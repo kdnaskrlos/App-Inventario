@@ -52,7 +52,7 @@ button{cursor:pointer}
 .wrap{max-width:640px;margin-inline:auto}
 
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding-block:12px 8px}
-.bar{display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--violet);border-radius:12px;padding:8px 6px 8px 14px;box-shadow:var(--shadow)}
+.bar{display:flex;align-items:center;gap:2px;padding:2px 0 2px}
 .brand{flex:1;min-width:0;margin-right:6px;display:flex;flex-direction:column;line-height:1.15}
 .brand b{font-size:18px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
 .brand b em{font-style:normal;color:var(--accent)}
@@ -178,7 +178,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 <div class="wrap">
   <header class="top">
     <div class="bar">
-      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v7</span></span></div>
+      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v8</span></span></div>
       <button class="ib" id="bSync" type="button" aria-label="Actualizar inventario desde GitHub"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-14.7 5.8L3.5 15.5"/><path d="M3.5 12a8.5 8.5 0 0 1 14.7-5.8l2.3 2.3"/><path d="M20.5 3.5v5h-5M3.5 20.5v-5h5"/></svg></button>
       <button class="ib" id="bTheme" type="button" aria-label="Cambiar entre modo claro y oscuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
       <button class="ib" id="bData" type="button" aria-label="Cargar o actualizar datos"><svg viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4.5 14v4.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V14"/></svg></button>
