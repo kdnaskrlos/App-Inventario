@@ -116,7 +116,12 @@ button{cursor:pointer}
 .scrim{position:fixed;inset:0;z-index:40;background:var(--scrim)}
 .sheet{position:fixed;z-index:41;left:0;right:0;bottom:0;margin-inline:auto;max-width:640px;max-height:90%;overflow:auto;overscroll-behavior:contain;background:var(--bg);border-radius:18px 18px 0 0;border:1px solid var(--line);border-bottom:0;
   padding:8px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));box-shadow:0 -10px 40px rgba(0,0,0,.25)}
-.sheet .grab{width:42px;height:4px;border-radius:2px;background:var(--line);margin:2px auto 10px}
+.sheet{touch-action:pan-y}
+.sheet.drag{transition:none!important;animation:none!important}
+.sheet.snap{transition:transform .22s ease-out}
+.sheet .grab{padding:10px 0;margin:-8px auto 2px;background:transparent;height:auto;width:100%;display:flex;justify-content:center}
+.sheet .grab::before{content:"";width:42px;height:4px;border-radius:2px;background:var(--line)}
+.sheet .grab-old{width:42px;height:4px;border-radius:2px;background:var(--line);margin:2px auto 10px}
 .sh{display:flex;gap:10px;align-items:flex-start}
 .sh h2{flex:1;min-width:0;margin:0;font-size:18px;line-height:1.25;overflow-wrap:anywhere}
 .sh .x{flex:none;width:40px;height:40px;border:1px solid var(--line);background:var(--surface);border-radius:10px;font-size:20px;line-height:1}
@@ -164,7 +169,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 <div class="wrap">
   <header class="top">
     <div class="bar">
-      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v3</span></span></div>
+      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v4</span></span></div>
       <button class="ib" id="bSync" type="button" aria-label="Actualizar inventario desde GitHub"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-14.7 5.8L3.5 15.5"/><path d="M3.5 12a8.5 8.5 0 0 1 14.7-5.8l2.3 2.3"/><path d="M20.5 3.5v5h-5M3.5 20.5v-5h5"/></svg></button>
       <button class="ib" id="bTheme" type="button" aria-label="Cambiar entre modo claro y oscuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
       <button class="ib" id="bData" type="button" aria-label="Cargar o actualizar datos"><svg viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4.5 14v4.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V14"/></svg></button>
@@ -413,6 +418,18 @@ document.addEventListener('click',e=>{const t=e.target;
     if(k==='close')hideSheets();else if(k==='data')openData();else if(k==='demo')demo();else if(k==='sync2'){sync(true)}else if(k==='sync'){const v=$('#repo').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\/$/,'');if(!/^[\w.-]+\/[\w.-]+$/.test(v)){toast('Escribe el repositorio como usuario/nombre.');return}REPO=v;store.set(RKEY,v);D.ver='';hideSheets();sync(true)}else if(k==='paste')pasted();
     else if(k==='wipe'){if(a.dataset.sure){const prev=D;D={rows:[],at:0,file:''};store.del(KEY);F={q:'',st:'all',cat:'',brand:'',sort:'name',shown:80};$('#q').value='';hideSheets();build();render();toast('Datos borrados de este teléfono.','Deshacer',()=>{D=prev;save();build();render()})}else{a.dataset.sure='1';a.textContent='Toca otra vez para confirmar el borrado'}}
     return}});
+
+/* ---------- bajar la hoja con un gesto ---------- */
+function swipeClose(sh){let y0=0,dy=0,t0=0,on=false,can=false;
+  const reset=()=>{sh.classList.remove('drag');sh.classList.add('snap');sh.style.transform='';setTimeout(()=>sh.classList.remove('snap'),240)};
+  sh.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;y0=e.touches[0].clientY;t0=Date.now();dy=0;on=false;can=sh.scrollTop<=0||!!e.target.closest('.grab,.sh')},{passive:true});
+  sh.addEventListener('touchmove',e=>{if(!can)return;dy=e.touches[0].clientY-y0;
+    if(!on){if(dy>8&&sh.scrollTop<=0){on=true;sh.classList.remove('snap');sh.classList.add('drag')}else if(dy<-4){can=false;return}else return}
+    e.preventDefault();sh.style.transform=`translateY(${Math.max(0,dy)}px)`},{passive:false});
+  const end=()=>{if(!on)return;on=false;const v=dy/Math.max(1,Date.now()-t0);
+    if(dy>110||(dy>40&&v>.6)){sh.classList.remove('drag');sh.classList.add('snap');sh.style.transform='translateY(110%)';setTimeout(()=>{sh.classList.remove('snap');sh.style.transform='';hideSheets()},200)}else reset()};
+  sh.addEventListener('touchend',end);sh.addEventListener('touchcancel',reset)}
+document.querySelectorAll('.sheet').forEach(swipeClose);
 $('#scrim').addEventListener('click',hideSheets);
 $('#bData').onclick=openData;$('#bSync').onclick=()=>sync(true);$('#bScan').onclick=openScan;$('#scanX').onclick=closeScan;
 $('#more').onclick=()=>{F.shown+=100;render()};
