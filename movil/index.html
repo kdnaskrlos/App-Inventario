@@ -39,7 +39,7 @@
 [hidden]{display:none!important}
 html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;
-  padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:0 110px}
+  padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px));padding-block:0 28px}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
 body.lock{overflow:hidden}
 button,input,select,textarea{font:inherit;color:inherit}
@@ -50,16 +50,16 @@ button{cursor:pointer}
 .wrap{max-width:640px;margin-inline:auto}
 
 .top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding-block:12px 8px}
-.bar{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--violet);border-radius:12px;padding:8px 8px 8px 14px;box-shadow:var(--shadow)}
-.brand{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.15}
-.brand b{font-size:19px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
+.bar{display:flex;align-items:center;gap:2px;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--violet);border-radius:12px;padding:8px 6px 8px 14px;box-shadow:var(--shadow)}
+.brand{flex:1;min-width:0;margin-right:6px;display:flex;flex-direction:column;line-height:1.15}
+.brand b{font-size:18px;font-weight:700;letter-spacing:-.01em;white-space:nowrap}
 .brand b em{font-style:normal;color:var(--accent)}
 .brand span{font-size:11.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ver{font-family:var(--f-mono);font-weight:500;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:1px 6px;font-size:11px}
-.ib{width:42px;height:42px;border-radius:10px;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;flex:none}
+.ib{width:36px;height:36px;border-radius:50%;border:0;background:transparent;color:var(--muted);display:grid;place-items:center;flex:none;padding:0}
 .ib:active{background:var(--surface2)}
 .ib.spin svg{animation:sp .9s linear infinite}@keyframes sp{to{transform:rotate(360deg)}}
-.ib svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.ib svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 
 .tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
 .tile{border-radius:12px;padding:10px 14px;background:var(--violet-soft);display:flex;flex-direction:column}
@@ -100,7 +100,7 @@ button{cursor:pointer}
 .stk.out{background:var(--bad-soft);color:var(--bad)}
 .more{margin:12px auto 0;display:block;border:1px solid var(--line);background:var(--surface);border-radius:10px;padding:10px 18px;font-weight:500;min-height:44px}
 
-.empty{margin-top:18px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 16px}
+.empty{margin-top:24px}
 .empty h2{margin:0 0 6px;font-size:17px}
 .empty ol{margin:10px 0 14px;padding-left:20px;display:flex;flex-direction:column;gap:6px;color:var(--muted)}
 .empty p{margin:0}
@@ -112,8 +112,6 @@ button{cursor:pointer}
 .row{display:flex;gap:8px;flex-wrap:wrap}
 .row>*{flex:1 1 140px}
 
-.fab{position:fixed;z-index:25;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));height:54px;padding:0 24px;border-radius:27px;border:0;background:var(--accent);color:var(--accent-ink);font-weight:700;display:flex;align-items:center;gap:10px;box-shadow:0 6px 20px rgba(14,138,79,.35)}
-.fab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 
 .scrim{position:fixed;inset:0;z-index:40;background:var(--scrim)}
 .sheet{position:fixed;z-index:41;left:0;right:0;bottom:0;margin-inline:auto;max-width:640px;max-height:90%;overflow:auto;overscroll-behavior:contain;background:var(--bg);border-radius:18px 18px 0 0;border:1px solid var(--line);border-bottom:0;
@@ -158,7 +156,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 .manual{display:flex;gap:8px;width:min(100%,420px)}
 .manual input{flex:1;min-width:0;height:46px;border-radius:10px;border:1px solid rgba(255,255,255,.4);background:rgba(0,0,0,.45);color:#fff;padding:0 12px;font-size:16px}
 
-.toast{position:fixed;z-index:80;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom,0px));width:max-content;max-width:min(92vw,520px);background:var(--ink);color:var(--bg);border-radius:12px;padding:11px 14px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow);font-size:14px}
+.toast{position:fixed;z-index:80;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));width:max-content;max-width:min(92vw,520px);background:var(--ink);color:var(--bg);border-radius:12px;padding:11px 14px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow);font-size:14px}
 .toast button{border:0;background:transparent;color:inherit;text-decoration:underline;font-weight:700;padding:4px 6px;min-height:32px}
 @media (prefers-reduced-motion:no-preference){.sheet{animation:up .2s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.4}}}
 </style>
@@ -166,7 +164,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 <div class="wrap">
   <header class="top">
     <div class="bar">
-      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v2</span></span></div>
+      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v3</span></span></div>
       <button class="ib" id="bSync" type="button" aria-label="Actualizar inventario desde GitHub"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-14.7 5.8L3.5 15.5"/><path d="M3.5 12a8.5 8.5 0 0 1 14.7-5.8l2.3 2.3"/><path d="M20.5 3.5v5h-5M3.5 20.5v-5h5"/></svg></button>
       <button class="ib" id="bTheme" type="button" aria-label="Cambiar entre modo claro y oscuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
       <button class="ib" id="bData" type="button" aria-label="Cargar o actualizar datos"><svg viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4.5 14v4.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V14"/></svg></button>
@@ -174,7 +172,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
     <div class="tiles" id="tiles"></div>
     <div class="seg" id="seg" role="group" aria-label="Estado del stock"></div>
     <div class="search">
-      <div class="f"><input id="q" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Buscar nombre, SKU o código"><button class="clr" id="qc" type="button" aria-label="Borrar búsqueda" hidden>×</button></div>
+      <div class="f"><input id="q" type="search" inputmode="search" enterkeyhint="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Nombre, SKU o código"><button class="clr" id="qc" type="button" aria-label="Borrar búsqueda" hidden>×</button></div>
       <button class="scanbtn" id="bScan" type="button" aria-label="Escanear código de barras"><svg viewBox="0 0 24 24"><path d="M3.5 8V5.5a2 2 0 0 1 2-2H8M16 3.5h2.5a2 2 0 0 1 2 2V8M20.5 16v2.5a2 2 0 0 1-2 2H16M8 20.5H5.5a2 2 0 0 1-2-2V16M7 8v8M10.5 8v8M14 8v8M17 8v8"/></svg></button>
     </div>
     <div class="filters">
@@ -191,8 +189,6 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
     <section class="empty" id="empty" hidden></section>
   </main>
 </div>
-
-<button class="fab" id="fab" type="button"><svg viewBox="0 0 24 24"><path d="M3.5 8V5.5a2 2 0 0 1 2-2H8M16 3.5h2.5a2 2 0 0 1 2 2V8M20.5 16v2.5a2 2 0 0 1-2 2H16M8 20.5H5.5a2 2 0 0 1-2-2V16M7 12h10"/></svg>Escanear</button>
 
 <div class="scrim" id="scrim" hidden></div>
 <section class="sheet" id="detail" role="dialog" aria-modal="true" aria-label="Detalle del producto" hidden></section>
@@ -288,7 +284,7 @@ function render(){
   const m=$('#more');m.hidden=list.length<=part.length;m.textContent=`Mostrar ${Math.min(100,list.length-part.length)} más`;
   $('#meta').innerHTML=has?`<span>${fmtN(list.length)} resultado${list.length===1?'':'s'}</span><span>${D.at?'Cargado '+new Date(D.at).toLocaleDateString('es-VE',{day:'2-digit',month:'short'})+' '+new Date(D.at).toLocaleTimeString('es-VE',{hour:'2-digit',minute:'2-digit'}):''}</span>`:'';
   const e=$('#empty');e.hidden=has;
-  if(!has)e.innerHTML=`<h2>Todavía no hay inventario</h2><p class="muted">Carga una vez el archivo de tu tabla de carga masiva y podrás consultarlo y escanear sin conexión.</p><ol><li>En la carga masiva toca «Sincronizar» y luego «Subir inventario».</li><li>Aquí toca «Actualizar desde GitHub».</li><li>Sin conexión también puedes elegir un archivo Excel o CSV.</li></ol><div class="stack"><button class="btn primary block" type="button" data-act="sync2">Actualizar desde GitHub</button><button class="btn block" type="button" data-act="data">Otras formas de cargar datos</button><button class="btn block" type="button" data-act="demo">Ver con datos de ejemplo</button></div>`;
+  if(!has)e.innerHTML=`<p class="muted" style="margin:0;text-align:center">Sin inventario. Toca el icono de arriba a la derecha para cargarlo.</p>`;
   else if(!list.length)$('#list').innerHTML=`<li class="muted" style="padding:18px 4px">Nada coincide con esos filtros.</li>`;
   document.querySelector('.search').style.opacity=has?1:.55}
 
@@ -418,7 +414,7 @@ document.addEventListener('click',e=>{const t=e.target;
     else if(k==='wipe'){if(a.dataset.sure){const prev=D;D={rows:[],at:0,file:''};store.del(KEY);F={q:'',st:'all',cat:'',brand:'',sort:'name',shown:80};$('#q').value='';hideSheets();build();render();toast('Datos borrados de este teléfono.','Deshacer',()=>{D=prev;save();build();render()})}else{a.dataset.sure='1';a.textContent='Toca otra vez para confirmar el borrado'}}
     return}});
 $('#scrim').addEventListener('click',hideSheets);
-$('#bData').onclick=openData;$('#bSync').onclick=()=>sync(true);$('#bScan').onclick=openScan;$('#fab').onclick=openScan;$('#scanX').onclick=closeScan;
+$('#bData').onclick=openData;$('#bSync').onclick=()=>sync(true);$('#bScan').onclick=openScan;$('#scanX').onclick=closeScan;
 $('#more').onclick=()=>{F.shown+=100;render()};
 let qt;$('#q').addEventListener('input',e=>{clearTimeout(qt);qt=setTimeout(()=>{F.q=e.target.value;F.shown=80;render()},120)});
 $('#q').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(qt);F.q=e.target.value;const v=e.target.value.trim();if(/^\d{8,14}$/.test(v)||/^[A-Za-z0-9_.-]+$/.test(v)&&D.rows.some(r=>r.s.toLowerCase()===v.toLowerCase())){lookup(v)}else render();e.target.blur()}});

@@ -17,4 +17,4 @@ El repositorio es público: cualquiera con el enlace puede ver `data/inventario.
 ## Versiones
 
 - Carga masiva: v21
-- Stock móvil: v2
+- Stock móvil: v3
