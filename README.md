@@ -16,5 +16,5 @@ El repositorio es público: cualquiera con el enlace puede ver `data/inventario.
 
 ## Versiones
 
-- Carga masiva: v23
+- Carga masiva: v24 (instalable en la PC)
 - Stock móvil: v5

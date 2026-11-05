@@ -3,7 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0e8a4f">
+<meta name="theme-color" content="#6a4de8">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 </head>
 <body>
 <title>Carga Masiva Comic Shop</title>
@@ -250,7 +253,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v23</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v24</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -971,6 +974,7 @@ renderPanel();renderPbar(false);setFilterUI();updUR();G.cur=SETK();
 renderHead();refreshAll(true);
 window.__S=S;window.__api={genVariants,addVariants,buildCsv,buildTsv,ean,HEAD,computeIssues};
 })();
+if('serviceWorker' in navigator&&/^https:/.test(location.protocol)&&!/claude/.test(location.hostname)){navigator.serviceWorker.register('sw.js').catch(()=>{})}
 </script>
 
 </body>
