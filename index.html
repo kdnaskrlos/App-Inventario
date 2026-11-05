@@ -250,7 +250,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v21</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v23</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -863,17 +863,19 @@ const syHdr=(tok,raw)=>({'Accept':raw?'application/vnd.github.raw+json':'applica
 function syErr(e){const m=String(e&&e.message||e);if(e&&e.status===401)return'GitHub no aceptó el token. Revisa que esté completo y que no haya vencido.';
   if(e&&(e.status===403||e.status===404))return'GitHub rechazó el acceso. Revisa el nombre del repositorio y que el token tenga permiso Contents: Read and write sobre él.';
   if(e&&e.status===409)return'El archivo cambió mientras se subía. Vuelve a tocar «Subir inventario».';
-  if(e&&e.status)return'GitHub respondió con el error '+e.status+'.';
+  if(e&&e.status)return'GitHub respondió con el error '+e.status+(e.msg?': '+e.msg:'')+'.';
   return'No se pudo conectar con GitHub. Esta función funciona al abrir la herramienta desde tu enlace de GitHub Pages, no desde la vista previa de Claude.'}
 const b64=str=>{const b=new TextEncoder().encode(str);let bin='';for(let i=0;i<b.length;i+=0x8000)bin+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(bin)};
-async function gh(url,opt){const res=await fetch(url,opt);if(!res.ok){const e=new Error('http');e.status=res.status;throw e}return res}
+async function gh(url,opt){const res=await fetch(url,{cache:'no-store',...opt});if(!res.ok){const e=new Error('http');e.status=res.status;try{e.msg=(await res.json()).message||''}catch(x){}throw e}return res}
 async function syPush(){const c=syCfg();if(!c)return;if(!c.token){syStatus('Pega tu token de GitHub para poder guardar.','bad');return}
   if(!S.rows.length){syStatus('La tabla está vacía. Agrega o importa productos antes de subir.','bad');return}
   syStatus('Subiendo…');$('#syPush').disabled=true;
   try{const payload=JSON.stringify({app:'carga-masiva',v:1,at:new Date().toISOString(),head:HEAD,rows:S.rows.map(r=>r.v)});const url=syUrl(c.repo);
-    const put=async()=>{let sha;try{const g=await gh(url,{headers:syHdr(c.token)});sha=(await g.json()).sha}catch(e){if(e.status!==404)throw e}
+    const dir=`https://api.github.com/repos/${c.repo}/contents/data`;
+    const getSha=async()=>{try{const l=await (await gh(dir+'?t='+Date.now(),{headers:syHdr(c.token)})).json();const f=Array.isArray(l)&&l.find(x=>x.name==='inventario.json');return f?f.sha:undefined}catch(e){if(e.status===404)return undefined;throw e}};
+    const put=async()=>{const sha=await getSha();
       await gh(url,{method:'PUT',headers:{...syHdr(c.token),'Content-Type':'application/json'},body:JSON.stringify({message:`Inventario actualizado (${S.rows.length} filas)`,content:b64(payload),...(sha?{sha}:{})})})};
-    try{await put()}catch(e){if(e.status===409)await put();else throw e}
+    try{await put()}catch(e){if(e.status===409||e.status===422)await put();else throw e}
     const o=sy.get();o.last=Date.now();sy.set(o);syStatus(`Listo: ${fmt(S.rows.length)} filas guardadas en <b>${esc(c.repo)}</b>. La app móvil las verá al abrirla o al tocar Actualizar.`,'ok')}
   catch(e){syStatus(esc(syErr(e)),'bad')}finally{$('#syPush').disabled=false}}
 async function syPull(){const c=syCfg();if(!c)return;syStatus('Descargando…');$('#syPull').disabled=true;
