@@ -116,12 +116,14 @@ button{cursor:pointer}
 .row>*{flex:1 1 140px}
 
 
-.scrim{position:fixed;inset:0;z-index:40;background:var(--scrim)}
+.scrim{position:fixed;inset:0;z-index:40;background:var(--scrim);opacity:0;transition:opacity .28s ease;will-change:opacity}
+.scrim.on{opacity:1}
 .sheet{position:fixed;z-index:41;left:0;right:0;bottom:0;margin-inline:auto;max-width:640px;max-height:90%;overflow:auto;overscroll-behavior:contain;background:var(--bg);border-radius:18px 18px 0 0;border:1px solid var(--line);border-bottom:0;
   padding:8px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-right,0px));box-shadow:0 -10px 40px rgba(0,0,0,.25)}
-.sheet{touch-action:pan-y}
-.sheet.drag{transition:none!important;animation:none!important}
-.sheet.snap{transition:transform .22s ease-out}
+.sheet{touch-action:pan-y;transform:translate3d(0,100%,0);transition:transform .34s cubic-bezier(.22,.9,.28,1);will-change:transform;backface-visibility:hidden;contain:layout paint}
+.sheet.in{transform:translate3d(0,0,0)}
+.sheet.drag{transition:none!important}
+.scrim.drag{transition:none!important}
 .sheet .grab{padding:10px 0;margin:-8px auto 2px;background:transparent;height:auto;width:100%;display:flex;justify-content:center}
 .sheet .grab::before{content:"";width:42px;height:4px;border-radius:2px;background:var(--line)}
 .sheet .grab-old{width:42px;height:4px;border-radius:2px;background:var(--line);margin:2px auto 10px}
@@ -166,13 +168,13 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 
 .toast{position:fixed;z-index:80;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));width:max-content;max-width:min(92vw,520px);background:var(--ink);color:var(--bg);border-radius:12px;padding:11px 14px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow);font-size:14px}
 .toast button{border:0;background:transparent;color:inherit;text-decoration:underline;font-weight:700;padding:4px 6px;min-height:32px}
-@media (prefers-reduced-motion:no-preference){.sheet{animation:up .2s ease-out}@keyframes up{from{transform:translateY(24px);opacity:.4}}}
+@media (prefers-reduced-motion:reduce){.sheet,.scrim{transition:none!important}}
 </style>
 
 <div class="wrap">
   <header class="top">
     <div class="bar">
-      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v5</span></span></div>
+      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v6</span></span></div>
       <button class="ib" id="bSync" type="button" aria-label="Actualizar inventario desde GitHub"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-14.7 5.8L3.5 15.5"/><path d="M3.5 12a8.5 8.5 0 0 1 14.7-5.8l2.3 2.3"/><path d="M20.5 3.5v5h-5M3.5 20.5v-5h5"/></svg></button>
       <button class="ib" id="bTheme" type="button" aria-label="Cambiar entre modo claro y oscuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
       <button class="ib" id="bData" type="button" aria-label="Cargar o actualizar datos"><svg viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4.5 14v4.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V14"/></svg></button>
@@ -298,8 +300,11 @@ function render(){
 
 /* ---------- hojas ---------- */
 let openSheet=null;
-function showSheet(el){hideSheets();$('#toast').hidden=true;openSheet=el;el.hidden=false;el.scrollTop=0;$('#scrim').hidden=false;document.body.classList.add('lock')}
-function hideSheets(){for(const s of document.querySelectorAll('.sheet'))s.hidden=true;$('#scrim').hidden=true;document.body.classList.remove('lock');openSheet=null}
+function showSheet(el){hideSheets(true);$('#toast').hidden=true;openSheet=el;const sc=$('#scrim');sc.hidden=false;el.hidden=false;el.scrollTop=0;el.style.transform='';void el.offsetHeight;sc.classList.add('on');el.classList.add('in');document.body.classList.add('lock')}
+function hideSheets(imm){const sc=$('#scrim');openSheet=null;document.body.classList.remove('lock');sc.classList.remove('on');sc.style.opacity='';
+  const fin=()=>{for(const s of document.querySelectorAll('.sheet'))if(!s.classList.contains('in')){s.hidden=true;s.style.transform=''}if(!sc.classList.contains('on'))sc.hidden=true};
+  for(const s of document.querySelectorAll('.sheet'))if(!s.hidden)s.classList.remove('in');
+  if(imm||matchMedia('(prefers-reduced-motion: reduce)').matches)fin();else setTimeout(fin,340)}
 const copy=async(t,l)=>{try{await navigator.clipboard.writeText(t);toast(l+' copiado.')}catch(e){toast('No se pudo copiar. Mantén presionado el texto para copiarlo.')}};
 
 const L=[ '0001101','0011001','0010011','0111101','0100011','0110001','0101111','0111011','0110111','0001011'];
@@ -324,7 +329,7 @@ function openDetail(sku){const r=D.rows.find(x=>x.s===sku);if(!r)return;const t=
   <div class="card"><h3>Precios</h3><div class="prices">${pri.map(o=>`<div><span>Precio ${o.i+1}</span><b>${fmtN(o.v)}</b></div>`).join('')}</div></div>
   <div class="card"><h3>Ficha</h3><dl class="kv">${kv('Categoría',r.c)}${kv('Marca',r.b)}${kv('Modelo',r.m)}${kv('Referencia',r.r)}${kv('Tallas',r.z)}<dt>Ubicación</dt><dd>${esc(loc)}</dd>
    <dt>Costo</dt><dd><button class="reveal" type="button" data-cost="${fmtN(r.k)}">Mostrar</button></dd></dl>${r.d?`<p class="hint" style="margin-top:10px">${esc(r.d)}</p>`:''}</div>`;
-  showSheet(el);if(r.e&&r.e.length===13)drawEan($('#bcv'),r.e)}
+  showSheet(el);if(r.e&&r.e.length===13)requestAnimationFrame(()=>{const cv=$('#bcv');cv&&drawEan(cv,r.e)})}
 
 function openData(){const el=$('#data');const has=D.rows.length>0;
   el.innerHTML=`<div class="grab"></div><div class="sh"><h2>Datos del inventario</h2><button class="x" type="button" data-act="close" aria-label="Cerrar">×</button></div>
@@ -423,15 +428,16 @@ document.addEventListener('click',e=>{const t=e.target;
     return}});
 
 /* ---------- bajar la hoja con un gesto ---------- */
-function swipeClose(sh){let y0=0,dy=0,t0=0,on=false,can=false;
-  const reset=()=>{sh.classList.remove('drag');sh.classList.add('snap');sh.style.transform='';setTimeout(()=>sh.classList.remove('snap'),240)};
-  sh.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;y0=e.touches[0].clientY;t0=Date.now();dy=0;on=false;can=sh.scrollTop<=0||!!e.target.closest('.grab,.sh')},{passive:true});
+function swipeClose(sh){let y0=0,dy=0,off=0,t0=0,on=false,can=false,raf=0;const sc=$('#scrim');
+  const paint=()=>{raf=0;const d=Math.max(0,dy-off);sh.style.transform=`translate3d(0,${d}px,0)`;sc.style.opacity=String(Math.max(0,1-d/(sh.offsetHeight||600)))};
+  const release=()=>{cancelAnimationFrame(raf);raf=0;sh.classList.remove('drag');sc.classList.remove('drag');sh.style.transform='';sc.style.opacity=''};
+  sh.addEventListener('touchstart',e=>{if(e.touches.length!==1)return;y0=e.touches[0].clientY;t0=Date.now();dy=0;off=0;on=false;can=sh.scrollTop<=0||!!e.target.closest('.grab,.sh')},{passive:true});
   sh.addEventListener('touchmove',e=>{if(!can)return;dy=e.touches[0].clientY-y0;
-    if(!on){if(dy>8&&sh.scrollTop<=0){on=true;sh.classList.remove('snap');sh.classList.add('drag')}else if(dy<-4){can=false;return}else return}
-    e.preventDefault();sh.style.transform=`translateY(${Math.max(0,dy)}px)`},{passive:false});
-  const end=()=>{if(!on)return;on=false;const v=dy/Math.max(1,Date.now()-t0);
-    if(dy>110||(dy>40&&v>.6)){sh.classList.remove('drag');sh.classList.add('snap');sh.style.transform='translateY(110%)';setTimeout(()=>{sh.classList.remove('snap');sh.style.transform='';hideSheets()},200)}else reset()};
-  sh.addEventListener('touchend',end);sh.addEventListener('touchcancel',reset)}
+    if(!on){if(dy>8&&sh.scrollTop<=0){on=true;off=dy;sh.classList.add('drag');sc.classList.add('drag')}else if(dy<-4){can=false;return}else return}
+    e.preventDefault();if(!raf)raf=requestAnimationFrame(paint)},{passive:false});
+  const end=()=>{if(!on)return;on=false;const d=dy-off,v=d/Math.max(1,Date.now()-t0);
+    if(d>110||(d>40&&v>.5)){release();hideSheets()}else release()};
+  sh.addEventListener('touchend',end);sh.addEventListener('touchcancel',()=>{if(on){on=false;release()}})}
 document.querySelectorAll('.sheet').forEach(swipeClose);
 $('#scrim').addEventListener('click',hideSheets);
 $('#bData').onclick=openData;$('#bSync').onclick=()=>sync(true);$('#bScan').onclick=openScan;$('#scanX').onclick=closeScan;
