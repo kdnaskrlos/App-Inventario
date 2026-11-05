@@ -192,7 +192,6 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 .toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));background:var(--ink);color:var(--bg);padding:10px 14px;border-radius:10px;display:flex;gap:12px;align-items:center;box-shadow:var(--shadow);z-index:60;max-width:calc(100% - 32px)}
 .toast button{background:transparent;border:0;color:inherit;font-weight:600;text-decoration:underline;padding:0}
 .note{font-size:12.5px;color:var(--muted)}
-#syInd{gap:7px;font-size:12.5px;padding-inline:8px}#syInd i{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}#syInd.ok i{background:var(--good)}#syInd.dirty i,#syInd.busy i{background:var(--warn)}#syInd.err i{background:var(--bad)}#syInd.busy i{animation:syp 1s ease-in-out infinite}@keyframes syp{50%{opacity:.25}}
 .xs{border-radius:10px;padding:10px 12px;background:var(--surface2);border:1px solid var(--line);font-size:13px;display:flex;flex-direction:column;gap:8px}
 .xs.ok{background:var(--good-soft);border-color:var(--good);color:var(--good)}.xs.bad{background:var(--warn-soft);border-color:var(--warn)}
 .xs textarea{width:100%;font-family:var(--f-mono);font-size:11.5px;min-height:110px;resize:vertical}
@@ -251,7 +250,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v22</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v21</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -259,7 +258,6 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
     <button class="btn ghost" id="btnRedo" disabled title="Rehacer (Ctrl+Y)"><svg class="ico" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg>Rehacer</button>
     <button class="btn" id="btnImport"><svg class="ico" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Importar inventario</button>
     <button class="btn primary" id="btnExport"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Exportar</button>
-    <button class="btn ghost" id="syInd" hidden></button>
     <button class="btn" id="btnSync" title="Guardar el inventario en GitHub para verlo desde el teléfono"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12A9 9 0 0 1 18.5 5.8L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/></svg>Sincronizar</button>
   </div>
 </header>
@@ -422,7 +420,6 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
     <div class="fld"><label for="syRepo">Repositorio <code>usuario/nombre</code></label><input class="in" id="syRepo" value="kdnaskrlos/App-Inventario" autocomplete="off" spellcheck="false"></div>
     <div class="fld"><label for="syTok">Token de GitHub <code>solo este equipo</code></label><input class="in" id="syTok" type="password" autocomplete="off" spellcheck="false" placeholder="github_pat_…"></div>
     <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="syRem" checked> Recordar el token en este equipo</label>
-    <label style="display:flex;gap:8px;align-items:flex-start"><input type="checkbox" id="syAuto" checked style="margin-top:3px"><span><b>Subir automáticamente cada cambio</b><br><span class="note">Necesita el token guardado. Cada día, antes de la primera subida, deja una copia del inventario anterior en <code>data/respaldo/</code>.</span></span></label>
     <div class="foot" style="justify-content:flex-start">
       <button class="btn primary" id="syPush">Subir inventario</button>
       <button class="btn" id="syPull">Traer del repositorio</button>
@@ -503,7 +500,7 @@ function gApply(str){G.busy=true;try{applyOpts(JSON.parse(str))}finally{G.busy=f
 function gUndo(){G.t=0;gTrack();if(!G.undo.length){toast('No hay más cambios que deshacer en las opciones.');return}G.redo.push(G.cur);gApply(G.undo.pop());toast('Cambio en las opciones deshecho. Ctrl+Y lo rehace.')}
 function gRedo(){G.t=0;gTrack();if(!G.redo.length){toast('No hay cambios que rehacer en las opciones.');return}G.undo.push(G.cur);gApply(G.redo.pop());toast('Cambio en las opciones rehecho')}
 let saveT;
-function persist(){gTrack();clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify({rows:S.rows,refs:S.refs,catalog:S.catalog,f:S.f,tpl:S.tpl,ui:S.ui,nextId:S.nextId,ins:S.ins,profiles:S.profiles,defs:S.defs,cw:S.cw,pw:S.pw,sp:S.sizeProfiles}))}catch(e){}syNote()},400)}
+function persist(){gTrack();clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify({rows:S.rows,refs:S.refs,catalog:S.catalog,f:S.f,tpl:S.tpl,ui:S.ui,nextId:S.nextId,ins:S.ins,profiles:S.profiles,defs:S.defs,cw:S.cw,pw:S.pw,sp:S.sizeProfiles}))}catch(e){}},400)}
 function restore(){try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(!j)return;if(Array.isArray(j.rows)&&j.rows.every(r=>r&&Array.isArray(r.v)&&r.v.length===NC)){S.rows=j.rows;S.nextId=j.nextId||j.rows.reduce((m,r)=>Math.max(m,r.id),0)+1}
  if(j.refs&&j.refs.sku)S.refs=j.refs;if(j.catalog&&j.catalog.colors)S.catalog=Object.assign(initCatalog(),j.catalog);if(j.f&&j.f.tipo)S.f=Object.assign(initForm(),j.f);if(j.tpl)S.tpl=Object.assign({...TPL0},j.tpl);if(j.defs&&j.defs.catalog&&j.defs.f&&j.defs.tpl&&Array.isArray(j.defs.profiles))S.defs=j.defs;if(j.cw&&typeof j.cw==='object')S.cw=j.cw;if(typeof j.pw==='number'&&j.pw>=300&&j.pw<=1000)S.pw=j.pw;if(Array.isArray(j.sp)&&j.sp.every(p=>p&&Array.isArray(p.sizes)))S.sizeProfiles=j.sp;if(j.ins&&j.ins.mode)S.ins=j.ins;if(Array.isArray(j.profiles)&&j.profiles.every(p=>p&&Array.isArray(p.a)&&p.a.length===5))S.profiles=j.profiles;if(j.ui)S.ui=Object.assign(S.ui,j.ui,{q:''})}catch(e){}}
 const initSizeProfiles=()=>[['Niño 4–16',['4','6','8','10','12','14','16']],['S–XL',['S','M','L','XL']],['S–3XL',['S','M','L','XL','2XL','3XL']],['Única',['U.']]].map(([name,sizes],i)=>({id:i+1,name,sizes}));
@@ -855,71 +852,40 @@ $('#doImport').onclick=()=>{if(!pending)return;const mode=document.querySelector
 
 
 /* ---------- sincronizar con GitHub ---------- */
-var syOn=false;
 const SYK='comicshop-sync-v1';
-const sy={get(){try{return JSON.parse(localStorage.getItem(SYK)||'{}')}catch(e){return{}}},set(o){try{localStorage.setItem(SYK,JSON.stringify(o))}catch(e){}},patch(x){this.set({...this.get(),...x})}};
+const sy={get(){try{return JSON.parse(localStorage.getItem(SYK)||'{}')}catch(e){return{}}},set(o){try{localStorage.setItem(SYK,JSON.stringify(o))}catch(e){}}};
 function syStatus(html,kind){const el=$('#syStatus');el.hidden=!html;el.className='xs'+(kind?' '+kind:'');el.innerHTML=html||''}
 function syCfg(){const repo=$('#syRepo').value.trim().replace(/^https?:\/\/github\.com\//,'').replace(/\.git$/,'').replace(/\/$/,''),token=$('#syTok').value.trim();
   if(!/^[\w.-]+\/[\w.-]+$/.test(repo)){syStatus('Escribe el repositorio como usuario/nombre, por ejemplo kdnaskrlos/App-Inventario.','bad');return null}
-  sy.patch({repo,token:$('#syRem').checked?token:'',rem:$('#syRem').checked,auto:$('#syAuto').checked});return{repo,token}}
+  sy.set({repo,token:$('#syRem').checked?token:'',rem:$('#syRem').checked,last:sy.get().last});return{repo,token}}
 const syUrl=repo=>`https://api.github.com/repos/${repo}/contents/data/inventario.json`;
 const syHdr=(tok,raw)=>({'Accept':raw?'application/vnd.github.raw+json':'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28',...(tok?{'Authorization':'Bearer '+tok}:{})});
-function syErr(e){if(e&&e.status===401)return'GitHub no aceptó el token. Revisa que esté completo y que no haya vencido.';
+function syErr(e){const m=String(e&&e.message||e);if(e&&e.status===401)return'GitHub no aceptó el token. Revisa que esté completo y que no haya vencido.';
   if(e&&(e.status===403||e.status===404))return'GitHub rechazó el acceso. Revisa el nombre del repositorio y que el token tenga permiso Contents: Read and write sobre él.';
-  if(e&&e.status===409)return'El archivo cambió mientras se subía. Vuelve a intentarlo.';
+  if(e&&e.status===409)return'El archivo cambió mientras se subía. Vuelve a tocar «Subir inventario».';
   if(e&&e.status)return'GitHub respondió con el error '+e.status+'.';
   return'No se pudo conectar con GitHub. Esta función funciona al abrir la herramienta desde tu enlace de GitHub Pages, no desde la vista previa de Claude.'}
 const b64=str=>{const b=new TextEncoder().encode(str);let bin='';for(let i=0;i<b.length;i+=0x8000)bin+=String.fromCharCode.apply(null,b.subarray(i,i+0x8000));return btoa(bin)};
 async function gh(url,opt){const res=await fetch(url,opt);if(!res.ok){const e=new Error('http');e.status=res.status;throw e}return res}
-const rowsKey=()=>{const t=JSON.stringify(S.rows.map(r=>r.v));let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)}return t.length+':'+(h>>>0)};
-let syKey='',syT=0,syBusy=false,syPend=false,syState='';
-function setInd(state,text){syState=state;const b=$('#syInd');if(!state){b.hidden=true;return}b.hidden=false;b.className='btn ghost '+state;b.innerHTML=`<i></i>${esc(text)}`;
-  b.title={ok:'Todo el inventario está guardado en GitHub',dirty:'Hay cambios que se subirán en unos segundos',busy:'Subiendo el inventario a GitHub',err:'No se pudo subir. Toca para ver el detalle.',warn:'Toca para revisar'}[state]||''}
-async function pushRemote(c){
-  const k=rowsKey();const payload=JSON.stringify({app:'carga-masiva',v:1,at:new Date().toISOString(),head:HEAD,rows:S.rows.map(r=>r.v)});const url=syUrl(c.repo);
-  const day=new Date().toLocaleDateString('en-CA');
-  if(sy.get().bk!==day){let prev=null;try{prev=await (await gh(url,{headers:syHdr(c.token,true)})).text()}catch(e){if(e.status!==404)throw e}
-    if(prev&&prev.length>20){try{await gh(`https://api.github.com/repos/${c.repo}/contents/data/respaldo/inventario-${day}.json`,{method:'PUT',headers:{...syHdr(c.token),'Content-Type':'application/json'},body:JSON.stringify({message:`Respaldo del ${day}`,content:b64(prev)})})}catch(e){if(e.status!==422)throw e}}
-    sy.patch({bk:day})}
-  const put=async()=>{let sha;try{sha=(await (await gh(url,{headers:syHdr(c.token)})).json()).sha}catch(e){if(e.status!==404)throw e}
-    await gh(url,{method:'PUT',headers:{...syHdr(c.token),'Content-Type':'application/json'},body:JSON.stringify({message:`Inventario actualizado (${S.rows.length} filas)`,content:b64(payload),...(sha?{sha}:{})})})};
-  try{await put()}catch(e){if(e.status===409)await put();else throw e}
-  syKey=k;sy.patch({last:Date.now(),n:S.rows.length})}
-async function autoPush(){clearTimeout(syT);const o=sy.get();if(!o.token||!o.repo||o.auto===false)return;
-  if(syBusy){syPend=true;return}
-  if(!S.rows.length){setInd('warn','Tabla vacía: no se sube');return}
-  if(o.n>20&&S.rows.length<o.n*0.5){setInd('warn','Se borraron muchas filas: súbelo a mano');return}
-  syBusy=true;setInd('busy','Subiendo…');let ok=false;
-  try{await pushRemote({repo:o.repo,token:o.token});ok=true;setInd('ok','Guardado en GitHub')}
-  catch(e){setInd('err','Error al subir');window.__syErr=syErr(e);syT=setTimeout(autoPush,60000)}
-  finally{syBusy=false;if(ok&&(syPend||rowsKey()!==syKey)){syPend=false;syT=setTimeout(autoPush,1500)}}}
-function syNote(){if(!syOn)return;const o=sy.get();if(!o.token||!o.repo||o.auto===false){if(syState)setInd('');return}
-  if(syBusy){syPend=true;return}
-  if(rowsKey()===syKey){if(syState==='dirty'){setInd('ok','Guardado en GitHub')}return}
-  setInd('dirty','Cambios sin subir');clearTimeout(syT);syT=setTimeout(autoPush,4000)}
 async function syPush(){const c=syCfg();if(!c)return;if(!c.token){syStatus('Pega tu token de GitHub para poder guardar.','bad');return}
   if(!S.rows.length){syStatus('La tabla está vacía. Agrega o importa productos antes de subir.','bad');return}
-  if(syBusy){syStatus('Ya se está subiendo. Espera un momento.');return}
-  syStatus('Subiendo…');$('#syPush').disabled=true;syBusy=true;clearTimeout(syT);
-  try{await pushRemote(c);setInd(sy.get().auto===false?'':'ok','Guardado en GitHub');syStatus(`Listo: ${fmt(S.rows.length)} filas guardadas en <b>${esc(c.repo)}</b>. La app móvil las verá al abrirla o al tocar Actualizar.`,'ok')}
-  catch(e){syStatus(esc(syErr(e)),'bad')}finally{syBusy=false;$('#syPush').disabled=false}}
+  syStatus('Subiendo…');$('#syPush').disabled=true;
+  try{const payload=JSON.stringify({app:'carga-masiva',v:1,at:new Date().toISOString(),head:HEAD,rows:S.rows.map(r=>r.v)});const url=syUrl(c.repo);
+    const put=async()=>{let sha;try{const g=await gh(url,{headers:syHdr(c.token)});sha=(await g.json()).sha}catch(e){if(e.status!==404)throw e}
+      await gh(url,{method:'PUT',headers:{...syHdr(c.token),'Content-Type':'application/json'},body:JSON.stringify({message:`Inventario actualizado (${S.rows.length} filas)`,content:b64(payload),...(sha?{sha}:{})})})};
+    try{await put()}catch(e){if(e.status===409)await put();else throw e}
+    const o=sy.get();o.last=Date.now();sy.set(o);syStatus(`Listo: ${fmt(S.rows.length)} filas guardadas en <b>${esc(c.repo)}</b>. La app móvil las verá al abrirla o al tocar Actualizar.`,'ok')}
+  catch(e){syStatus(esc(syErr(e)),'bad')}finally{$('#syPush').disabled=false}}
 async function syPull(){const c=syCfg();if(!c)return;syStatus('Descargando…');$('#syPull').disabled=true;
   try{const res=await gh(syUrl(c.repo),{headers:syHdr(c.token,true)});const j=await res.json();
     if(!j||!Array.isArray(j.rows)||!j.rows.every(v=>Array.isArray(v)&&v.length===NC))throw Object.assign(new Error('formato'),{bad:true});
     if(!j.rows.length){syStatus('El repositorio no tiene filas guardadas todavía.','bad');return}
-    snap();S.rows=j.rows.map(v=>({id:S.nextId++,src:'imp',v}));S.sel.clear();syKey=rowsKey();sy.patch({n:S.rows.length});gs.scrollTop=0;$('#ovSync').hidden=true;refreshAll(true);
-    if(sy.get().token&&sy.get().auto!==false)setInd('ok','Guardado en GitHub');
+    snap();S.rows=j.rows.map(v=>({id:S.nextId++,src:'imp',v}));S.sel.clear();gs.scrollTop=0;$('#ovSync').hidden=true;refreshAll(true);
     toast(`${fmt(j.rows.length)} filas traídas del repositorio`,'Deshacer',undo)}
   catch(e){syStatus(e.bad?'El archivo del repositorio no tiene el formato de esta herramienta.':e.status===404?'Todavía no hay inventario guardado en ese repositorio. Primero usa «Subir inventario».':esc(syErr(e)),'bad')}finally{$('#syPull').disabled=false}}
-function openSync(){const o=sy.get();if(o.repo)$('#syRepo').value=o.repo;$('#syTok').value=o.token||'';$('#syRem').checked=o.rem!==false;$('#syAuto').checked=o.auto!==false;
-  const parts=[];if(syState==='err'&&window.__syErr)parts.push(window.__syErr);if(o.last)parts.push(`Última subida desde este equipo: ${new Date(o.last).toLocaleString('es-VE')}.`);
-  syStatus(parts.join(' '),syState==='err'?'bad':'');$('#ovSync').hidden=false}
-$('#btnSync').onclick=openSync;$('#syInd').onclick=()=>{if(syState==='err'||syState==='warn'||syState==='dirty'){if(syState==='dirty'){autoPush()}else openSync()}else openSync()};
+$('#btnSync').onclick=()=>{const o=sy.get();if(o.repo)$('#syRepo').value=o.repo;$('#syTok').value=o.token||'';$('#syRem').checked=o.rem!==false;
+  syStatus(o.last?`Última subida desde este equipo: ${new Date(o.last).toLocaleString('es-VE')}.`:'');$('#ovSync').hidden=false};
 $('#syPush').onclick=syPush;$('#syPull').onclick=syPull;
-$('#syAuto').addEventListener('change',()=>{const c=syCfg();if(c){if(c.token&&$('#syAuto').checked){syKey='';syNote()}else if(!$('#syAuto').checked)setInd('')}});
-addEventListener('online',()=>{if(syState==='err'||syState==='dirty')autoPush()});
-addEventListener('beforeunload',e=>{if(syState==='dirty'||syState==='busy'||syState==='err'){e.preventDefault();e.returnValue=''}});
-setTimeout(()=>{syKey=rowsKey();syOn=true;const o=sy.get();if(o.token&&o.repo&&o.auto!==false&&o.last)setInd('ok','Guardado en GitHub')},700);
 
 /* ---------- buscar y reemplazar ---------- */
 const REPC=Array.from({length:NC},(_,i)=>i).filter(i=>i&&i!==16&&!BOOL.has(i));
