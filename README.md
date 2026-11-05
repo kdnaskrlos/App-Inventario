@@ -10,11 +10,12 @@ Dos apps web que comparten el inventario a través de este repositorio.
 ## Cómo se sincronizan
 
 1. En la carga masiva, toca **Sincronizar → Subir inventario**. Se guarda `data/inventario.json` en este repositorio.
-2. La app móvil descarga ese archivo al abrirse y cada vez que vuelves a ella. También hay un botón de actualizar.
+2. Con la subida automática activada, cada cambio se sube solo a los pocos segundos y cada día se deja un respaldo en `data/respaldo/`.
+3. La app móvil descarga ese archivo al abrirse y cada vez que vuelves a ella. También hay un botón de actualizar.
 
 El repositorio es público: cualquiera con el enlace puede ver `data/inventario.json`, incluidos costos y precios.
 
 ## Versiones
 
-- Carga masiva: v21
+- Carga masiva: v22
 - Stock móvil: v4
