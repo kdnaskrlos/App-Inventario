@@ -178,7 +178,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 <div class="wrap">
   <header class="top">
     <div class="bar">
-      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v9</span></span></div>
+      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v10</span></span></div>
       <button class="ib" id="bSync" type="button" aria-label="Actualizar inventario desde GitHub"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-14.7 5.8L3.5 15.5"/><path d="M3.5 12a8.5 8.5 0 0 1 14.7-5.8l2.3 2.3"/><path d="M20.5 3.5v5h-5M3.5 20.5v-5h5"/></svg></button>
       <button class="ib" id="bTheme" type="button" aria-label="Cambiar entre modo claro y oscuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
       <button class="ib" id="bData" type="button" aria-label="Cargar o actualizar datos"><svg viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4.5 14v4.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V14"/></svg></button>
@@ -304,11 +304,18 @@ function render(){
 
 /* ---------- hojas ---------- */
 let openSheet=null;
-function showSheet(el){hideSheets(true);$('#toast').hidden=true;openSheet=el;const sc=$('#scrim');sc.hidden=false;el.hidden=false;el.scrollTop=0;el.style.transform='';void el.offsetHeight;sc.classList.add('on');el.classList.add('in');document.body.classList.add('lock')}
+/* botón Atrás: cierra el panel o el escáner sin salir de la app */
+let hist=0,ignorePop=0;
+const anyOpen=()=>!$('#scan').hidden||!!openSheet;
+function layerOpen(){if(!hist){try{history.pushState({ov:1},'');hist=1}catch(e){}}}
+function layerDone(){if(hist&&!anyOpen()){hist=0;ignorePop++;try{history.back()}catch(e){ignorePop--}}}
+window.addEventListener('popstate',()=>{if(ignorePop>0){ignorePop--;return}hist=0;if(!$('#scan').hidden)closeScan(true);else if(openSheet)hideSheets()});
+function showSheet(el){hideSheets(true);$('#toast').hidden=true;openSheet=el;layerOpen();const sc=$('#scrim');sc.hidden=false;el.hidden=false;el.scrollTop=0;el.style.transform='';void el.offsetHeight;sc.classList.add('on');el.classList.add('in');document.body.classList.add('lock')}
 function hideSheets(imm){const sc=$('#scrim');openSheet=null;document.body.classList.remove('lock');sc.classList.remove('on');sc.style.opacity='';
   const fin=()=>{for(const s of document.querySelectorAll('.sheet'))if(!s.classList.contains('in')){s.hidden=true;s.style.transform=''}if(!sc.classList.contains('on'))sc.hidden=true};
   for(const s of document.querySelectorAll('.sheet'))if(!s.hidden)s.classList.remove('in');
-  if(imm||matchMedia('(prefers-reduced-motion: reduce)').matches)fin();else setTimeout(fin,340)}
+  if(imm||matchMedia('(prefers-reduced-motion: reduce)').matches)fin();else setTimeout(fin,340);
+  if(!imm)layerDone()}
 const copy=async(t,l)=>{try{await navigator.clipboard.writeText(t);toast(l+' copiado.')}catch(e){toast('No se pudo copiar. Mantén presionado el texto para copiarlo.')}};
 
 const L=[ '0001101','0011001','0010011','0111101','0100011','0110001','0101111','0111011','0110111','0001011'];
@@ -398,7 +405,7 @@ async function tick(){if(!stream)return;const v=$('#vid');
   tmr=setTimeout(tick,180)}
 async function openScan(){
   if(!D.rows.length){toast('Primero carga tu inventario.');return}
-  hideSheets();$('#scan').hidden=false;document.body.classList.add('lock');$('#manualQ').value='';
+  hideSheets(true);layerOpen();$('#scan').hidden=false;document.body.classList.add('lock');$('#manualQ').value='';
   const msg=$('#scanMsg');msg.textContent='Abriendo la cámara…';
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('sin cámara en vivo');
@@ -406,8 +413,8 @@ async function openScan(){
     const v=$('#vid');v.srcObject=stream;await v.play();msg.textContent='Centra el código de barras dentro del recuadro.';$('#frame').hidden=false;tick()}
   catch(e){stream=null;$('#frame').hidden=true;msg.textContent='Aquí no se puede usar la cámara en vivo. Toca «Tomar foto del código» o escribe el número.'}}
 function stopCam(){clearTimeout(tmr);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}const v=$('#vid');v.srcObject=null}
-function closeScan(){stopCam();$('#scan').hidden=true;document.body.classList.remove('lock')}
-function found(code){try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}closeScan();lookup(code,true)}
+function closeScan(keep){stopCam();$('#scan').hidden=true;document.body.classList.remove('lock');if(keep!==true)layerDone()}
+function found(code){try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}closeScan(true);lookup(code,true);layerDone()}
 function lookup(raw,fromScan){const c=str(raw).replace(/\s/g,'');if(!c)return;const dig=c.replace(/\D/g,'');
   const keys=new Set([c.toLowerCase()]);if(dig){keys.add(dig);if(dig.length===12)keys.add(dig+checkDigit(dig));if(dig.length===13&&dig[0]==='0')keys.add(dig.slice(1))}
   const hit=D.rows.filter(r=>keys.has(r.e)||keys.has(r.s.toLowerCase())||(r.e&&keys.has(r.e.slice(1))&&r.e[0]==='0'));
@@ -444,14 +451,14 @@ function swipeClose(sh){let y0=0,dy=0,off=0,t0=0,on=false,can=false,raf=0;const 
   sh.addEventListener('touchend',end);sh.addEventListener('touchcancel',()=>{if(on){on=false;release()}})}
 document.querySelectorAll('.sheet').forEach(swipeClose);
 $('#scrim').addEventListener('click',hideSheets);
-$('#bData').onclick=openData;$('#bSync').onclick=()=>sync(true);$('#bScan').onclick=openScan;$('#scanX').onclick=closeScan;
+$('#bData').onclick=openData;$('#bSync').onclick=()=>sync(true);$('#bScan').onclick=openScan;$('#scanX').onclick=()=>closeScan();
 $('#more').onclick=()=>{F.shown+=100;render()};
 let qt;$('#q').addEventListener('input',e=>{clearTimeout(qt);qt=setTimeout(()=>{F.q=e.target.value;F.shown=80;render()},120)});
 $('#q').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(qt);F.q=e.target.value;const v=e.target.value.trim();if(/^\d{8,14}$/.test(v)||/^[A-Za-z0-9_.-]+$/.test(v)&&D.rows.some(r=>r.s.toLowerCase()===v.toLowerCase())){lookup(v)}else render();e.target.blur()}});
 $('#qc').onclick=()=>{F.q='';$('#q').value='';render();$('#q').focus()};
 $('#fCat').onchange=e=>{F.cat=e.target.value;F.shown=80;render()};$('#fBrand').onchange=e=>{F.brand=e.target.value;F.shown=80;render()};$('#fSort').onchange=e=>{F.sort=e.target.value;render()};
 $('#photo').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';fromPhoto(f)});
-$('#manual').addEventListener('submit',e=>{e.preventDefault();const v=$('#manualQ').value.trim();if(v){closeScan();lookup(v)}});
+$('#manual').addEventListener('submit',e=>{e.preventDefault();const v=$('#manualQ').value.trim();if(v){closeScan(true);lookup(v);layerDone()}});
 document.addEventListener('change',e=>{if(e.target.id==='file'){const f=e.target.files[0];e.target.value='';if(f)readFile(f)}});
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('#scan').hidden)closeScan();else if(openSheet)hideSheets()}});
 $('#bTheme').onclick=()=>{const dark=document.documentElement.dataset.theme?document.documentElement.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;const n=dark?'light':'dark';document.documentElement.dataset.theme=n;store.set(TKEY,n)};
