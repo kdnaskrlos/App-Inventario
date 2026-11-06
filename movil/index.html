@@ -166,6 +166,10 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 .scan .msg{font-size:14px;max-width:420px}
 .scan .btn{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.35);color:#fff}
 .scan .btn.primary{background:#34d399;color:#04251a;border-color:#34d399}
+.scan .tbtns{display:flex;gap:10px}
+.scan .x svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;display:block;margin:auto}
+.scan .x[aria-pressed="true"]{background:#facc15;border-color:#facc15;color:#1a1300}
+.scan .x svg path{fill:none}.scan .x[aria-pressed="true"] svg path{fill:currentColor}
 .scan .x{width:44px;height:44px;border-radius:12px;border:1px solid rgba(255,255,255,.4);background:rgba(0,0,0,.4);color:#fff;font-size:22px}
 .manual{display:flex;gap:8px;width:min(100%,420px)}
 .manual input{flex:1;min-width:0;height:46px;border-radius:10px;border:1px solid rgba(255,255,255,.4);background:rgba(0,0,0,.45);color:#fff;padding:0 12px;font-size:16px}
@@ -178,7 +182,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 <div class="wrap">
   <header class="top">
     <div class="bar">
-      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v10</span></span></div>
+      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v11</span></span></div>
       <button class="ib" id="bSync" type="button" aria-label="Actualizar inventario desde GitHub"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-14.7 5.8L3.5 15.5"/><path d="M3.5 12a8.5 8.5 0 0 1 14.7-5.8l2.3 2.3"/><path d="M20.5 3.5v5h-5M3.5 20.5v-5h5"/></svg></button>
       <button class="ib" id="bTheme" type="button" aria-label="Cambiar entre modo claro y oscuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
       <button class="ib" id="bData" type="button" aria-label="Cargar o actualizar datos"><svg viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4.5 14v4.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V14"/></svg></button>
@@ -211,7 +215,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 <section class="scan" id="scan" role="dialog" aria-modal="true" aria-label="Escáner de códigos de barras" hidden>
   <video id="vid" playsinline muted></video>
   <div class="shade"></div><div class="frame" id="frame"></div>
-  <div class="tp"><b>Escanear código</b><button class="x" id="scanX" type="button" aria-label="Cerrar escáner">×</button></div>
+  <div class="tp"><b>Escanear código</b><div class="tbtns"><button class="x" id="torch" type="button" aria-pressed="false" aria-label="Encender el flash" hidden><svg viewBox="0 0 24 24"><path d="M13 2 5 13.5h6L10 22l9-12h-6.5z"/></svg></button><button class="x" id="scanX" type="button" aria-label="Cerrar escáner">×</button></div></div>
   <div class="bt">
     <div class="msg" id="scanMsg"></div>
     <div class="row" style="width:min(100%,420px)">
@@ -405,14 +409,20 @@ async function tick(){if(!stream)return;const v=$('#vid');
   tmr=setTimeout(tick,180)}
 async function openScan(){
   if(!D.rows.length){toast('Primero carga tu inventario.');return}
-  hideSheets(true);layerOpen();$('#scan').hidden=false;document.body.classList.add('lock');$('#manualQ').value='';
+  hideSheets(true);layerOpen();$('#toast').hidden=true;$('#scan').hidden=false;document.body.classList.add('lock');$('#manualQ').value='';
   const msg=$('#scanMsg');msg.textContent='Abriendo la cámara…';
   try{
     if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('sin cámara en vivo');
     stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280}},audio:false});
-    const v=$('#vid');v.srcObject=stream;await v.play();msg.textContent='Centra el código de barras dentro del recuadro.';$('#frame').hidden=false;tick()}
+    const v=$('#vid');v.srcObject=stream;await v.play();msg.textContent='Centra el código de barras dentro del recuadro.';$('#frame').hidden=false;torchSetup();tick()}
   catch(e){stream=null;$('#frame').hidden=true;msg.textContent='Aquí no se puede usar la cámara en vivo. Toca «Tomar foto del código» o escribe el número.'}}
-function stopCam(){clearTimeout(tmr);if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}const v=$('#vid');v.srcObject=null}
+let torchOn=false;
+function torchSetup(){const b=$('#torch');torchOn=false;b.setAttribute('aria-pressed','false');b.hidden=true;
+  try{const tr=stream&&stream.getVideoTracks()[0];const cap=tr&&tr.getCapabilities&&tr.getCapabilities();b.hidden=!(cap&&cap.torch)}catch(e){}}
+async function torchToggle(){const tr=stream&&stream.getVideoTracks()[0];if(!tr)return;const want=!torchOn;
+  try{await tr.applyConstraints({advanced:[{torch:want}]});torchOn=want;const b=$('#torch');b.setAttribute('aria-pressed',String(want));b.setAttribute('aria-label',want?'Apagar el flash':'Encender el flash')}
+  catch(e){toast('No se pudo encender el flash en este teléfono.')}}
+function stopCam(){clearTimeout(tmr);torchOn=false;{const b=$('#torch');b.hidden=true;b.setAttribute('aria-pressed','false')}if(stream){stream.getTracks().forEach(t=>t.stop());stream=null}const v=$('#vid');v.srcObject=null}
 function closeScan(keep){stopCam();$('#scan').hidden=true;document.body.classList.remove('lock');if(keep!==true)layerDone()}
 function found(code){try{navigator.vibrate&&navigator.vibrate(60)}catch(e){}closeScan(true);lookup(code,true);layerDone()}
 function lookup(raw,fromScan){const c=str(raw).replace(/\s/g,'');if(!c)return;const dig=c.replace(/\D/g,'');
@@ -451,7 +461,7 @@ function swipeClose(sh){let y0=0,dy=0,off=0,t0=0,on=false,can=false,raf=0;const 
   sh.addEventListener('touchend',end);sh.addEventListener('touchcancel',()=>{if(on){on=false;release()}})}
 document.querySelectorAll('.sheet').forEach(swipeClose);
 $('#scrim').addEventListener('click',hideSheets);
-$('#bData').onclick=openData;$('#bSync').onclick=()=>sync(true);$('#bScan').onclick=openScan;$('#scanX').onclick=()=>closeScan();
+$('#bData').onclick=openData;$('#bSync').onclick=()=>sync(true);$('#bScan').onclick=openScan;$('#scanX').onclick=()=>closeScan();$('#torch').onclick=torchToggle;
 $('#more').onclick=()=>{F.shown+=100;render()};
 let qt;$('#q').addEventListener('input',e=>{clearTimeout(qt);qt=setTimeout(()=>{F.q=e.target.value;F.shown=80;render()},120)});
 $('#q').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();clearTimeout(qt);F.q=e.target.value;const v=e.target.value.trim();if(/^\d{8,14}$/.test(v)||/^[A-Za-z0-9_.-]+$/.test(v)&&D.rows.some(r=>r.s.toLowerCase()===v.toLowerCase())){lookup(v)}else render();e.target.blur()}});
