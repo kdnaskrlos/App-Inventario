@@ -252,6 +252,10 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 .pf .pmain .mono{font-size:11.5px;color:var(--muted);line-height:1.5}
 .pf .pmain i{font-style:normal;opacity:.7}
 .pf .btn{border-radius:0;min-height:0;padding:0 8px}
+.pfgrip{flex:none;display:flex;align-items:center;padding:0 4px 0 6px;color:var(--muted);cursor:grab;touch-action:none;user-select:none}
+.pfgrip .ico{width:16px;height:16px;fill:currentColor;stroke:none}
+.pf.drag{box-shadow:0 6px 18px rgba(0,0,0,.18);border-color:var(--accent);position:relative;z-index:2;transition:none}
+.pfl.dragging{cursor:grabbing}.pfl.dragging .pf:not(.drag){transition:transform .15s}
 .pfe{border:1px dashed var(--accent);border-radius:10px;padding:10px;margin-top:8px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
 @media (max-width:980px){
   .pgrip{display:none}
@@ -268,7 +272,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v28</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v29</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -640,7 +644,7 @@ const curA=()=>{const f=F();return[f.cost,f.price,f.price2,f.price3,f.price4].ma
 const newPid=()=>S.profiles.reduce((m,p)=>Math.max(m,p.id),0)+1;
 const PL=['Costo','Precio','Precio 2','Precio 3','Precio 4'],PS=['Costo','P1','P2','P3','P4'];
 function renderProfiles(){const cur=curA().join('|');const ed=S.pe;
- const list=S.profiles.map(p=>`<div class="pf${p.a.join('|')===cur?' on':''}" data-pf="${p.id}"><button class="pmain" data-papply="${p.id}" title="Aplicar este perfil al formulario">${p.name?`<b>${esc(p.name)}</b>`:''}<span class="mono">${PS.map((l,i)=>`<i>${l}</i> ${fp(p.a[i])}`).join(' · ')}</span></button><button class="btn ghost sm" data-pedit="${p.id}" aria-label="Editar perfil" title="Editar">${'<svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>'}</button><button class="btn ghost sm" data-pdup="${p.id}" aria-label="Duplicar perfil" title="Duplicar"><svg class="ico" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg></button><button class="btn ghost sm danger" data-pdel="${p.id}" aria-label="Eliminar perfil" title="Eliminar">${ICO.trash}</button></div>`).join('')||'<p class="note" style="margin:0">No hay perfiles. Usa "Nuevo" o "Guardar como perfil".</p>';
+ const list=S.profiles.map(p=>`<div class="pf${p.a.join('|')===cur?' on':''}" data-pf="${p.id}"><span class="pfgrip" data-pgrip="${p.id}" title="Arrastra para cambiar el orden" aria-label="Mover perfil"><svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.3"/><circle cx="15" cy="6" r="1.3"/><circle cx="9" cy="12" r="1.3"/><circle cx="15" cy="12" r="1.3"/><circle cx="9" cy="18" r="1.3"/><circle cx="15" cy="18" r="1.3"/></svg></span><button class="pmain" data-papply="${p.id}" title="Aplicar este perfil al formulario">${p.name?`<b>${esc(p.name)}</b>`:''}<span class="mono">${PS.map((l,i)=>`<i>${l}</i> ${fp(p.a[i])}`).join(' · ')}</span></button><button class="btn ghost sm" data-pedit="${p.id}" aria-label="Editar perfil" title="Editar">${'<svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>'}</button><button class="btn ghost sm" data-pdup="${p.id}" aria-label="Duplicar perfil" title="Duplicar"><svg class="ico" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg></button><button class="btn ghost sm danger" data-pdel="${p.id}" aria-label="Eliminar perfil" title="Eliminar">${ICO.trash}</button></div>`).join('')||'<p class="note" style="margin:0">No hay perfiles. Usa "Nuevo" o "Guardar como perfil".</p>';
  const editor=ed?`<div class="pfe"><div class="lbl"><b>${ed.id?'Editar perfil':'Nuevo perfil'}</b></div><div class="fld"><label for="pe_n">Nombre (opcional)</label><input class="in" id="pe_n" data-pe="name" value="${esc(ed.name)}" placeholder="Ej. Franela caballero"></div><div class="grid3">${PL.map((l,i)=>`<div class="fld"><label for="pe_${i}">${l}</label><input class="in" id="pe_${i}" data-pe="${i}" inputmode="decimal" value="${esc(ed.a[i])}"></div>`).join('')}</div><div class="tools" style="margin:0"><button class="btn sm primary" data-act="pSave">Guardar perfil</button><button class="btn sm" data-act="pCancel">Cancelar</button></div></div>`:'';
  $('#profs').innerHTML=`<div class="phead"><span class="lbl">Perfiles de precio · clic para aplicar</span><span class="tools"><button class="btn sm" data-act="pNew">Nuevo</button><button class="btn sm" data-act="pLearn" title="Agrega las combinaciones de precio más usadas en tu tabla">Aprender de mi tabla</button></span></div><div class="pfl">${list}</div>${editor}`}
 function markProfiles(){const cur=curA().join('|');for(const d of document.querySelectorAll('#profs .pf')){const p=S.profiles.find(x=>x.id===+d.dataset.pf);d.classList.toggle('on',!!p&&p.a.join('|')===cur)}}
@@ -1040,8 +1044,43 @@ function applyPw(){if(S.pw)document.documentElement.style.setProperty('--pw',S.p
 renderPanel();renderPbar(false);setFilterUI();updUR();G.cur=SETK();
 renderHead();refreshAll(true);
 window.__S=S;window.__api={genVariants,addVariants,buildCsv,buildTsv,ean,HEAD,computeIssues};
+(function(){
+ let d=null;
+ document.addEventListener('pointerdown',e=>{
+  const g=e.target.closest&&e.target.closest('.pfgrip');if(!g||(e.button!==undefined&&e.button>0))return;
+  const el=g.closest('.pf'),list=el.parentNode;e.preventDefault();
+  d={el,list,id:+el.dataset.pf,y0:e.clientY,pid:e.pointerId,start:[...list.children].indexOf(el)};
+  try{g.setPointerCapture(e.pointerId)}catch(_){}
+  el.classList.add('drag');list.classList.add('dragging');
+ });
+ document.addEventListener('pointermove',e=>{
+  if(!d||e.pointerId!==d.pid)return;
+  const {el,list}=d,r=list.getBoundingClientRect();
+  if(e.clientY<r.top+24)list.scrollTop-=8;else if(e.clientY>r.bottom-24)list.scrollTop+=8;
+  const sibs=[...list.children].filter(x=>x!==el);
+  let before=null;
+  for(const x of sibs){const b=x.getBoundingClientRect();if(e.clientY<b.top+b.height/2){before=x;break}}
+  const cur=el.nextElementSibling;
+  if(before!==cur&&!(before===null&&cur===null)){
+   const first=new Map(sibs.map(x=>[x,x.getBoundingClientRect().top]));
+   list.insertBefore(el,before);
+   for(const x of sibs){const dy=first.get(x)-x.getBoundingClientRect().top;if(dy){x.style.transition='none';x.style.transform=`translateY(${dy}px)`;x.getBoundingClientRect();x.style.transition='';x.style.transform=''}}
+  }
+ });
+ const end=e=>{
+  if(!d||(e&&e.pointerId!==d.pid))return;
+  const {el,list}=d;d=null;el.classList.remove('drag');list.classList.remove('dragging');
+  const ids=[...list.children].map(x=>+x.dataset.pf);
+  const map=new Map(S.profiles.map(p=>[p.id,p]));
+  const ord=ids.map(i=>map.get(i)).filter(Boolean);
+  if(ord.length===S.profiles.length&&ord.some((p,i)=>p!==S.profiles[i])){S.profiles=ord;persist()}
+  renderProfiles();
+ };
+ document.addEventListener('pointerup',end);document.addEventListener('pointercancel',end);
+})();
 })();
 if('serviceWorker' in navigator&&/^https:/.test(location.protocol)&&!/claude/.test(location.hostname)){navigator.serviceWorker.register('sw.js').catch(()=>{})}
+
 </script>
 
 </body>
