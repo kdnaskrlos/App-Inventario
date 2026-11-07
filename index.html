@@ -253,7 +253,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v25</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v26</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -579,12 +579,12 @@ function openCb(k,filter){const inp=$('#e_'+k);cbK=k;const q=key(filter||'');con
  const cur=key(F()[k].n);cbIdx=cbItems.findIndex(x=>key(x.n)===cur);
  const mg=S.mg.ent;cbl.style.maxHeight=(mg?330:240)+'px';
  const items=cbItems.length?cbItems.map((x,i)=>{const it=`<button type="button" data-cbi="${i}" class="${i===cbIdx?'on':''}"><span>${esc(x.n)}</span><small>${esc(x.ab)}</small></button>`;return mg?`<div class="cbrow">${it}<button type="button" class="cbdel" data-cbdel="${i}" aria-label="Eliminar ${esc(x.n)}" title="Eliminar de la lista">×</button></div>`:it}).join(''):'<div class="note" style="padding:8px 10px">'+(mg?'La lista está vacía.':'Sin coincidencias. Se registrará como nuevo al agregar.')+'</div>';
- const add=mg?`<div class="cbadd"><span class="lbl" style="padding:0 2px">Agregar a ${esc(KIND[k].toLowerCase())}</span><div class="cbaddr"><input class="in" id="cbN" placeholder="Nombre" autocomplete="off" aria-label="Nombre nuevo"><input class="in ab" id="cbA" placeholder="Abrev." autocomplete="off" aria-label="Abreviatura"><button type="button" class="btn sm primary" data-cbadd>Agregar</button></div></div>`:'';
+ const add=mg?`<div class="cbadd"><span class="lbl" style="padding:0 2px">Agregar a ${esc(KIND[k].toLowerCase())}</span><span class="note" style="padding:0 2px;margin:0">La abreviatura es opcional: en blanco no se agrega nada al SKU.</span><div class="cbaddr"><input class="in" id="cbN" placeholder="Nombre" autocomplete="off" aria-label="Nombre nuevo"><input class="in ab" id="cbA" placeholder="Abrev." autocomplete="off" aria-label="Abreviatura (opcional)"><button type="button" class="btn sm primary" data-cbadd>Agregar</button></div></div>`:'';
  cbl.innerHTML=items+add;
  cbl.hidden=false;const r=inp.getBoundingClientRect();const h=Math.min(mg?330:240,cbl.scrollHeight+10);const below=innerHeight-r.bottom;const up=below<h+8&&r.top>below;cbl.style.left=r.left+'px';cbl.style.width=Math.max(r.width,220)+'px';cbl.style.top=(up?r.top-h-4:r.bottom+4)+'px';inp.setAttribute('aria-expanded','true');const on=cbl.querySelector('.on');if(on)on.scrollIntoView({block:'nearest'})}
 function closeCb(){cbl.hidden=true;if(cbK){const i=$('#e_'+cbK);if(i)i.setAttribute('aria-expanded','false')}cbK=null}
 function pickCb(i){const x=cbItems[i];if(!x||!cbK)return;const k=cbK,f=F();f[k].n=x.n;f[k].ab=x.ab;f[k].t=0;$('#e_'+k).value=x.n;$('#a_'+k).value=x.ab;closeCb();schedPv()}
-function cbAdd(){const k=cbK;if(!k)return;const n=$('#cbN').value.trim();if(!n){toast('Escribe el nombre.');return}if(S.catalog[k].some(x=>key(x.n)===key(n))){toast('Ya existe en la lista.');return}S.catalog[k].push({n,ab:$('#cbA').value.trim()||suggestAb(n)});persist();openCb(k,'');$('#cbN').focus();toast(`"${n}" agregado a ${KIND[k].toLowerCase()}`)}
+function cbAdd(){const k=cbK;if(!k)return;const n=$('#cbN').value.trim();if(!n){toast('Escribe el nombre.');return}if(S.catalog[k].some(x=>key(x.n)===key(n))){toast('Ya existe en la lista.');return}const ab=$('#cbA').value.trim();S.catalog[k].push({n,ab});persist();openCb(k,'');$('#cbN').focus();toast(`"${n}" agregado a ${KIND[k].toLowerCase()}${ab?'':' (sin abreviatura en el SKU)'}`)}
 cbl.addEventListener('click',e=>{const d=e.target.closest('[data-cbdel]');if(d){const k=cbK,x=cbItems[+d.dataset.cbdel];if(!x)return;const arr=S.catalog[k],i=arr.indexOf(x);if(i<0)return;arr.splice(i,1);persist();openCb(k,'');toast(`"${x.n}" eliminado de la lista`,'Deshacer',()=>{arr.splice(Math.min(i,arr.length),0,x);persist();if(cbK===k)openCb(k,'')});return}
  if(e.target.closest('[data-cbadd]')){cbAdd();return}const b=e.target.closest('[data-cbi]');if(b)pickCb(+b.dataset.cbi)});
 cbl.addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.target.id==='cbN'||e.target.id==='cbA')){e.preventDefault();cbAdd()}else if(e.key==='Escape')closeCb()});
