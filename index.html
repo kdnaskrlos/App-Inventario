@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v32</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v33</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -346,7 +346,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
       </section>
       <section class="sec">
         <h2><i>4</i>Precios y stock</h2>
-        <div class="chips" id="profs" style="margin-bottom:10px"></div>
+        <details class="adv" id="profDet" style="margin:0 0 10px"><summary id="profSum">Perfiles de precio</summary><div class="chips" id="profs" style="margin-top:8px"></div></details>
         <div class="grid2">
           <div class="fld"><label for="f_cost">Costo <code>cost</code></label><input class="in" id="f_cost" inputmode="decimal" data-f="cost"></div>
           <div class="fld"><label for="f_price">Precio <code>price</code></label><input class="in" id="f_price" inputmode="decimal" data-f="price"></div>
@@ -664,7 +664,7 @@ const fp=v=>{v=String(v==null?'':v).trim();return v===''?'—':(/^-?\d+(\.\d+)?$
 const curA=()=>{const f=F();return[f.cost,f.price,f.price2,f.price3,f.price4].map(x=>String(x==null?'':x).trim())};
 const newPid=()=>S.profiles.reduce((m,p)=>Math.max(m,p.id),0)+1;
 const PL=['Costo','Precio','Precio 2','Precio 3','Precio 4'],PS=['Costo','P1','P2','P3','P4'];
-function renderProfiles(){const cur=curA().join('|');const ed=S.pe;
+function renderProfiles(){const cur=curA().join('|');const ed=S.pe;{const sm=$('#profSum');if(sm)sm.textContent='Perfiles de precio ('+S.profiles.length+')';if(ed&&$('#profDet'))$('#profDet').open=true}
  const list=S.profiles.map(p=>`<div class="pf${p.a.join('|')===cur?' on':''}" data-pf="${p.id}"><span class="pfgrip" data-pgrip="${p.id}" title="Arrastra para cambiar el orden" aria-label="Mover perfil"><svg class="ico" viewBox="0 0 24 24"><circle cx="9" cy="6" r="1.3"/><circle cx="15" cy="6" r="1.3"/><circle cx="9" cy="12" r="1.3"/><circle cx="15" cy="12" r="1.3"/><circle cx="9" cy="18" r="1.3"/><circle cx="15" cy="18" r="1.3"/></svg></span><button class="pmain" data-papply="${p.id}" title="Aplicar este perfil al formulario">${p.name?`<b>${esc(p.name)}</b>`:''}<span class="mono">${PS.map((l,i)=>`<i>${l}</i> ${fp(p.a[i])}`).join(' · ')}</span></button><button class="btn ghost sm" data-pedit="${p.id}" aria-label="Editar perfil" title="Editar">${'<svg class="ico" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>'}</button><button class="btn ghost sm" data-pdup="${p.id}" aria-label="Duplicar perfil" title="Duplicar"><svg class="ico" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h8"/></svg></button><button class="btn ghost sm danger" data-pdel="${p.id}" aria-label="Eliminar perfil" title="Eliminar">${ICO.trash}</button></div>`).join('')||'<p class="note" style="margin:0">No hay perfiles. Usa "Nuevo" o "Guardar como perfil".</p>';
  const editor=ed?`<div class="pfe"><div class="lbl"><b>${ed.id?'Editar perfil':'Nuevo perfil'}</b></div><div class="fld"><label for="pe_n">Nombre (opcional)</label><input class="in" id="pe_n" data-pe="name" value="${esc(ed.name)}" placeholder="Ej. Franela caballero"></div><div class="grid3">${PL.map((l,i)=>`<div class="fld"><label for="pe_${i}">${l}</label><input class="in" id="pe_${i}" data-pe="${i}" inputmode="decimal" value="${esc(ed.a[i])}"></div>`).join('')}</div><div class="tools" style="margin:0"><button class="btn sm primary" data-act="pSave">Guardar perfil</button><button class="btn sm" data-act="pCancel">Cancelar</button></div></div>`:'';
  $('#profs').innerHTML=`<div class="phead"><span class="lbl">Perfiles de precio · clic para aplicar</span><span class="tools"><button class="btn sm" data-act="pNew">Nuevo</button><button class="btn sm" data-act="pLearn" title="Agrega las combinaciones de precio más usadas en tu tabla">Aprender de mi tabla</button></span></div><div class="pfl">${list}</div>${editor}`}
