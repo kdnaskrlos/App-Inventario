@@ -256,6 +256,11 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 .pfgrip .ico{width:16px;height:16px;fill:currentColor;stroke:none}
 .pf.drag{box-shadow:0 6px 18px rgba(0,0,0,.18);border-color:var(--accent);position:relative;z-index:2;transition:none}
 .pfl.dragging{cursor:grabbing}.pfl.dragging .pf:not(.drag){transition:transform .15s}
+.tfl{display:flex;flex-direction:column;gap:6px;max-height:52vh;overflow:auto;padding:2px}
+.tfr{border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.tfr.ok{border-color:var(--accent);background:var(--accent-soft)}
+.tfr .tt{display:flex;justify-content:space-between;gap:8px;font-size:13px}.tfr .tt small{color:var(--muted);white-space:nowrap}
+.tfr select{width:100%}.tfr .mono{font-size:11.5px;color:var(--muted)}
 .pfe{border:1px dashed var(--accent);border-radius:10px;padding:10px;margin-top:8px;display:flex;flex-direction:column;gap:8px;background:var(--surface)}
 @media (max-width:980px){
   .pgrip{display:none}
@@ -272,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v29</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v30</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -280,6 +285,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
     <button class="btn ghost" id="btnRedo" disabled title="Rehacer (Ctrl+Y)"><svg class="ico" viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg>Rehacer</button>
     <button class="btn" id="btnImport"><svg class="ico" viewBox="0 0 24 24"><path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Importar inventario</button>
     <button class="btn primary" id="btnExport"><svg class="ico" viewBox="0 0 24 24"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 15v4a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-4"/></svg>Exportar</button>
+    <button class="btn" id="btnTf" title="Traer los precios por tramos desde el Tarifario"><svg class="ico" viewBox="0 0 24 24"><path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.2"/></svg>Tarifario</button>
     <button class="btn" id="btnSync" title="Guardar el inventario en GitHub para verlo desde el teléfono"><svg class="ico" viewBox="0 0 24 24"><path d="M21 12a9 9 0 0 1-15.5 6.2L3 16"/><path d="M3 12A9 9 0 0 1 18.5 5.8L21 8"/><path d="M21 3v5h-5"/><path d="M3 21v-5h5"/></svg>Sincronizar</button>
   </div>
 </header>
@@ -434,6 +440,21 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
   </div>
 </div>
 
+<div class="ov" id="ovTf" hidden>
+  <div class="modal" role="dialog" aria-labelledby="hTf" style="width:min(720px,100%)">
+    <h3 id="hTf">Precios del Tarifario</h3>
+    <p class="note" style="margin:0">Elige a qué producto del tarifario corresponde cada grupo de la tabla. Los precios 1 a 4 se toman de los tramos 1, 2, 3 y 4 del tarifario y se actualizan solos. Lo que vincules se recuerda para los productos nuevos con los mismos datos.</p>
+    <div id="tfSt" class="xs" role="status"></div>
+    <div id="tfKey" hidden>
+      <div class="fld"><label for="tfPass">Clave del tarifario <code>solo este equipo</code></label><input class="in" id="tfPass" type="password" autocomplete="off" spellcheck="false"></div>
+      <label style="display:flex;gap:8px;align-items:center;margin-top:6px"><input type="checkbox" id="tfRem" checked> Recordar la clave en este equipo</label>
+      <div class="foot" style="justify-content:flex-start"><button class="btn primary" id="tfConn">Conectar</button></div>
+    </div>
+    <div class="foot" style="justify-content:flex-start"><button class="btn" id="tfRef">Actualizar ahora</button><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="tfFilt"> Mostrar solo los sin vincular</label></div>
+    <div id="tfList" class="tfl"></div>
+    <div class="foot"><button class="btn" data-close="ovTf">Cerrar</button></div>
+  </div>
+</div>
 <div class="ov" id="ovSync" hidden>
   <div class="modal" role="dialog" aria-labelledby="hSync">
     <h3 id="hSync">Sincronizar con GitHub</h3>
@@ -511,7 +532,7 @@ const TOKS=['tipo','tipo_ab','marca','marca_ab','modelo','modelo_ab','cat','cat_
 
 /* ---------- estado ---------- */
 const KEY='comicshop-carga-masiva-v1';
-const S={pw:0,redo:[],sp:null,sizeProfiles:[],cw:{},defs:null,mg:{col:false,sz:false,ent:false,sp:false},pe:null,profiles:[],ins:{mode:'end',n:''},idx:new Map(),rows:[],refs:{sku:[],name:[],base:[]},catalog:null,f:null,tpl:{...TPL0},ui:{view:'ess',filter:'all',q:''},sel:new Set(),undo:[],nextId:1,issues:new Map(),view:[],cnt:{err:0,warn:0}};
+const S={pw:0,redo:[],sp:null,sizeProfiles:[],cw:{},defs:null,mg:{col:false,sz:false,ent:false,sp:false},pe:null,profiles:[],tlinks:{},ins:{mode:'end',n:''},idx:new Map(),rows:[],refs:{sku:[],name:[],base:[]},catalog:null,f:null,tpl:{...TPL0},ui:{view:'ess',filter:'all',q:''},sel:new Set(),undo:[],nextId:1,issues:new Map(),view:[],cnt:{err:0,warn:0}};
 function initCatalog(){const c={colors:COLORS.map(x=>({...x})),sizes:[...SIZES0]};for(const k in CAT0)c[k]=CAT0[k].map(([n,ab])=>({n,ab}));return c}
 function initForm(){const f={tipo:{n:'Franela',ab:'Franela'},marca:{n:'Etanol',ab:'Eta'},modelo:{n:'Manga Corta',ab:'MC'},cat:{n:'Caballero',ab:'Cab'},mat:{n:'PoliAlg.',ab:'PoliAlg'},colors:['Blanco','Negro','Rojo'],sizes:['S','M','L','XL'],cost:'11000',price:'30000',price2:'28000',price3:'25000',price4:'22000',fis:'0',nof:'12',min:'5',adv:{},mode:'color',refs:[],rp:{pre:'Ref-',from:'1',to:'10',dig:'4'}};return f}
 S.catalog=initCatalog();S.f=initForm();
@@ -521,9 +542,9 @@ function gApply(str){G.busy=true;try{applyOpts(JSON.parse(str))}finally{G.busy=f
 function gUndo(){G.t=0;gTrack();if(!G.undo.length){toast('No hay más cambios que deshacer en las opciones.');return}G.redo.push(G.cur);gApply(G.undo.pop());toast('Cambio en las opciones deshecho. Ctrl+Y lo rehace.')}
 function gRedo(){G.t=0;gTrack();if(!G.redo.length){toast('No hay cambios que rehacer en las opciones.');return}G.undo.push(G.cur);gApply(G.redo.pop());toast('Cambio en las opciones rehecho')}
 let saveT;
-function persist(){gTrack();clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify({rows:S.rows,refs:S.refs,catalog:S.catalog,f:S.f,tpl:S.tpl,ui:S.ui,nextId:S.nextId,ins:S.ins,profiles:S.profiles,defs:S.defs,cw:S.cw,pw:S.pw,sp:S.sizeProfiles}))}catch(e){}},400)}
+function persist(){gTrack();clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify({rows:S.rows,refs:S.refs,catalog:S.catalog,f:S.f,tpl:S.tpl,ui:S.ui,nextId:S.nextId,ins:S.ins,profiles:S.profiles,tlinks:S.tlinks,defs:S.defs,cw:S.cw,pw:S.pw,sp:S.sizeProfiles}))}catch(e){}},400)}
 function restore(){try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(!j)return;if(Array.isArray(j.rows)&&j.rows.every(r=>r&&Array.isArray(r.v)&&r.v.length===NC)){S.rows=j.rows;S.nextId=j.nextId||j.rows.reduce((m,r)=>Math.max(m,r.id),0)+1}
- if(j.refs&&j.refs.sku)S.refs=j.refs;if(j.catalog&&j.catalog.colors)S.catalog=Object.assign(initCatalog(),j.catalog);if(j.f&&j.f.tipo)S.f=Object.assign(initForm(),j.f);if(j.tpl)S.tpl=Object.assign({...TPL0},j.tpl);if(j.defs&&j.defs.catalog&&j.defs.f&&j.defs.tpl&&Array.isArray(j.defs.profiles))S.defs=j.defs;if(j.cw&&typeof j.cw==='object')S.cw=j.cw;if(typeof j.pw==='number'&&j.pw>=300&&j.pw<=1000)S.pw=j.pw;if(Array.isArray(j.sp)&&j.sp.every(p=>p&&Array.isArray(p.sizes)))S.sizeProfiles=j.sp;if(j.ins&&j.ins.mode)S.ins=j.ins;if(Array.isArray(j.profiles)&&j.profiles.every(p=>p&&Array.isArray(p.a)&&p.a.length===5))S.profiles=j.profiles;if(j.ui)S.ui=Object.assign(S.ui,j.ui,{q:''})}catch(e){}}
+ if(j.refs&&j.refs.sku)S.refs=j.refs;if(j.catalog&&j.catalog.colors)S.catalog=Object.assign(initCatalog(),j.catalog);if(j.f&&j.f.tipo)S.f=Object.assign(initForm(),j.f);if(j.tpl)S.tpl=Object.assign({...TPL0},j.tpl);if(j.defs&&j.defs.catalog&&j.defs.f&&j.defs.tpl&&Array.isArray(j.defs.profiles))S.defs=j.defs;if(j.cw&&typeof j.cw==='object')S.cw=j.cw;if(typeof j.pw==='number'&&j.pw>=300&&j.pw<=1000)S.pw=j.pw;if(Array.isArray(j.sp)&&j.sp.every(p=>p&&Array.isArray(p.sizes)))S.sizeProfiles=j.sp;if(j.ins&&j.ins.mode)S.ins=j.ins;if(Array.isArray(j.profiles)&&j.profiles.every(p=>p&&Array.isArray(p.a)&&p.a.length===5))S.profiles=j.profiles;if(j.tlinks&&typeof j.tlinks==='object')S.tlinks=j.tlinks;if(j.ui)S.ui=Object.assign(S.ui,j.ui,{q:''})}catch(e){}}
 const initSizeProfiles=()=>[['Niño 4–16',['4','6','8','10','12','14','16']],['S–XL',['S','M','L','XL']],['S–3XL',['S','M','L','XL','2XL','3XL']],['Única',['U.']]].map(([name,sizes],i)=>({id:i+1,name,sizes}));
 const initProfiles=()=>PROF0.map((a,i)=>({id:i+1,name:'',a:a.map(String)}));
 S.profiles=initProfiles();S.sizeProfiles=initSizeProfiles();
@@ -576,7 +597,7 @@ function addVariants(){const list=genVariants().filter(x=>!x.dup);const skipped=
  snap();const f=F();const used=usedBases();let first=null;const fresh=[];
  for(const x of list){const v=DEF.slice();for(const k in f.adv)v[k]=f.adv[k];
   if(x.ref)v[7]=x.ref;v[1]=x.sku;v[2]=x.name;v[4]=f.cat.n;v[5]=f.marca.n;v[6]=f.modelo.n;v[8]=f.cost;v[15]=f.price;v[25]=f.price2;v[27]=f.price3;v[29]=f.price4;v[21]=f.fis;v[22]=f.nof;v[23]=f.min;v[17]=uniqueBase(used);
-  const r={id:S.nextId++,src:'new',v};fresh.push(r);if(!first)first=r.id}
+  const r={id:S.nextId++,src:'new',v,tp:f.tipo.n};tfPut(r);fresh.push(r);if(!first)first=r.id}
  S.rows.splice(insPos(),0,...fresh)
  learnCatalog();S.ui.filter='all';S.ui.q='';$('#q').value='';
  refreshAll(true);scrollToId(first);
@@ -1043,6 +1064,75 @@ function applyPw(){if(S.pw)document.documentElement.style.setProperty('--pw',S.p
 /* ---------- arranque ---------- */
 renderPanel();renderPbar(false);setFilterUI();updUR();G.cur=SETK();
 renderHead();refreshAll(true);
+
+/* ---------- Tarifario ---------- */
+const TFK='cm-tarifario-v1',TFREPO='kdnaskrlos/Tarifario-de-Precios';
+const TF={items:[],at:0,pass:null,err:''};
+try{const c=JSON.parse(localStorage.getItem(TFK)||'null');if(c&&Array.isArray(c.items)){TF.items=c.items;TF.at=c.at||0}}catch(e){}
+const nz=x=>String(x==null?'':x).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();
+function tfTipo(r){if(r.tp)return r.tp;const n=nz(r.v[2]);let best='';for(const t of (S.catalog.tipo||[])){const a=nz(t.n);if(a&&(n===a||n.startsWith(a+' '))&&a.length>nz(best).length)best=t.n}return best}
+function tfKey(r){return [tfTipo(r),r.v[5],r.v[6],r.v[4]].map(nz).join('|')}
+function tfLabel(r){const t=tfTipo(r);return `${t?t+' ':''}${r.v[6]||''}`.trim()+` · ${r.v[4]||'—'} · ${r.v[5]||'—'}`}
+function tfCalc(p,TS){ // misma lógica que el tarifario
+ if(!p.cb||!p.list)return null;const has=x=>x!=null&&x!==''&&isFinite(x);
+ const go=has(p.gop)?+p.gop:(TS.go||0),fl=has(p.flp)?+p.flp:TS.floor,r=TS.round,out=[];
+ TS.tiers.forEach((t,i)=>{const c=p.cb+go;
+  if(i===0){out.push(p.list);return}
+  const prev=out[i-1],lower=c/(1-fl/100),target=p.list*(1-t.d/100);
+  let price=Math.round(target/r)*r;
+  if(price<lower)price=Math.ceil(lower/r)*r;
+  if(price>prev)price=prev;
+  const m=p.mp&&p.mp[i];if(m!=null&&m!==''&&isFinite(m)&&+m>0)price=+m;
+  out.push(price)});
+ return out}
+function tfSet(env,pass){return decTf(env,pass).then(d=>{const TS=Object.assign({obj:40,health:20,floor:10,round:500,go:5000,tiers:[{min:1,d:0},{min:6,d:10},{min:12,d:20},{min:24,d:30},{min:49,d:35}]},d.S||{});
+ const items=[];for(const p of (d.P||[])){if(p.sep&&false)continue;const t=tfCalc(p,TS);if(t)items.push({id:p.id,prov:p.prov||'',gen:p.gen||'',prod:p.prod||'',t:t.slice(0,4),lab:TS.tiers.slice(0,4).map((x,i,a)=>{const b=TS.tiers[i+1]?TS.tiers[i+1].min-1:null;return b?(x.min===b?x.min:x.min+'–'+b):'+'+x.min})})}
+ TF.items=items;TF.at=Date.now();try{localStorage.setItem(TFK,JSON.stringify({items,at:TF.at}))}catch(e){}})}
+const b64u=b=>{const s=atob(String(b).replace(/\s/g,''));const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
+async function decTf(env,pass){const te=new TextEncoder(),base=await crypto.subtle.importKey('raw',te.encode(pass),'PBKDF2',false,['deriveKey']);
+ const k=await crypto.subtle.deriveKey({name:'PBKDF2',salt:b64u(env.salt),iterations:env.iter||250000,hash:'SHA-256'},base,{name:'AES-GCM',length:256},false,['decrypt']);
+ return JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:'AES-GCM',iv:b64u(env.iv)},k,b64u(env.datos))))}
+function tfPass(){try{return TF.pass||localStorage.getItem('tarifario-clave')||localStorage.getItem('cm-tarifario-clave')||''}catch(e){return TF.pass||''}}
+async function tfEnv(){
+ try{const r=await fetch(`https://api.github.com/repos/${TFREPO}/contents/datos.json?t=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/vnd.github.raw+json'}});if(r.ok){const j=await r.json();if(j&&j.datos)return j}}catch(e){}
+ try{const r=await fetch(`https://${TFREPO.split('/')[0]}.github.io/${TFREPO.split('/')[1]}/datos.json?t=${Date.now()}`,{cache:'no-store'});if(r.ok){const j=await r.json();if(j&&j.datos)return j}}catch(e){}
+ try{const c=JSON.parse(localStorage.getItem('tarifario-cache')||'null');if(c&&c.env&&c.env.datos)return c.env}catch(e){}
+ return null}
+async function tfLoad(){ // devuelve 'ok' | 'clave' | 'red'
+ const env=await tfEnv();if(!env)return'red';const pass=tfPass();if(!pass)return'clave';
+ try{await tfSet(env,pass);return'ok'}catch(e){return'clave'}}
+function tfPrices(key){const l=S.tlinks[key];if(!l)return null;const it=TF.items.find(x=>x.id===l.id);return it?it.t:null}
+function tfPut(r){const t=tfPrices(tfKey(r));if(!t)return false;[15,25,27,29].forEach((c,i)=>{if(t[i]!=null)r.v[c]=String(Math.round(t[i]))});return true}
+function tfApplyAll(quiet){let n=0,rows=0;const ch=[];for(const r of S.rows){const t=tfPrices(tfKey(r));if(!t)continue;const nv=[15,25,27,29].map((c,i)=>t[i]!=null?String(Math.round(t[i])):r.v[c]);if([15,25,27,29].some((c,i)=>String(r.v[c])!==nv[i]))ch.push([r,nv])}
+ if(!ch.length)return 0;snap();for(const [r,nv] of ch)[15,25,27,29].forEach((c,i)=>r.v[c]=nv[i]);persist();refreshAll(true);
+ toast(`Precios del tarifario actualizados en ${fmt(ch.length)} filas`,'Deshacer',undo);return ch.length}
+function tfStatus(){const el=$('#tfSt');const n=Object.keys(S.tlinks).length;
+ el.hidden=false;el.className='xs';
+ el.innerHTML=TF.items.length?`Tarifario leído: <b>${fmt(TF.items.length)}</b> productos con precios${TF.at?' · '+new Date(TF.at).toLocaleString('es-VE'):''}. Vínculos guardados: <b>${n}</b>.${TF.err?' <span style="color:var(--danger,#c0392b)">'+esc(TF.err)+'</span>':''}`:(TF.err?esc(TF.err):'Todavía no se han leído los precios del tarifario.')}
+function tfGroups(){const m=new Map();for(const r of S.rows){const k=tfKey(r);let g=m.get(k);if(!g){g={k,lab:tfLabel(r),n:0,cat:r.v[4],marca:r.v[5],tipo:tfTipo(r),modelo:r.v[6]};m.set(k,g)}g.n++}return[...m.values()].sort((a,b)=>(!!S.tlinks[a.k])-(!!S.tlinks[b.k])||a.lab.localeCompare(b.lab))}
+function tfSuggest(g){const w=new Set(nz(g.tipo+' '+g.modelo).split(' ').filter(Boolean));return TF.items.map(it=>{let sc=0;for(const x of nz(it.prod).split(' '))if(w.has(x))sc+=2;if(nz(it.gen)===nz(g.cat))sc+=2;if(nz(it.prov)===nz(g.marca))sc+=3;return[sc,it]}).filter(x=>x[0]>=5).sort((a,b)=>b[0]-a[0]).slice(0,3).map(x=>x[1])}
+const tfOpt=it=>`<option value="${esc(it.id)}">${esc([it.prov,it.gen,it.prod].filter(Boolean).join(' · '))}</option>`;
+function tfRender(){tfStatus();const only=$('#tfFilt').checked;const all=TF.items.slice().sort((a,b)=>(a.prov+a.gen+a.prod).localeCompare(b.prov+b.gen+b.prod)).map(tfOpt).join('');
+ const gs2=tfGroups().filter(g=>!only||!S.tlinks[g.k]);
+ $('#tfList').innerHTML=gs2.map(g=>{const l=S.tlinks[g.k],cur=l&&TF.items.find(x=>x.id===l.id),sug=l?[]:tfSuggest(g);
+  const sel=`<select class="in" data-tfk="${esc(g.k)}" aria-label="Producto del tarifario para ${esc(g.lab)}"><option value="">— Sin vincular —</option>${sug.length?`<optgroup label="Sugeridos">${sug.map(tfOpt).join('')}</optgroup>`:''}<optgroup label="Todos">${all}</optgroup></select>`;
+  const pr=cur?`<span class="mono">${cur.t.map((x,i)=>`P${i+1} (${cur.lab[i]}) ${fmt(Math.round(x))}`).join(' · ')}</span>`:(l?'<span class="mono">Ese producto ya no está en el tarifario.</span>':'');
+  return`<div class="tfr${cur?' ok':''}" data-tfg="${esc(g.k)}"><div class="tt"><b>${esc(g.lab)}</b><small>${fmt(g.n)} fila${g.n>1?'s':''}</small></div>${sel}${pr}</div>`}).join('')||'<p class="note" style="margin:0">'+(S.rows.length?'Todo está vinculado.':'La tabla está vacía. Agrega productos para vincularlos.')+'</p>';
+ for(const s2 of document.querySelectorAll('#tfList select')){const l=S.tlinks[s2.dataset.tfk];if(l)s2.value=l.id}}
+async function tfRefresh(show){TF.err='';const rs=await tfLoad();
+ if(rs==='clave'){$('#tfKey').hidden=false;TF.err=tfPass()?'La clave no abre los datos del tarifario.':'Escribe la clave del tarifario para poder leer sus precios.'}
+ else if(rs==='red'){TF.err=TF.items.length?'No se pudo conectar. Se usan los últimos precios leídos.':'No se pudo conectar con el tarifario.'}
+ else{$('#tfKey').hidden=true;TF.err='';tfApplyAll()}
+ if(show)tfRender();return rs}
+$('#btnTf').onclick=()=>{$('#ovTf').hidden=false;tfRender();tfRefresh(true)};
+$('#tfRef').onclick=()=>tfRefresh(true);
+$('#tfFilt').onchange=tfRender;
+$('#tfConn').onclick=async()=>{const v=$('#tfPass').value;if(!v)return;TF.pass=v;if($('#tfRem').checked)try{localStorage.setItem('cm-tarifario-clave',v)}catch(e){}await tfRefresh(true)};
+$('#tfList').addEventListener('change',e=>{const s2=e.target.closest('select[data-tfk]');if(!s2)return;const k=s2.dataset.tfk,id=s2.value;
+ if(!id){delete S.tlinks[k];persist();tfRender();return}
+ const it=TF.items.find(x=>x.id===id);S.tlinks[k]={id,lbl:[it.prov,it.gen,it.prod].join(' · ')};persist();tfApplyAll();tfRender()});
+setTimeout(()=>{if(Object.keys(S.tlinks).length)tfRefresh(false)},1500);
+let tfLast=Date.now();document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Object.keys(S.tlinks).length&&Date.now()-tfLast>60000){tfLast=Date.now();tfRefresh(false)}});
 window.__S=S;window.__api={genVariants,addVariants,buildCsv,buildTsv,ean,HEAD,computeIssues};
 (function(){
  let d=null;
