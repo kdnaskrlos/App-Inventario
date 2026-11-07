@@ -253,7 +253,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v24</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v25</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -543,7 +543,7 @@ function computeIssues(){const K=allKeys();const m=new Map();let err=0,warn=0;
 /* ---------- generador ---------- */
 const F=()=>S.f;
 function tokVals(color,size,ref){const f=F();const sk=(x)=>x;return{tipo:f.tipo.n,tipo_ab:f.tipo.ab,marca:f.marca.n,marca_ab:f.marca.ab,modelo:f.modelo.n,modelo_ab:f.modelo.ab,cat:f.cat.n,cat_ab:f.cat.ab,talla:size,color:color?color.n:'',color_ab:color?color.ab:'',material:f.mat.n,material_ab:f.mat.ab,ref:ref||''}}
-function tplRender(tpl,vals,safe){const s=tpl.replace(/\{(\w+)\}/g,(m,k)=>{let v=vals[k];if(v==null)return m;v=String(v).trim();return safe?(k==='ref'?v.replace(/\s+/g,'_'):v.replace(/[\s-]+/g,'_')):v});return safe?s.split('-').map(x=>x.trim()).filter(Boolean).join('-'):s.replace(/\s+/g,' ').trim()}
+function tplRender(tpl,vals,safe){const s=tpl.replace(/\{(\w+)\}/g,(m,k)=>{let v=vals[k];if(v==null)return m;v=String(v).trim();return safe?v.replace(/\s+/g,'_'):v});return safe?s.split('-').map(x=>x.trim()).filter(Boolean).join('-'):s.replace(/\s+/g,' ').trim()}
 const tk=()=>F().mode==='ref'?{s:'skuR',n:'nameR'}:{s:'sku',n:'name'};
 function genVariants(){const f=F();const K=allKeys();if(f.mode==='ref'){const sizes=S.catalog.sizes.filter(z=>f.sizes.includes(z));const out=[];const seenS=new Set(),seenN=new Set();
   for(const r of (f.refs||[]))for(const sz of sizes){const vals=tokVals(null,sz,r);const sku=tplRender(S.tpl.skuR,vals,true),name=tplRender(S.tpl.nameR,vals,false);
