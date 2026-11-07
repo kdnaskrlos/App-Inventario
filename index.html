@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v30</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v31</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -1072,7 +1072,7 @@ try{const c=JSON.parse(localStorage.getItem(TFK)||'null');if(c&&Array.isArray(c.
 const nz=x=>String(x==null?'':x).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();
 function tfTipo(r){if(r.tp)return r.tp;const n=nz(r.v[2]);let best='';for(const t of (S.catalog.tipo||[])){const a=nz(t.n);if(a&&(n===a||n.startsWith(a+' '))&&a.length>nz(best).length)best=t.n}return best}
 function tfKey(r){return [tfTipo(r),r.v[5],r.v[6],r.v[4]].map(nz).join('|')}
-function tfLabel(r){const t=tfTipo(r);return `${t?t+' ':''}${r.v[6]||''}`.trim()+` · ${r.v[4]||'—'} · ${r.v[5]||'—'}`}
+function tfLabel(r){const t=tfTipo(r),m=String(r.v[6]||'').trim(),a=nz(t),b=nz(m);const nom=!t?m:!m?t:(b.includes(a)?m:a.includes(b)?t:t+' '+m);return nom+` · ${r.v[4]||'—'} · ${r.v[5]||'—'}`}
 function tfCalc(p,TS){ // misma lógica que el tarifario
  if(!p.cb||!p.list)return null;const has=x=>x!=null&&x!==''&&isFinite(x);
  const go=has(p.gop)?+p.gop:(TS.go||0),fl=has(p.flp)?+p.flp:TS.floor,r=TS.round,out=[];
@@ -1108,7 +1108,7 @@ function tfApplyAll(quiet){let n=0,rows=0;const ch=[];for(const r of S.rows){con
  toast(`Precios del tarifario actualizados en ${fmt(ch.length)} filas`,'Deshacer',undo);return ch.length}
 function tfStatus(){const el=$('#tfSt');const n=Object.keys(S.tlinks).length;
  el.hidden=false;el.className='xs';
- el.innerHTML=TF.items.length?`Tarifario leído: <b>${fmt(TF.items.length)}</b> productos con precios${TF.at?' · '+new Date(TF.at).toLocaleString('es-VE'):''}. Vínculos guardados: <b>${n}</b>.${TF.err?' <span style="color:var(--danger,#c0392b)">'+esc(TF.err)+'</span>':''}`:(TF.err?esc(TF.err):'Todavía no se han leído los precios del tarifario.')}
+ el.innerHTML='<span>'+(TF.items.length?`Tarifario leído: <b>${fmt(TF.items.length)}</b> productos con precios${TF.at?' · '+new Date(TF.at).toLocaleString('es-VE'):''}. Vínculos guardados: <b>${n}</b>.${TF.err?' <span style="color:var(--danger,#c0392b)">'+esc(TF.err)+'</span>':''}`:(TF.err?esc(TF.err):'Todavía no se han leído los precios del tarifario.'))+'</span>'}
 function tfGroups(){const m=new Map();for(const r of S.rows){const k=tfKey(r);let g=m.get(k);if(!g){g={k,lab:tfLabel(r),n:0,cat:r.v[4],marca:r.v[5],tipo:tfTipo(r),modelo:r.v[6]};m.set(k,g)}g.n++}return[...m.values()].sort((a,b)=>(!!S.tlinks[a.k])-(!!S.tlinks[b.k])||a.lab.localeCompare(b.lab))}
 function tfSuggest(g){const w=new Set(nz(g.tipo+' '+g.modelo).split(' ').filter(Boolean));return TF.items.map(it=>{let sc=0;for(const x of nz(it.prod).split(' '))if(w.has(x))sc+=2;if(nz(it.gen)===nz(g.cat))sc+=2;if(nz(it.prov)===nz(g.marca))sc+=3;return[sc,it]}).filter(x=>x[0]>=5).sort((a,b)=>b[0]-a[0]).slice(0,3).map(x=>x[1])}
 const tfOpt=it=>`<option value="${esc(it.id)}">${esc([it.prov,it.gen,it.prod].filter(Boolean).join(' · '))}</option>`;
