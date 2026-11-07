@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v34</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v35</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -311,7 +311,6 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
           <button class="btn sm" data-act="colNone">Quitar todos</button>
           <button class="btn sm" data-act="colMg" id="colMg" aria-pressed="false" title="Mostrar botones para eliminar colores">Gestionar</button>
         </div>
-        <div id="colAb"></div>
         <details class="adv"><summary>Agregar un color nuevo</summary>
           <div class="row2" style="margin-top:8px"><div class="fld"><label for="ncN">Nombre</label><input class="in" id="ncN" placeholder="Ej. Verde Limón"></div><div class="fld"><label for="ncA">Abrev.</label><input class="in ab" id="ncA" placeholder="Vrd_Lim"></div></div>
           <button class="btn sm" data-act="colNew">Agregar y seleccionar</button>
@@ -632,7 +631,7 @@ window.addEventListener('resize',closeCb);
 function renderColors(){const f=F();const q=key($('#colQ').value);const mg=S.mg.col;const list=S.catalog.colors.filter(c=>!q||key(c.n).includes(q)||key(c.ab).includes(q));
  $('#colChips').innerHTML=list.map(c=>{const chip=`<button class="chip" data-col="${esc(c.n)}" aria-pressed="${f.colors.includes(c.n)}">${esc(c.n)} <small>${esc(c.ab)}</small></button>`;return mg?`<span class="chw mg">${chip}<button class="mini del" data-delcol="${esc(c.n)}" aria-label="Eliminar el color ${esc(c.n)}" title="Eliminar color">×</button></span>`:chip}).join('')||'<span class="note">Sin resultados</span>';
  const sel=S.catalog.colors.filter(c=>f.colors.includes(c.n));$('#colSum').textContent=sel.length?`${sel.length} elegidos`:'Elige uno o más';
- $('#colAb').innerHTML=sel.length?`<div class="lbl" style="margin-top:10px">Abreviatura en el SKU de los elegidos</div>`+sel.map(c=>`<div class="abrow"><span>${esc(c.n)}</span><input class="in ab" data-cab="${esc(c.n)}" value="${esc(c.ab)}" aria-label="Abreviatura de ${esc(c.n)}"><button class="btn ghost sm" data-uncol="${esc(c.n)}" aria-label="Quitar ${esc(c.n)}">${ICO.x}</button></div>`).join(''):''}
+}
 function renderSizes(){const f=F();const mg=S.mg.sz;$('#szChips').innerHTML=S.catalog.sizes.map(s=>`<span class="chw${mg?' mg':''}" draggable="true" data-szw="${esc(s)}"><span class="chip size" role="button" tabindex="0" data-sz="${esc(s)}" aria-pressed="${f.sizes.includes(s)}">${esc(s)}</span>${mg?`<button class="mini" data-mvsz="l" data-s="${esc(s)}" aria-label="Mover ${esc(s)} a la izquierda" title="Mover antes">‹</button><button class="mini" data-mvsz="r" data-s="${esc(s)}" aria-label="Mover ${esc(s)} a la derecha" title="Mover después">›</button><button class="mini del" data-delsz="${esc(s)}" aria-label="Eliminar la talla ${esc(s)}" title="Eliminar talla">×</button>`:''}</span>`).join('')||'<span class="note">No hay tallas. Agrega una abajo.</span>';$('#szSum').textContent=f.sizes.length?`${f.sizes.length} elegidas`:'Elige una o más';markSp()}
 function rpNorm(rp){if(rp.to===undefined){rp.to=String((parseInt(rp.from,10)||1)+Math.max(1,parseInt(rp.n,10)||1)-1)}return rp}
 function rpList(rp){rpNorm(rp);const fs=String(rp.from).trim(),ts=String(rp.to).trim();const from=parseInt(fs,10),to=parseInt(ts,10);if(isNaN(from)||isNaN(to)||to<from)return null;
