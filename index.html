@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v33</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v34</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -338,11 +338,11 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
         <div class="chips" id="szChips"></div>
         <p class="hint">Arrastra una talla para cambiar su orden. Ese orden se usa al crear las variantes.</p>
         <div id="szProfs" style="margin-top:10px"></div>
-        <div class="tools">
+        <div class="tools" style="margin-top:10px">
           <button class="btn sm" data-act="szSet" data-v="">Quitar selección</button>
           <button class="btn sm" data-act="szMg" id="szMg" aria-pressed="false" title="Mostrar botones para mover y eliminar tallas">Gestionar tallas</button>
+          <span style="display:flex;gap:6px;flex:1 1 200px;min-width:0"><input class="in" id="nsz" placeholder="Otra talla (ej. 2-4)" style="flex:1;min-width:0;max-width:none"><button class="btn sm" data-act="szNew">Agregar</button></span>
         </div>
-        <div class="tools"><input class="in" id="nsz" placeholder="Otra talla (ej. 2-4)" style="max-width:170px"><button class="btn sm" data-act="szNew">Agregar</button></div>
       </section>
       <section class="sec">
         <h2><i>4</i>Precios y stock</h2>
