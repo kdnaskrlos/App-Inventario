@@ -104,6 +104,21 @@ details.adv{margin-top:10px}
 details.adv summary{cursor:pointer;color:var(--muted);font-size:13px;padding:4px 0}
 .advgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
 .advgrid .fld.chk label{flex-direction:row;align-items:center;gap:8px}
+.fmt{margin-top:10px}.fmt .fl{font-size:13px;color:var(--muted);margin-bottom:4px}.fmt .fl code{float:right;font-family:var(--f-mono);font-size:11px}
+.fstrip,.tray{position:relative;display:flex;flex-wrap:wrap;gap:6px;align-items:center;align-content:flex-start;padding:8px;border-radius:10px}
+.fstrip{min-height:46px;border:1px solid var(--line);background:var(--surface);transition:border-color .12s,box-shadow .12s}
+.fstrip:empty::before{content:"Arrastra fichas aquí";color:var(--muted);font-size:12.5px}
+.fstrip.fmo{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+.tray{min-height:42px;margin-top:6px;border:1px dashed var(--line);background:var(--surface2);transition:border-color .12s,background .12s}
+.tray.fmo{border-color:var(--bad);background:var(--bad-soft)}
+.pl{font-family:var(--f-mono);font-size:12px;line-height:1.2;padding:5px 9px;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:grab;user-select:none;-webkit-user-select:none;touch-action:none;white-space:nowrap}
+.fstrip .pl{background:var(--accent-soft);border-color:var(--accent);color:var(--mark-ink)}
+.pl.txt{background:var(--violet-soft)!important;border-color:var(--violet)!important;color:var(--ink)!important}
+.pl:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pl.ghost{opacity:.35;border-style:dashed}
+.pl.float{position:fixed;z-index:300;pointer-events:none;margin:0;cursor:grabbing;box-shadow:0 8px 22px rgba(15,23,42,.3);transform:scale(1.08)}
+body.dragging,body.dragging *{cursor:grabbing!important;user-select:none!important;-webkit-user-select:none!important}
+.txtadd{width:96px;height:28px;padding:0 8px;font-size:12px}
 .tok{font-family:var(--f-mono);font-size:12px;padding:2px 7px;border-radius:6px;border:1px dashed var(--line);background:var(--surface2)}
 .ex{margin-top:6px;font-size:12px;color:var(--muted);word-break:break-all}
 .ex b{font-family:var(--f-mono);font-weight:500;color:var(--ink)}
@@ -253,7 +268,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v26</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v27</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -342,9 +357,8 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
       </section>
       <section class="sec">
         <h2>Formato de SKU y nombre</h2>
-        <div class="fld"><label for="tSku">SKU <code>sku</code></label><input class="in ab" id="tSku"></div>
-        <div class="fld" style="margin-top:8px"><label for="tName">Nombre <code>name</code></label><input class="in ab" id="tName"></div>
-        <div class="chips" id="toks" style="margin-top:8px"></div>
+        <div class="fmt"><div class="fl">SKU <code>sku</code></div><div class="fstrip" id="stS" data-fm="s" role="list" aria-label="Orden de las partes del SKU"></div><div class="tray" id="trS" data-fm="s" role="list" aria-label="Partes disponibles para el SKU"></div></div>
+        <div class="fmt"><div class="fl">Nombre <code>name</code></div><div class="fstrip" id="stN" data-fm="n" role="list" aria-label="Orden de las partes del nombre"></div><div class="tray" id="trN" data-fm="n" role="list" aria-label="Partes disponibles para el nombre"></div></div>
         <p class="ex" id="ex"></p>
         <div class="tools"><button class="btn sm" data-act="tplReset">Volver al formato original</button></div>
       </section>
@@ -579,7 +593,7 @@ function openCb(k,filter){const inp=$('#e_'+k);cbK=k;const q=key(filter||'');con
  const cur=key(F()[k].n);cbIdx=cbItems.findIndex(x=>key(x.n)===cur);
  const mg=S.mg.ent;cbl.style.maxHeight=(mg?330:240)+'px';
  const items=cbItems.length?cbItems.map((x,i)=>{const it=`<button type="button" data-cbi="${i}" class="${i===cbIdx?'on':''}"><span>${esc(x.n)}</span><small>${esc(x.ab)}</small></button>`;return mg?`<div class="cbrow">${it}<button type="button" class="cbdel" data-cbdel="${i}" aria-label="Eliminar ${esc(x.n)}" title="Eliminar de la lista">×</button></div>`:it}).join(''):'<div class="note" style="padding:8px 10px">'+(mg?'La lista está vacía.':'Sin coincidencias. Se registrará como nuevo al agregar.')+'</div>';
- const add=mg?`<div class="cbadd"><span class="lbl" style="padding:0 2px">Agregar a ${esc(KIND[k].toLowerCase())}</span><span class="note" style="padding:0 2px;margin:0">La abreviatura es opcional: en blanco no se agrega nada al SKU.</span><div class="cbaddr"><input class="in" id="cbN" placeholder="Nombre" autocomplete="off" aria-label="Nombre nuevo"><input class="in ab" id="cbA" placeholder="Abrev." autocomplete="off" aria-label="Abreviatura (opcional)"><button type="button" class="btn sm primary" data-cbadd>Agregar</button></div></div>`:'';
+ const add=mg?`<div class="cbadd"><span class="lbl" style="padding:0 2px">Agregar a ${esc(KIND[k].toLowerCase())}</span><div class="cbaddr"><input class="in" id="cbN" placeholder="Nombre" autocomplete="off" aria-label="Nombre nuevo"><input class="in ab" id="cbA" placeholder="Abrev." autocomplete="off" aria-label="Abreviatura (opcional)"><button type="button" class="btn sm primary" data-cbadd>Agregar</button></div></div>`:'';
  cbl.innerHTML=items+add;
  cbl.hidden=false;const r=inp.getBoundingClientRect();const h=Math.min(mg?330:240,cbl.scrollHeight+10);const below=innerHeight-r.bottom;const up=below<h+8&&r.top>below;cbl.style.left=r.left+'px';cbl.style.width=Math.max(r.width,220)+'px';cbl.style.top=(up?r.top-h-4:r.bottom+4)+'px';inp.setAttribute('aria-expanded','true');const on=cbl.querySelector('.on');if(on)on.scrollIntoView({block:'nearest'})}
 function closeCb(){cbl.hidden=true;if(cbK){const i=$('#e_'+cbK);if(i)i.setAttribute('aria-expanded','false')}cbK=null}
@@ -633,7 +647,59 @@ function markProfiles(){const cur=curA().join('|');for(const d of document.query
 function renderFields(){const f=F();for(const el of document.querySelectorAll('[data-f]'))el.value=f[el.dataset.f]??''}
 const ADVC=[3,7,9,10,11,12,13,14,18,19,20,24,26,28,30,...Array.from({length:20},(_,i)=>31+i)];
 function renderAdv(){const f=F();$('#adv').innerHTML=ADVC.map(c=>{const v=f.adv[c]!==undefined?f.adv[c]:DEF[c];return BOOL.has(c)?`<div class="fld chk"><label><input type="checkbox" data-adv="${c}" ${v===true?'checked':''}> <span class="mono" style="font-size:12px">${HEAD[c]}</span></label></div>`:`<div class="fld"><label for="adv${c}"><span class="mono">${HEAD[c]}</span></label><input class="in" id="adv${c}" data-adv="${c}" value="${esc(v)}"></div>`}).join('')}
-function renderTpl(){const T=tk();$('#tSku').value=S.tpl[T.s];$('#tName').value=S.tpl[T.n];$('#toks').innerHTML='<span class="lbl" style="width:100%">Clic para insertar donde esté el cursor</span>'+TOKS.map(t=>`<button class="tok" data-tok="${t}">{${t}}</button>`).join('')}
+/* ---------- formato: fichas que se arrastran ---------- */
+const FM={s:{key:()=>tk().s,sep:'-',st:'#stS',tr:'#trS'},n:{key:()=>tk().n,sep:' ',st:'#stN',tr:'#trN'}};
+let fmN=0;
+const fmParse=(str,sep)=>(sep==='-'?String(str).split('-'):String(str).split(/\s+/)).map(x=>x.trim()).filter(Boolean).map(x=>{const m=x.match(/^\{(\w+)\}$/);return m&&TOKS.includes(m[1])?{id:'t:'+m[1],t:'tok',v:m[1]}:{id:'x'+(++fmN),t:'txt',v:x}});
+const fmStr=(items,sep)=>items.map(it=>it.t==='tok'?'{'+it.v+'}':it.v).join(sep);
+const fmLbl=it=>it.t==='tok'?'{'+it.v+'}':it.v;
+const fmPill=(it,ghost,tray)=>`<span class="pl${it.t==='txt'?' txt':''}${ghost?' ghost':''}" data-id="${esc(it.id)}" role="listitem" tabindex="0" title="${tray?'Arrastra o toca para agregar':'Arrastra para mover o sacar'}">${esc(fmLbl(it))}</span>`;
+function fmDraw(kind,items,ghostId,animate){
+  const m=FM[kind],st=$(m.st),tr=$(m.tr);const before=new Map();
+  if(animate)for(const el of document.querySelectorAll(m.st+' .pl,'+m.tr+' .pl'))before.set(el.dataset.id,el.getBoundingClientRect());
+  const used=new Set(items.filter(x=>x.t==='tok').map(x=>x.v));
+  const keep=document.activeElement&&document.activeElement.dataset&&document.activeElement.dataset.id;
+  st.innerHTML=items.map(it=>fmPill(it,it.id===ghostId,false)).join('');
+  tr.innerHTML=TOKS.filter(t=>!used.has(t)).map(t=>fmPill({id:'t:'+t,t:'tok',v:t},false,true)).join('')+`<input class="in ab txtadd" data-txt="${kind}" placeholder="+ texto" autocomplete="off" aria-label="Agregar texto fijo">`;
+  if(animate){for(const el of document.querySelectorAll(m.st+' .pl,'+m.tr+' .pl')){const b=before.get(el.dataset.id);if(!b)continue;const a=el.getBoundingClientRect();const dx=b.left-a.left,dy=b.top-a.top;
+    if(dx||dy){el.style.transition='none';el.style.transform=`translate(${dx}px,${dy}px)`;requestAnimationFrame(()=>{el.style.transition='transform .2s cubic-bezier(.2,.8,.2,1)';el.style.transform=''})}}}
+  if(keep){const f=document.querySelector(`[data-id="${CSS.escape(keep)}"]`);f&&f.focus&&f.focus({preventScroll:true})}}
+function renderTpl(){const T=tk();for(const k of ['s','n']){const m=FM[k];fmDraw(k,fmParse(S.tpl[T[k]],m.sep))}}
+function fmCommit(kind,items){const m=FM[kind],T=tk();S.tpl[T[kind]]=fmStr(items,m.sep);fmDraw(kind,items,null,true);schedPv()}
+const fmItems=kind=>fmParse(S.tpl[tk()[kind]],FM[kind].sep);
+let fmDrag=null,fmDown=null;
+function fmIdx(st,list,x,y){const pills=[...st.querySelectorAll('.pl:not(.ghost)')];const R=st.getBoundingClientRect();
+  for(let i=0;i<pills.length;i++){const l=pills[i].offsetLeft,t=pills[i].offsetTop,w=pills[i].offsetWidth,h=pills[i].offsetHeight;const px=x-R.left-st.clientLeft,py=y-R.top-st.clientTop;
+    if(py<t)return i;if(py<=t+h&&px<l+w/2)return i}return pills.length}
+$('#panel').addEventListener('pointerdown',e=>{const pl=e.target.closest('.pl');if(!pl||e.button>0)return;const box=pl.closest('[data-fm]');if(!box)return;
+  fmDown={kind:box.dataset.fm,id:pl.dataset.id,fromTray:box.classList.contains('tray'),x:e.clientX,y:e.clientY,pl}});
+function fmStart(e){const {kind,id,fromTray,pl}=fmDown;const r=pl.getBoundingClientRect();const items=fmItems(kind);
+  const it=fromTray?{id,t:'tok',v:id.slice(2)}:items.find(x=>x.id===id);if(!it){fmDown=null;return}
+  const fl=pl.cloneNode(true);fl.className='pl float'+(it.t==='txt'?' txt':'');fl.style.width=r.width+'px';fl.style.left=r.left+'px';fl.style.top=r.top+'px';fl.removeAttribute('tabindex');document.body.appendChild(fl);
+  document.body.classList.add('dragging');fmDrag={kind,it,fromTray,orig:items,fl,dx:e.clientX-r.left,dy:e.clientY-r.top,where:'',idx:-1}}
+function fmMove(e){if(!fmDrag)return;const d=fmDrag,m=FM[d.kind],st=$(m.st),tr=$(m.tr);
+  d.fl.style.left=(e.clientX-d.dx)+'px';d.fl.style.top=(e.clientY-d.dy)+'px';
+  const inR=(el,pad)=>{const r=el.getBoundingClientRect();return e.clientX>=r.left-pad&&e.clientX<=r.right+pad&&e.clientY>=r.top-pad&&e.clientY<=r.bottom+pad};
+  const base=d.orig.filter(x=>x.id!==d.it.id);let where='none',idx=-1;
+  if(inR(st,6)){where='strip';idx=fmIdx(st,base,e.clientX,e.clientY)}else if(inR(tr,6))where='tray';
+  st.classList.toggle('fmo',where==='strip');tr.classList.toggle('fmo',where==='tray'&&!d.fromTray);
+  if(where===d.where&&idx===d.idx)return;d.where=where;d.idx=idx;
+  const list=where==='strip'?[...base.slice(0,idx),d.it,...base.slice(idx)]:base;
+  d.list=list;fmDraw(d.kind,list,where==='strip'?d.it.id:null,true)}
+function fmEnd(cancel){const d=fmDrag;if(!d)return;fmDrag=null;fmDown=null;d.fl.remove();document.body.classList.remove('dragging');$(FM[d.kind].st).classList.remove('fmo');$(FM[d.kind].tr).classList.remove('fmo');
+  if(cancel||d.where==='none'||!d.list){fmDraw(d.kind,d.orig,null,true);return}
+  fmCommit(d.kind,d.list)}
+document.addEventListener('pointermove',e=>{if(fmDrag)return fmMove(e);if(fmDown&&Math.hypot(e.clientX-fmDown.x,e.clientY-fmDown.y)>5){fmStart(e);fmDrag&&fmMove(e)}});
+document.addEventListener('pointerup',()=>{if(fmDrag){fmEnd(false);return}
+  if(fmDown&&fmDown.fromTray){const kind=fmDown.kind,id=fmDown.id;const items=fmItems(kind);if(!items.some(x=>x.id===id))fmCommit(kind,[...items,{id,t:'tok',v:id.slice(2)}])}fmDown=null});
+document.addEventListener('pointercancel',()=>{if(fmDrag)fmEnd(true);fmDown=null});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&fmDrag)fmEnd(true)},true);
+$('#panel').addEventListener('keydown',e=>{const t=e.target;
+  if(t.classList&&t.classList.contains('txtadd')&&e.key==='Enter'){e.preventDefault();const v=t.value.trim();if(!v)return;const k=t.dataset.txt;fmCommit(k,[...fmItems(k),{id:'x'+(++fmN),t:'txt',v}]);return}
+  const pl=t.closest&&t.closest('.pl');if(!pl)return;const box=pl.closest('[data-fm]');const kind=box.dataset.fm,tray=box.classList.contains('tray');const items=fmItems(kind);const id=pl.dataset.id;
+  if(tray&&(e.key==='Enter'||e.key===' ')){e.preventDefault();if(!items.some(x=>x.id===id))fmCommit(kind,[...items,{id,t:'tok',v:id.slice(2)}])}
+  else if(!tray&&(e.key==='Delete'||e.key==='Backspace')){e.preventDefault();fmCommit(kind,items.filter(x=>x.id!==id))}
+  else if(!tray&&(e.key==='ArrowLeft'||e.key==='ArrowRight')){e.preventDefault();const i=items.findIndex(x=>x.id===id),j=i+(e.key==='ArrowLeft'?-1:1);if(i<0||j<0||j>=items.length)return;[items[i],items[j]]=[items[j],items[i]];fmCommit(kind,items)}});
 function renderPreview(){const vs=genVariants();const ok=vs.filter(x=>!x.dup).length,dup=vs.length-ok;const f=F();
  const isR=f.mode==='ref',T=tk();const ex=isR?tokVals(null,f.sizes[0]||'M',(f.refs||[])[0]||'Ref-0001'):tokVals(S.catalog.colors.find(c=>c.n===f.colors[0])||{n:'Color',ab:'Col'},f.sizes[0]||'M');
  $('#ex').innerHTML=`Ejemplo: <b>${esc(tplRender(S.tpl[T.s],ex,true))}</b><br><b>${esc(tplRender(S.tpl[T.n],ex,false))}</b>`;
