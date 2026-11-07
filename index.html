@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v31</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v32</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -1072,7 +1072,7 @@ try{const c=JSON.parse(localStorage.getItem(TFK)||'null');if(c&&Array.isArray(c.
 const nz=x=>String(x==null?'':x).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();
 function tfTipo(r){if(r.tp)return r.tp;const n=nz(r.v[2]);let best='';for(const t of (S.catalog.tipo||[])){const a=nz(t.n);if(a&&(n===a||n.startsWith(a+' '))&&a.length>nz(best).length)best=t.n}return best}
 function tfKey(r){return [tfTipo(r),r.v[5],r.v[6],r.v[4]].map(nz).join('|')}
-function tfLabel(r){const t=tfTipo(r),m=String(r.v[6]||'').trim(),a=nz(t),b=nz(m);const nom=!t?m:!m?t:(b.includes(a)?m:a.includes(b)?t:t+' '+m);return nom+` · ${r.v[4]||'—'} · ${r.v[5]||'—'}`}
+function tfLabel(r){const t=tfTipo(r),m=String(r.v[6]||'').trim(),a=nz(t),b=nz(m);const nom=!t?m:!m?t:(b.includes(a)?m:a.includes(b)?t:t+' '+m);return `${r.v[5]||'—'} · ${r.v[4]||'—'} · ${nom}`}
 function tfCalc(p,TS){ // misma lógica que el tarifario
  if(!p.cb||!p.list)return null;const has=x=>x!=null&&x!==''&&isFinite(x);
  const go=has(p.gop)?+p.gop:(TS.go||0),fl=has(p.flp)?+p.flp:TS.floor,r=TS.round,out=[];
