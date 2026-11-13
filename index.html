@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v35</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v36</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -596,7 +596,7 @@ function addVariants(){const list=genVariants().filter(x=>!x.dup);const skipped=
  snap();const f=F();const used=usedBases();let first=null;const fresh=[];
  for(const x of list){const v=DEF.slice();for(const k in f.adv)v[k]=f.adv[k];
   if(x.ref)v[7]=x.ref;v[1]=x.sku;v[2]=x.name;v[4]=f.cat.n;v[5]=f.marca.n;v[6]=f.modelo.n;v[8]=f.cost;v[15]=f.price;v[25]=f.price2;v[27]=f.price3;v[29]=f.price4;v[21]=f.fis;v[22]=f.nof;v[23]=f.min;v[17]=uniqueBase(used);
-  const r={id:S.nextId++,src:'new',v,tp:f.tipo.n};tfPut(r);fresh.push(r);if(!first)first=r.id}
+  const r={id:S.nextId++,src:'new',v,tp:f.tipo.n,cl:x.color?x.color.n:'',sz:x.size};tfPut(r);fresh.push(r);if(!first)first=r.id}
  S.rows.splice(insPos(),0,...fresh)
  learnCatalog();S.ui.filter='all';S.ui.q='';$('#q').value='';
  refreshAll(true);scrollToId(first);
@@ -964,7 +964,7 @@ async function gh(url,opt){const res=await fetch(url,{cache:'no-store',...opt});
 async function syPush(){const c=syCfg();if(!c)return;if(!c.token){syStatus('Pega tu token de GitHub para poder guardar.','bad');return}
   if(!S.rows.length){syStatus('La tabla está vacía. Agrega o importa productos antes de subir.','bad');return}
   syStatus('Subiendo…');$('#syPush').disabled=true;
-  try{const payload=JSON.stringify({app:'carga-masiva',v:1,at:new Date().toISOString(),head:HEAD,rows:S.rows.map(r=>r.v)});const url=syUrl(c.repo);
+  try{if(Object.keys(S.tlinks).length){try{await tfRefresh(false)}catch(e){}}const px=withX();const payload=JSON.stringify({app:'carga-masiva',v:1,at:new Date().toISOString(),head:px.head,rows:px.rows});const url=syUrl(c.repo);
     const dir=`https://api.github.com/repos/${c.repo}/contents/data`;
     const getSha=async()=>{try{const l=await (await gh(dir+'?t='+Date.now(),{headers:syHdr(c.token)})).json();const f=Array.isArray(l)&&l.find(x=>x.name==='inventario.json');return f?f.sha:undefined}catch(e){if(e.status===404)return undefined;throw e}};
     const put=async()=>{const sha=await getSha();
@@ -974,9 +974,9 @@ async function syPush(){const c=syCfg();if(!c)return;if(!c.token){syStatus('Pega
   catch(e){syStatus(esc(syErr(e)),'bad')}finally{$('#syPush').disabled=false}}
 async function syPull(){const c=syCfg();if(!c)return;syStatus('Descargando…');$('#syPull').disabled=true;
   try{const res=await gh(syUrl(c.repo),{headers:syHdr(c.token,true)});const j=await res.json();
-    if(!j||!Array.isArray(j.rows)||!j.rows.every(v=>Array.isArray(v)&&v.length===NC))throw Object.assign(new Error('formato'),{bad:true});
+    if(!j||!Array.isArray(j.rows)||!j.rows.every(v=>Array.isArray(v)&&(v.length===NC||v.length===NC+XH.length)))throw Object.assign(new Error('formato'),{bad:true});
     if(!j.rows.length){syStatus('El repositorio no tiene filas guardadas todavía.','bad');return}
-    snap();S.rows=j.rows.map(v=>({id:S.nextId++,src:'imp',v}));S.sel.clear();gs.scrollTop=0;$('#ovSync').hidden=true;refreshAll(true);
+    snap();S.rows=j.rows.map(v=>({id:S.nextId++,src:'imp',v:v.slice(0,NC)}));S.sel.clear();gs.scrollTop=0;$('#ovSync').hidden=true;refreshAll(true);
     toast(`${fmt(j.rows.length)} filas traídas del repositorio`,'Deshacer',undo)}
   catch(e){syStatus(e.bad?'El archivo del repositorio no tiene el formato de esta herramienta.':e.status===404?'Todavía no hay inventario guardado en ese repositorio. Primero usa «Subir inventario».':esc(syErr(e)),'bad')}finally{$('#syPull').disabled=false}}
 $('#btnSync').onclick=()=>{const o=sy.get();if(o.repo)$('#syRepo').value=o.repo;$('#syTok').value=o.token||'';$('#syRem').checked=o.rem!==false;
@@ -1085,7 +1085,7 @@ function tfCalc(p,TS){ // misma lógica que el tarifario
   out.push(price)});
  return out}
 function tfSet(env,pass){return decTf(env,pass).then(d=>{const TS=Object.assign({obj:40,health:20,floor:10,round:500,go:5000,tiers:[{min:1,d:0},{min:6,d:10},{min:12,d:20},{min:24,d:30},{min:49,d:35}]},d.S||{});
- const items=[];for(const p of (d.P||[])){if(p.sep&&false)continue;const t=tfCalc(p,TS);if(t)items.push({id:p.id,prov:p.prov||'',gen:p.gen||'',prod:p.prod||'',t:t.slice(0,4),lab:TS.tiers.slice(0,4).map((x,i,a)=>{const b=TS.tiers[i+1]?TS.tiers[i+1].min-1:null;return b?(x.min===b?x.min:x.min+'–'+b):'+'+x.min})})}
+ const items=[];for(const p of (d.P||[])){if(p.sep&&false)continue;const t=tfCalc(p,TS);if(t)items.push({id:p.id,prov:p.prov||'',gen:p.gen||'',prod:p.prod||'',sep:!!p.sep,t:t.slice(0,5),lab:TS.tiers.slice(0,5).map((x,i,a)=>{const b=TS.tiers[i+1]?TS.tiers[i+1].min-1:null;return b?(x.min===b?x.min:x.min+'–'+b):'+'+x.min})})}
  TF.items=items;TF.at=Date.now();try{localStorage.setItem(TFK,JSON.stringify({items,at:TF.at}))}catch(e){}})}
 const b64u=b=>{const s=atob(String(b).replace(/\s/g,''));const u=new Uint8Array(s.length);for(let i=0;i<s.length;i++)u[i]=s.charCodeAt(i);return u};
 async function decTf(env,pass){const te=new TextEncoder(),base=await crypto.subtle.importKey('raw',te.encode(pass),'PBKDF2',false,['deriveKey']);
@@ -1115,7 +1115,7 @@ function tfRender(){tfStatus();const only=$('#tfFilt').checked;const all=TF.item
  const gs2=tfGroups().filter(g=>!only||!S.tlinks[g.k]);
  $('#tfList').innerHTML=gs2.map(g=>{const l=S.tlinks[g.k],cur=l&&TF.items.find(x=>x.id===l.id),sug=l?[]:tfSuggest(g);
   const sel=`<select class="in" data-tfk="${esc(g.k)}" aria-label="Producto del tarifario para ${esc(g.lab)}"><option value="">— Sin vincular —</option>${sug.length?`<optgroup label="Sugeridos">${sug.map(tfOpt).join('')}</optgroup>`:''}<optgroup label="Todos">${all}</optgroup></select>`;
-  const pr=cur?`<span class="mono">${cur.t.map((x,i)=>`P${i+1} (${cur.lab[i]}) ${fmt(Math.round(x))}`).join(' · ')}</span>`:(l?'<span class="mono">Ese producto ya no está en el tarifario.</span>':'');
+  const pr=cur?`<span class="mono">${cur.t.slice(0,4).map((x,i)=>`P${i+1} (${cur.lab[i]}) ${fmt(Math.round(x))}`).join(' · ')}</span>`:(l?'<span class="mono">Ese producto ya no está en el tarifario.</span>':'');
   return`<div class="tfr${cur?' ok':''}" data-tfg="${esc(g.k)}"><div class="tt"><b>${esc(g.lab)}</b><small>${fmt(g.n)} fila${g.n>1?'s':''}</small></div>${sel}${pr}</div>`}).join('')||'<p class="note" style="margin:0">'+(S.rows.length?'Todo está vinculado.':'La tabla está vacía. Agrega productos para vincularlos.')+'</p>';
  for(const s2 of document.querySelectorAll('#tfList select')){const l=S.tlinks[s2.dataset.tfk];if(l)s2.value=l.id}}
 async function tfRefresh(show){TF.err='';const rs=await tfLoad();
@@ -1132,7 +1132,47 @@ $('#tfList').addEventListener('change',e=>{const s2=e.target.closest('select[dat
  const it=TF.items.find(x=>x.id===id);S.tlinks[k]={id,lbl:[it.prov,it.gen,it.prod].join(' · ')};persist();tfApplyAll();tfRender()});
 setTimeout(()=>{if(Object.keys(S.tlinks).length)tfRefresh(false)},1500);
 let tfLast=Date.now();document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Object.keys(S.tlinks).length&&Date.now()-tfLast>60000){tfLast=Date.now();tfRefresh(false)}});
-window.__S=S;window.__api={genVariants,addVariants,buildCsv,buildTsv,ean,HEAD,computeIssues};
+
+/* ---------- columnas extra para el punto de venta ---------- */
+const XH=['producto','color','talla','price5','separado'];
+const lc=x=>String(x==null?'':x).trim().toLowerCase();
+function xParts(r){
+ const toks=String(r.v[2]||'').split(/\s+/).filter(Boolean),L=toks.map(lc),n=toks.length,used=new Set();
+ const tp=String(S.tpl.name),pt=tp.indexOf('{talla}'),pc=tp.indexOf('{color}');
+ const pfx=new Set([tfTipo(r),r.v[5],r.v[4]].filter(Boolean).flatMap(x=>String(x).split(/\s+/)).map(lc));
+ let pl=0;while(pl<n&&pfx.has(L[pl]))pl++;
+ {const cw=lc(r.v[4]).split(/\s+/).filter(Boolean);if(cw.length)for(let i=0;i+cw.length<=n;i++){if(cw.every((w,k)=>L[i+k]===w)){pl=Math.max(pl,i+cw.length);break}}}
+ // talla: del catálogo, o un dato numérico (6-8, 10) que no sea parte del tipo, marca o categoría
+ let szI=-1,sz='';
+ for(let i=0;i<n&&szI<0;i++){const z=S.catalog.sizes.find(z=>lc(z)===L[i]);if(z){sz=z;szI=i}}
+ if(szI<0&&pt>=0)for(let i=pl;i<n;i++){if(/^[0-9]+([-–/][0-9]+)?$/.test(toks[i])){sz=toks[i];szI=i;break}}
+ if(szI>=0)used.add(szI);
+ // tela al final (del catálogo) y referencia
+ let end=n;for(const w of (S.catalog.mat||[]).map(m=>lc(m.n).split(/\s+/)).sort((a,b)=>b.length-a.length)){if(w.length&&end-w.length>pl-1&&w.every((x,k)=>L[end-w.length+k]===x)){end-=w.length;break}}
+ const refv=String(r.v[7]||'').trim(),rk=x=>String(x).toLowerCase().replace(/[^a-z0-9]/g,'');
+ const refI=refv?toks.findIndex(t=>rk(t)===rk(refv)):-1;
+ let cl='';
+ if(refI>=0){used.add(refI);cl=refv}
+ else if(pc>=0&&pt>=0&&pc>pt){ // el color va después de la talla: lo que queda entre la talla y la tela
+  const from=szI>=0?szI:pl-1,idx=[];for(let i=from+1;i<end;i++)if(!used.has(i))idx.push(i);
+  if(idx.length&&idx.length<=3){const raw=idx.map(i=>toks[i]).join(' ');const c=S.catalog.colors.find(c=>lc(c.n)===lc(raw));cl=c?c.n:raw;idx.forEach(i=>used.add(i))}}
+ if(!cl){const cs=S.catalog.colors.map(c=>({n:c.n,w:lc(c.n).split(/\s+/).filter(Boolean)})).sort((a,b)=>b.w.length-a.w.length);
+  outer:for(const c of cs){for(let i=0;i+c.w.length<=n;i++){if(c.w.every((w,k)=>L[i+k]===w&&!used.has(i+k))){cl=c.n;c.w.forEach((_,k)=>used.add(i+k));break outer}}}}
+ if(!sz&&r.sz)sz=r.sz;if(!cl&&r.cl)cl=r.cl;
+ return{producto:toks.filter((_,i)=>!used.has(i)).join(' '),color:cl,talla:sz}}
+function xCols(rows){
+ const P=rows.map(r=>({r,...xParts(r)}));
+ const canon=(arr,f)=>{const cnt=new Map();for(const x of arr){const k=nz(f(x));if(!cnt.has(k))cnt.set(k,new Map());const m=cnt.get(k),v=f(x);m.set(v,(m.get(v)||0)+1)}
+  const out=new Map();for(const [k,m] of cnt)out.set(k,[...m.entries()].sort((a,b)=>b[1]-a[1])[0][0]);return out};
+ const cp=canon(P,x=>x.producto),cc=canon(P.filter(x=>x.color),x=>x.color);
+ const mods=new Map();for(const x of P){const k=nz(x.producto);if(!mods.has(k))mods.set(k,new Set());mods.get(k).add(nz(x.r.v[6]))}
+ return P.map(x=>{let pr=cp.get(nz(x.producto))||x.producto;const m=String(x.r.v[6]||'').trim();
+  if(m&&mods.get(nz(x.producto)).size>1&&!nz(pr).includes(nz(m)))pr=(pr+' '+m).trim();
+  const it=(()=>{const l=S.tlinks[tfKey(x.r)];return l?TF.items.find(i=>i.id===l.id):null})();
+  const p5=it&&it.t&&it.t[4]!=null?String(Math.round(it.t[4])):'';
+  return[pr,x.color?(cc.get(nz(x.color))||x.color):'',x.talla,p5,!!(it&&it.sep)]})}
+const withX=()=>{const X=xCols(S.rows);return{head:[...HEAD,...XH],rows:S.rows.map((r,i)=>r.v.concat(X[i]))}};
+window.__S=S;window.__api={withX,xCols,xParts,genVariants,addVariants,buildCsv,buildTsv,ean,HEAD,computeIssues};
 (function(){
  let d=null;
  document.addEventListener('pointerdown',e=>{
