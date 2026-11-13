@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v37</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v38</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -510,8 +510,8 @@ const W={1:230,2:300,3:160,4:110,5:110,6:130,7:110,8:90,9:110,15:90,16:140,17:13
 W[51]=230;W[52]=120;W[53]=80;W[54]=110;W[55]=90;
 const DEF=Array(NC).fill('');
 Object.assign(DEF,{9:'0',10:true,11:'0',12:false,14:'0',18:'Principal',21:'0',22:'12',23:'5',26:'0',28:'0',30:'0',31:'Fijo',32:'4000',33:true,34:'Fijo',35:'2000',36:'Fijo',37:'2000',38:false,39:'Fijo',40:'0',41:'Fijo',42:'1000',43:false,44:'Fijo',45:'0',46:'Fijo',47:'1000',48:false,49:'Fijo',50:'0'});
-const ESS=[1,2,51,52,53,4,5,6,8,15,25,27,29,54,55,16,17,21,22,23];
-const label=c=>c>=NC?XL[c-NC]:(HEAD[c]||'(base)');
+const ESS=[1,2,51,52,53,4,5,6,8,15,25,27,29,54,55,16,22,23];
+const label=c=>c>=NC?XL[c-NC]:(c===22&&S.ui.view==='ess'?'Existencia':(HEAD[c]||'(base)'));
 const FML=n=>`R${n} & MOD(10 - MOD(SUMPRODUCT(MID(R${n}, {1,2,3,4,5,6,7,8,9,10,11,12}, 1) * {1,3,1,3,1,3,1,3,1,3,1,3}), 10), 10)`;
 function ean(b){b=String(b==null?'':b).trim();if(!/^\d{12}$/.test(b))return'';let s=0;for(let i=0;i<12;i++)s+=(+b[i])*(i%2?3:1);return b+((10-(s%10))%10)}
 
