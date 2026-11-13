@@ -182,7 +182,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 <div class="wrap">
   <header class="top">
     <div class="bar">
-      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v11</span></span></div>
+      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v12</span></span></div>
       <button class="ib" id="bSync" type="button" aria-label="Actualizar inventario desde GitHub"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-14.7 5.8L3.5 15.5"/><path d="M3.5 12a8.5 8.5 0 0 1 14.7-5.8l2.3 2.3"/><path d="M20.5 3.5v5h-5M3.5 20.5v-5h5"/></svg></button>
       <button class="ib" id="bTheme" type="button" aria-label="Cambiar entre modo claro y oscuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
       <button class="ib" id="bData" type="button" aria-label="Cargar o actualizar datos"><svg viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4.5 14v4.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V14"/></svg></button>
@@ -252,12 +252,12 @@ function toEan(code,base){const nz=x=>str(x).replace(/\.0+$/,'');code=nz(code);b
 const st=r=>{const t=r.fi+r.nf;return t<=0?'out':(r.mn>0&&t<=r.mn?'low':'ok')};
 
 function parseTable(aoa){
-  let h=-1;for(let i=0;i<Math.min(aoa.length,10);i++){const l=(aoa[i]||[]).map(x=>norm(x).trim());if(l.includes('sku')&&l.includes('name')){h=i;break}}
+  let h=-1;for(let i=0;i<Math.min(aoa.length,10);i++){const l=(aoa[i]||[]).map(x=>norm(x).trim());if(l.includes('sku')&&(l.includes('name')||l.includes('nombre'))){h=i;break}}
   if(h<0)throw new Error('No encontré las columnas «sku» y «name». Usa el archivo exportado desde la carga masiva.');
-  const head=aoa[h].map(x=>norm(x).trim()),ix=n=>head.indexOf(n);
-  const c={sku:ix('sku'),name:ix('name'),desc:ix('description'),cat:ix('category'),brand:ix('brand'),model:ix('model'),ref:ix('reference'),cost:ix('cost'),
-    p1:ix('price'),p2:ix('price2'),p3:ix('price3'),p4:ix('price4'),bc:ix('barcode'),ln:ix('location_name'),la:ix('location_aisle'),ls:ix('location_shelf'),
-    fi:ix('location_fiscalstock'),nf:ix('location_nonfiscalstock'),mn:ix('location_minstock'),sz:ix('sizes')};
+  const head=aoa[h].map(x=>norm(x).trim()),ix=(...n)=>{for(const x of n){const i=head.indexOf(x);if(i>=0)return i}return -1};
+  const c={sku:ix('sku'),name:ix('nombre','name'),desc:ix('description'),cat:ix('categoria','category'),brand:ix('marca','brand'),model:ix('modelo','model'),ref:ix('reference'),cost:ix('costo','cost'),
+    p1:ix('precio1','price'),p2:ix('precio2','price2'),p3:ix('precio3','price3'),p4:ix('precio4','price4'),bc:ix('codigo','barcode'),ln:ix('location_name'),la:ix('location_aisle'),ls:ix('location_shelf'),
+    fi:ix('location_fiscalstock'),nf:ix('existencia','location_nonfiscalstock'),mn:ix('minimo','location_minstock'),sz:ix('sizes')};
   c.base=(c.bc>=0&&head[c.bc+1]==='')?c.bc+1:-1;
   const g=(a,i)=>i>=0?a[i]:'';const rows=[];const seen=new Set();
   for(let i=h+1;i<aoa.length;i++){const a=aoa[i]||[];const sku=str(g(a,c.sku));if(!sku||seen.has(sku))continue;seen.add(sku);

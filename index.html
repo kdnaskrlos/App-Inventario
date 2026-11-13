@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v42</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v43</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -416,7 +416,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 <div class="ov" id="ovExp" hidden>
   <div class="modal" role="dialog" aria-labelledby="hExp">
     <h3 id="hExp">Exportar plantilla</h3>
-    <p class="note" style="margin:0">Se genera solo con las columnas esenciales: sku, name, tipo, tela, color, talla, category, brand, model, cost, price a price5, separado, barcode (ya calculado), location_nonfiscalstock y location_minstock.</p>
+    <p class="note" style="margin:0">Se genera solo con las columnas esenciales: sku, nombre, tipo, tela, color, talla, categoria, marca, modelo, costo, precio1 a precio5, separado, codigo (ya calculado), existencia y minimo.</p>
     <div>
       <div class="lbl" style="margin-bottom:6px">Qué filas</div>
       <label class="opt"><input type="radio" name="xrows" value="new"><div><b>Solo las nuevas <span id="xNew"></span></b><span>Lo que agregaste con el generador. Ideal para subir solo lo pendiente.</span></div></label>
@@ -498,7 +498,9 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 /* ---------- plantilla: 51 columnas exactas ---------- */
 const HEAD=['','sku','name','description','category','brand','model','reference','cost','costwithoutvat','istaxexempt','vatpercentage','utilityprotection','proverateid','margin','price','barcode','','location_name','location_aisle','location_shelf','location_fiscalstock','location_nonfiscalstock','location_minstock','sizes','price2','margin2','price3','margin3','price4','margin4','comm_type1','comm_value1','comm_reduced_active1','comm_reduced_type1','comm_reduced_value1','comm_type2','comm_value2','comm_reduced_active2','comm_reduced_type2','comm_reduced_value2','comm_type3','comm_value3','comm_reduced_active3','comm_reduced_type3','comm_reduced_value3','comm_type4','comm_value4','comm_reduced_active4','comm_reduced_type4','comm_reduced_value4'];
 const NC=HEAD.length;
-const XH=['tipo','tela','color','talla','price5','separado'],XL=XH;
+const XH=['tipo','tela','color','talla','precio5','separado'],XL=XH;
+const NEWN={1:'sku',2:'nombre',4:'categoria',5:'marca',6:'modelo',8:'costo',15:'precio1',25:'precio2',27:'precio3',29:'precio4',16:'codigo',22:'existencia',23:'minimo'};
+const hix=(hl,c)=>{let i=hl.indexOf(String(HEAD[c]).toLowerCase());if(i<0&&NEWN[c])i=hl.indexOf(NEWN[c]);return i};
 const BOOL=new Set([10,12,33,38,43,48]);
 const NUM=new Set([8,9,11,14,15,17,21,22,23,25,26,27,28,29,30,32,35,37,40,42,45,47,50]);
 const W={1:230,2:300,3:160,4:110,5:110,6:130,7:110,8:90,9:110,15:90,16:140,17:130,18:120,19:120,20:120,21:120,22:140,23:120,24:90,25:90,29:90,27:90};
@@ -506,7 +508,7 @@ W[51]=110;W[52]=110;W[53]=120;W[54]=80;W[55]=110;W[56]=90;
 const DEF=Array(NC).fill('');
 Object.assign(DEF,{9:'0',10:true,11:'0',12:false,14:'0',18:'Principal',21:'0',22:'12',23:'5',26:'0',28:'0',30:'0',31:'Fijo',32:'4000',33:true,34:'Fijo',35:'2000',36:'Fijo',37:'2000',38:false,39:'Fijo',40:'0',41:'Fijo',42:'1000',43:false,44:'Fijo',45:'0',46:'Fijo',47:'1000',48:false,49:'Fijo',50:'0'});
 const ESS=[1,2,51,52,53,54,4,5,6,8,15,25,27,29,55,56,16,22,23];
-const label=c=>c>=NC?XL[c-NC]:(c===22?'Existencia':(HEAD[c]||'(base)'));
+const label=c=>c>=NC?XL[c-NC]:(NEWN[c]||HEAD[c]||'(base)');
 const FML=n=>`R${n} & MOD(10 - MOD(SUMPRODUCT(MID(R${n}, {1,2,3,4,5,6,7,8,9,10,11,12}, 1) * {1,3,1,3,1,3,1,3,1,3,1,3}), 10), 10)`;
 function ean(b){b=String(b==null?'':b).trim();if(!/^\d{12}$/.test(b))return'';let s=0;for(let i=0;i<12;i++)s+=(+b[i])*(i%2?3:1);return b+((10-(s%10))%10)}
 
@@ -812,7 +814,7 @@ $('#hr').addEventListener('dblclick',e=>{const h=e.target.closest('[data-rz]');i
 function xText(x,c){const v=x?x[c-NC]:'';return c===NC+5?(v?'Sí':'—'):(v===''||v==null?'—':String(v))}
 function cell(r,c,fl){if(c>=NC){const x=S.xc&&S.xc.get(r.id);if(c===NC+5)return`<td class="bool"><input type="checkbox" data-xk="1" ${x&&x[5]?'checked':''} aria-label="separado"></td>`;return`<td class="${c===NC+4?'num':''}"><input data-xc="${c}" value="${esc(x?x[c-NC]:'')}" ${c===NC+4?'inputmode="decimal" ':''}spellcheck="false" aria-label="${esc(XH[c-NC])}"></td>`}const v=r.v[c];const cl=[];if(c===1)cl.push('stk');if(NUM.has(c))cl.push('num');if(c===1||c===16||c===17||c===2)cl.push('mn');if(fl)cl.push(fl);
  if(c===16)return`<td class="ro ${fl||''}"><span data-bc>${esc(ean(r.v[17])||'—')}</span></td>`;
- if(BOOL.has(c))return`<td class="bool"><input type="checkbox" data-c="${c}" ${v===true?'checked':''} aria-label="${HEAD[c]}"></td>`;
+ if(BOOL.has(c))return`<td class="bool"><input type="checkbox" data-c="${c}" ${v===true?'checked':''} aria-label="${esc(NEWN[c]||HEAD[c])}"></td>`;
  return`<td class="${cl.join(' ')}"><input data-c="${c}" value="${esc(v)}" ${NUM.has(c)?'inputmode="decimal"':''} spellcheck="false" aria-label="${esc(label(c))}"></td>`}
 function renderRows(force){const V=S.view;const st=gs.scrollTop,h=gs.clientHeight||600;const first=Math.max(0,Math.floor(st/ROW_H)-6),last=Math.min(V.length,Math.ceil((st+h)/ROW_H)+6);
  if(!force&&first===r0&&last===r1)return;r0=first;r1=last;
@@ -931,7 +933,7 @@ function readFile(file){if(typeof XLSX==='undefined'){toast('No se pudo cargar e
  const rd=new FileReader();rd.onload=()=>{try{let wb;if(/\.csv$/i.test(file.name))wb=XLSX.read(new TextDecoder('utf-8').decode(rd.result),{type:'string'});else wb=XLSX.read(rd.result,{type:'array'});
   const ws=wb.Sheets[wb.SheetNames[0]];const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true,blankrows:false});if(!aoa.length)throw new Error('vacío');
   const hdr=aoa[0].map(x=>String(x).trim().toLowerCase());const map=new Array(NC).fill(-1);let hit=0;
-  for(let c=1;c<NC;c++){if(c===17||!HEAD[c])continue;const i=hdr.indexOf(HEAD[c].toLowerCase());if(i>=0){map[c]=i;hit++}}
+  for(let c=1;c<NC;c++){if(c===17||!HEAD[c])continue;const i=hix(hdr,c);if(i>=0){map[c]=i;hit++}}
   const bi=map[16];if(bi>=0&&hdr[bi+1]==='')map[17]=bi+1;if(map[1]<0)throw new Error('sin columna sku');
   const rows=[];for(let k=1;k<aoa.length;k++){const a=aoa[k];const v=DEF.slice();for(let c=1;c<NC;c++){if(map[c]<0||c===16)continue;
     if(BOOL.has(c))v[c]=(a[map[c]]===''||a[map[c]]===undefined)?DEF[c]:boolOf(a[map[c]]);else v[c]=(a[map[c]]===''||a[map[c]]===undefined)?'':(typeof a[map[c]]==='number'?String(a[map[c]]):String(a[map[c]]))}
@@ -972,10 +974,10 @@ async function syPush(){const c=syCfg();if(!c)return;if(!c.token){syStatus('Pega
     try{await put()}catch(e){if(e.status===409||e.status===422)await put();else throw e}
     const o=sy.get();o.last=Date.now();sy.set(o);syStatus(`Listo: ${fmt(S.rows.length)} filas guardadas en <b>${esc(c.repo)}</b>. La app móvil las verá al abrirla o al tocar Actualizar.`,'ok')}
   catch(e){syStatus(esc(syErr(e)),'bad')}finally{$('#syPush').disabled=false}}
-function extraOut(head,a){const hl=head.map(x=>String(x).trim().toLowerCase()),o={};const t=hl.indexOf('tipo'),l=hl.indexOf('tela');if(t>=0&&String(a[t]||'').trim())o.tp=String(a[t]).trim();if(l>=0&&String(a[l]||'').trim())o.tl=String(a[l]).trim();const q=hl.indexOf('price5'),w=hl.indexOf('separado');if(q>=0&&String(a[q]||'').trim())o.p5=String(a[q]).trim();if(w>=0)o.sepd=a[w]===true||/^(true|1)$/i.test(String(a[w]));return o}
+function extraOut(head,a){const hl=head.map(x=>String(x).trim().toLowerCase()),o={};const t=hl.indexOf('tipo'),l=hl.indexOf('tela');if(t>=0&&String(a[t]||'').trim())o.tp=String(a[t]).trim();if(l>=0&&String(a[l]||'').trim())o.tl=String(a[l]).trim();const q=Math.max(hl.indexOf('precio5'),hl.indexOf('price5')),w=hl.indexOf('separado');if(q>=0&&String(a[q]||'').trim())o.p5=String(a[q]).trim();if(w>=0)o.sepd=a[w]===true||/^(true|1)$/i.test(String(a[w]));return o}
 function fromOut(head,a){const v=DEF.slice(),hl=head.map(x=>String(x).trim().toLowerCase());
- for(let c=1;c<NC;c++){if(c===16||c===17||!HEAD[c])continue;const i=hl.indexOf(HEAD[c].toLowerCase());if(i<0)continue;const x=a[i];v[c]=BOOL.has(c)?(x===true||/^(true|1)$/i.test(String(x))):(x==null?'':String(x))}
- const bi=hl.indexOf('barcode');if(bi>=0&&/^\d{13}$/.test(String(a[bi]).trim()))v[17]=String(a[bi]).trim().slice(0,12);return v}
+ for(let c=1;c<NC;c++){if(c===16||c===17||!HEAD[c])continue;const i=hix(hl,c);if(i<0)continue;const x=a[i];v[c]=BOOL.has(c)?(x===true||/^(true|1)$/i.test(String(x))):(x==null?'':String(x))}
+ const bi=hix(hl,16);if(bi>=0&&/^\d{13}$/.test(String(a[bi]).trim()))v[17]=String(a[bi]).trim().slice(0,12);return v}
 async function syPull(){const c=syCfg();if(!c)return;syStatus('Descargando…');$('#syPull').disabled=true;
   try{const res=await gh(syUrl(c.repo),{headers:syHdr(c.token,true)});const j=await res.json();
     if(!j||!Array.isArray(j.rows)||!Array.isArray(j.head)||!j.rows.every(v=>Array.isArray(v)&&v.length===j.head.length))throw Object.assign(new Error('formato'),{bad:true});
@@ -1017,7 +1019,7 @@ $('#btnExport').onclick=()=>{const nn=S.rows.filter(r=>r.src==='new').length;$('
 function expRows(){const m=document.querySelector('input[name=xrows]:checked').value;return m==='new'?S.rows.filter(r=>r.src==='new'):S.rows}
 const numOk=s=>/^-?\d+(\.\d+)?$/.test(String(s).trim());
 const OUT=[1,2,51,52,53,54,4,5,6,8,15,25,27,29,55,56,16,22,23];
-const outName=c=>c>=NC?XH[c-NC]:HEAD[c];
+const outName=c=>c>=NC?XH[c-NC]:(NEWN[c]||HEAD[c]);
 const outBool=c=>c===NC+5||BOOL.has(c);
 const outNum=c=>c===NC+4||NUM.has(c);
 function outRows(rows){const X=xCols(rows);return rows.map((r,i)=>OUT.map(c=>c>=NC?X[i][c-NC]:c===16?ean(r.v[17]):r.v[c]))}
