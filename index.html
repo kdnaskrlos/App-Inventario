@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v39</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v40</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -384,7 +384,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
     <div class="bar" id="bar">
       <div class="search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="in" id="q" placeholder="Buscar por SKU o nombre" autocomplete="off"></div>
       <div class="seg" id="flt"><button data-v="all" aria-pressed="true">Todas</button><button data-v="new" aria-pressed="false">Nuevas</button><button data-v="imp" aria-pressed="false">Importadas</button><button data-v="alert" aria-pressed="false">Con alertas</button></div>
-      <div class="seg" id="vw"><button data-v="ess" aria-pressed="true">Esencial</button><button data-v="all" aria-pressed="false">Las 51 columnas</button></div>
+      <div class="seg" id="vw" hidden><button data-v="ess" aria-pressed="true">Esencial</button></div>
       <button class="btn sm" id="btnRep" title="Cambia una palabra o texto dentro de una columna, sin tocar el resto del contenido">Buscar y reemplazar</button>
       <button class="btn sm ghost" id="btnCw" title="Vuelve al ancho original de todas las columnas">Restablecer anchos</button>
       <span class="count" id="count"></span>
@@ -416,16 +416,11 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 <div class="ov" id="ovExp" hidden>
   <div class="modal" role="dialog" aria-labelledby="hExp">
     <h3 id="hExp">Exportar plantilla</h3>
-    <p class="note" style="margin:0">Se genera con las mismas 51 columnas y títulos de tu archivo, incluida la columna A vacía y la columna R (base del código de barras).</p>
+    <p class="note" style="margin:0">Se genera solo con las columnas esenciales: sku, name, producto, color, talla, category, brand, model, cost, price a price5, separado, barcode (ya calculado), location_nonfiscalstock y location_minstock.</p>
     <div>
       <div class="lbl" style="margin-bottom:6px">Qué filas</div>
       <label class="opt"><input type="radio" name="xrows" value="new"><div><b>Solo las nuevas <span id="xNew"></span></b><span>Lo que agregaste con el generador. Ideal para subir solo lo pendiente.</span></div></label>
       <label class="opt" style="margin-top:8px"><input type="radio" name="xrows" value="all" checked><div><b>Todas las de la tabla <span id="xAll"></span></b><span>Incluye también las importadas.</span></div></label>
-    </div>
-    <div>
-      <div class="lbl" style="margin-bottom:6px">Código de barras <code>barcode</code></div>
-      <label class="opt"><input type="radio" name="xbc" value="f" checked><div><b>Con la fórmula de tu plantilla</b><span>Igual que tu archivo. Recomendado para el .xlsx.</span></div></label>
-      <label class="opt" style="margin-top:8px"><input type="radio" name="xbc" value="v"><div><b>Número ya calculado</b><span>Úsalo al copiar y pegar en Google Sheets si tu hoja usa coma decimal, porque ahí las llaves { } de la fórmula pueden fallar.</span></div></label>
     </div>
     <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="xhead" checked> Incluir fila de títulos</label>
     <div class="foot" style="justify-content:flex-start">
@@ -511,7 +506,7 @@ W[51]=230;W[52]=120;W[53]=80;W[54]=110;W[55]=90;
 const DEF=Array(NC).fill('');
 Object.assign(DEF,{9:'0',10:true,11:'0',12:false,14:'0',18:'Principal',21:'0',22:'12',23:'5',26:'0',28:'0',30:'0',31:'Fijo',32:'4000',33:true,34:'Fijo',35:'2000',36:'Fijo',37:'2000',38:false,39:'Fijo',40:'0',41:'Fijo',42:'1000',43:false,44:'Fijo',45:'0',46:'Fijo',47:'1000',48:false,49:'Fijo',50:'0'});
 const ESS=[1,2,51,52,53,4,5,6,8,15,25,27,29,54,55,16,22,23];
-const label=c=>c>=NC?XL[c-NC]:(c===22&&S.ui.view==='ess'?'Existencia':(HEAD[c]||'(base)'));
+const label=c=>c>=NC?XL[c-NC]:(c===22?'Existencia':(HEAD[c]||'(base)'));
 const FML=n=>`R${n} & MOD(10 - MOD(SUMPRODUCT(MID(R${n}, {1,2,3,4,5,6,7,8,9,10,11,12}, 1) * {1,3,1,3,1,3,1,3,1,3,1,3}), 10), 10)`;
 function ean(b){b=String(b==null?'':b).trim();if(!/^\d{12}$/.test(b))return'';let s=0;for(let i=0;i<12;i++)s+=(+b[i])*(i%2?3:1);return b+((10-(s%10))%10)}
 
@@ -805,7 +800,7 @@ function xRefresh(){try{const X=xCols(S.rows);S.xc=new Map(S.rows.map((r,i)=>[r.
 function computeView(){xRefresh();S.lastI=null;S.idx=new Map(S.rows.map((r,i)=>[r.id,i]));const q=key(S.ui.q),fl=S.ui.filter;S.view=S.rows.filter(r=>{if(fl==='new'&&r.src!=='new')return false;if(fl==='imp'&&r.src==='new')return false;if(fl==='alert'&&!S.issues.has(r.id))return false;if(q&&!(key(r.v[1])+' '+key(r.v[2])).includes(q))return false;return true})}
 const cw=c=>S.cw[c]||W[c]||100;
 const tblW=()=>86+visCols.reduce((s,c)=>s+cw(c),0);
-function renderHead(){visCols=S.ui.view==='ess'?ESS:Array.from({length:NC-1},(_,i)=>i+1);
+function renderHead(){visCols=ESS;
  $('#cg').innerHTML='<col style="width:34px"><col style="width:52px">'+visCols.map(c=>`<col style="width:${cw(c)}px">`).join('');
  $('#tbl').style.width=tblW()+'px';
  $('#hr').innerHTML='<th class="cb"><input type="checkbox" id="selAll" aria-label="Seleccionar todas"></th><th class="rn" title="Número de fila como en Google Sheets">Fila</th>'+visCols.map(c=>`<th class="${c===1?'stk':''}" title="${c===17?'Columna R sin título: 12 dígitos que usa la fórmula del código de barras':c>=NC?esc(XH[c-NC])+' (se calcula solo y sale en inventario.json)':esc(HEAD[c])}">${esc(label(c))}<span class="rz" data-rz="${c}" title="Arrastra para cambiar el ancho. Doble clic para restablecer."></span></th>`).join('')}
@@ -977,11 +972,14 @@ async function syPush(){const c=syCfg();if(!c)return;if(!c.token){syStatus('Pega
     try{await put()}catch(e){if(e.status===409||e.status===422)await put();else throw e}
     const o=sy.get();o.last=Date.now();sy.set(o);syStatus(`Listo: ${fmt(S.rows.length)} filas guardadas en <b>${esc(c.repo)}</b>. La app móvil las verá al abrirla o al tocar Actualizar.`,'ok')}
   catch(e){syStatus(esc(syErr(e)),'bad')}finally{$('#syPush').disabled=false}}
+function fromOut(head,a){const v=DEF.slice(),hl=head.map(x=>String(x).trim().toLowerCase());
+ for(let c=1;c<NC;c++){if(c===16||c===17||!HEAD[c])continue;const i=hl.indexOf(HEAD[c].toLowerCase());if(i<0)continue;const x=a[i];v[c]=BOOL.has(c)?(x===true||/^(true|1)$/i.test(String(x))):(x==null?'':String(x))}
+ const bi=hl.indexOf('barcode');if(bi>=0&&/^\d{13}$/.test(String(a[bi]).trim()))v[17]=String(a[bi]).trim().slice(0,12);return v}
 async function syPull(){const c=syCfg();if(!c)return;syStatus('Descargando…');$('#syPull').disabled=true;
   try{const res=await gh(syUrl(c.repo),{headers:syHdr(c.token,true)});const j=await res.json();
-    if(!j||!Array.isArray(j.rows)||!j.rows.every(v=>Array.isArray(v)&&(v.length===NC||v.length===NC+XH.length)))throw Object.assign(new Error('formato'),{bad:true});
+    if(!j||!Array.isArray(j.rows)||!Array.isArray(j.head)||!j.rows.every(v=>Array.isArray(v)&&v.length===j.head.length))throw Object.assign(new Error('formato'),{bad:true});
     if(!j.rows.length){syStatus('El repositorio no tiene filas guardadas todavía.','bad');return}
-    snap();S.rows=j.rows.map(v=>({id:S.nextId++,src:'imp',v:v.slice(0,NC)}));S.sel.clear();gs.scrollTop=0;$('#ovSync').hidden=true;refreshAll(true);
+    snap();S.rows=j.rows.map(a=>({id:S.nextId++,src:'imp',v:fromOut(j.head,a)}));S.sel.clear();gs.scrollTop=0;$('#ovSync').hidden=true;refreshAll(true);
     toast(`${fmt(j.rows.length)} filas traídas del repositorio`,'Deshacer',undo)}
   catch(e){syStatus(e.bad?'El archivo del repositorio no tiene el formato de esta herramienta.':e.status===404?'Todavía no hay inventario guardado en ese repositorio. Primero usa «Subir inventario».':esc(syErr(e)),'bad')}finally{$('#syPull').disabled=false}}
 $('#btnSync').onclick=()=>{const o=sy.get();if(o.repo)$('#syRepo').value=o.repo;$('#syTok').value=o.token||'';$('#syRem').checked=o.rem!==false;
@@ -1017,17 +1015,21 @@ $('#rpGo').onclick=()=>{if(!repPlan||!repPlan.length)return;const ch=repPlan;sna
 $('#btnExport').onclick=()=>{const nn=S.rows.filter(r=>r.src==='new').length;$('#xNew').textContent=`(${fmt(nn)})`;$('#xAll').textContent=`(${fmt(S.rows.length)})`;document.querySelector('input[name=xrows][value=new]').checked=nn>0&&nn!==S.rows.length;document.querySelector('input[name=xrows][value=all]').checked=!(nn>0&&nn!==S.rows.length);setStatus('');$('#ovExp').hidden=false};
 function expRows(){const m=document.querySelector('input[name=xrows]:checked').value;return m==='new'?S.rows.filter(r=>r.src==='new'):S.rows}
 const numOk=s=>/^-?\d+(\.\d+)?$/.test(String(s).trim());
-function sheetAoa(forText){const rows=expRows();const formula=document.querySelector('input[name=xbc]:checked').value==='f';const head=$('#xhead').checked;const off=head?2:1;const out=[];if(head)out.push(HEAD.slice());
- rows.forEach((r,i)=>{const n=i+off;out.push(r.v.map((v,c)=>{if(c===16){return formula?(forText?'='+FML(n):{f:FML(n),v:ean(r.v[17])}):ean(r.v[17])}if(BOOL.has(c))return v===true?'TRUE':'FALSE';return v}))});return{aoa:out,rows,head,formula}}
-function buildXlsx(){const{aoa,head,formula}=sheetAoa(false);const ws={};const off=head?1:0;
- aoa.forEach((row,ri)=>row.forEach((v,c)=>{const ref=XLSX.utils.encode_cell({r:ri,c});const isHead=head&&ri===0;
-  if(isHead){if(v!=='')ws[ref]={t:'s',v};return}
-  const col=c;if(col===16){if(v&&typeof v==='object'){ws[ref]={t:'s',f:v.f,v:v.v}}else if(v!=='')ws[ref]={t:'s',v:String(v)};return}
-  if(BOOL.has(col)){ws[ref]={t:'b',v:v==='TRUE'};return}
+const OUT=[1,2,51,52,53,4,5,6,8,15,25,27,29,54,55,16,22,23];
+const outName=c=>c>=NC?XH[c-NC]:HEAD[c];
+const outBool=c=>c===NC+4||BOOL.has(c);
+const outNum=c=>c===NC+3||NUM.has(c);
+function outRows(rows){const X=xCols(rows);return rows.map((r,i)=>OUT.map(c=>c>=NC?X[i][c-NC]:c===16?ean(r.v[17]):r.v[c]))}
+function sheetAoa(forText){const rows=expRows();const head=$('#xhead').checked;const out=[];if(head)out.push(OUT.map(outName));
+ for(const row of outRows(rows))out.push(row.map((v,k)=>outBool(OUT[k])?(v===true?'TRUE':'FALSE'):v));return{aoa:out,rows,head}}
+function buildXlsx(){const{aoa,head}=sheetAoa(false);const ws={};
+ aoa.forEach((row,ri)=>row.forEach((v,k)=>{const ref=XLSX.utils.encode_cell({r:ri,c:k});const col=OUT[k];
+  if(head&&ri===0){ws[ref]={t:'s',v};return}
+  if(outBool(col)){ws[ref]={t:'b',v:v==='TRUE'};return}
   if(v===''||v==null)return;
-  if(NUM.has(col)&&numOk(v))ws[ref]={t:'n',v:Number(v)};else ws[ref]={t:'s',v:String(v)}}));
- ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:Math.max(0,aoa.length-1),c:NC-1}});ws['!cols']=HEAD.map((_,c)=>({wch:Math.round((W[c]||100)/7)}));
- const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'plantilla_facilitopos_completa');return XLSX.write(wb,{bookType:'xlsx',type:'array'})}
+  if(outNum(col)&&numOk(v))ws[ref]={t:'n',v:Number(v)};else ws[ref]={t:'s',v:String(v)}}));
+ ws['!ref']=XLSX.utils.encode_range({s:{r:0,c:0},e:{r:Math.max(0,aoa.length-1),c:OUT.length-1}});ws['!cols']=OUT.map(c=>({wch:Math.round((W[c]||100)/7)}));
+ const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'inventario');return XLSX.write(wb,{bookType:'xlsx',type:'array'})}
 const csvCell=v=>{const s=String(v==null?'':v);return /[",\n\r]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
 function buildCsv(){const{aoa}=sheetAoa(true);return'﻿'+aoa.map(r=>r.map(csvCell).join(',')).join('\r\n')}
 function buildTsv(){const{aoa}=sheetAoa(true);return aoa.map(r=>r.map(v=>String(v==null?'':v).replace(/[\t\r\n]+/g,' ')).join('\t')).join('\n')}
@@ -1175,7 +1177,7 @@ function xCols(rows){
   const it=(()=>{const l=S.tlinks[tfKey(x.r)];return l?TF.items.find(i=>i.id===l.id):null})();
   const p5=it&&it.t&&it.t[4]!=null?String(Math.round(it.t[4])):'';
   return[pr,x.color?(cc.get(nz(x.color))||x.color):'',x.talla,p5,!!(it&&it.sep)]})}
-const withX=()=>{const X=xCols(S.rows);return{head:[...HEAD,...XH],rows:S.rows.map((r,i)=>r.v.concat(X[i]))}};
+const withX=()=>({head:OUT.map(outName),rows:outRows(S.rows)});
 xRefresh();renderRows(true);
 window.__S=S;window.__api={withX,xCols,xParts,genVariants,addVariants,buildCsv,buildTsv,ean,HEAD,computeIssues};
 (function(){
