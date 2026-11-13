@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v41</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v42</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -810,7 +810,7 @@ $('#hr').addEventListener('pointerdown',e=>{const h=e.target.closest('[data-rz]'
  h.addEventListener('pointermove',mv);h.addEventListener('pointerup',up);h.addEventListener('pointercancel',up)});
 $('#hr').addEventListener('dblclick',e=>{const h=e.target.closest('[data-rz]');if(!h)return;delete S.cw[+h.dataset.rz];renderHead();renderRows(true);persist()});
 function xText(x,c){const v=x?x[c-NC]:'';return c===NC+5?(v?'Sí':'—'):(v===''||v==null?'—':String(v))}
-function cell(r,c,fl){if(c>=NC){const x=S.xc&&S.xc.get(r.id);if(c===NC||c===NC+1)return`<td><input data-xc="${c}" value="${esc(x?x[c-NC]:'')}" spellcheck="false" aria-label="${esc(XH[c-NC])}"></td>`;return`<td class="ro ${c===NC+4?'num':''}"><span data-x="${c}">${esc(xText(x,c))}</span></td>`}const v=r.v[c];const cl=[];if(c===1)cl.push('stk');if(NUM.has(c))cl.push('num');if(c===1||c===16||c===17||c===2)cl.push('mn');if(fl)cl.push(fl);
+function cell(r,c,fl){if(c>=NC){const x=S.xc&&S.xc.get(r.id);if(c===NC+5)return`<td class="bool"><input type="checkbox" data-xk="1" ${x&&x[5]?'checked':''} aria-label="separado"></td>`;return`<td class="${c===NC+4?'num':''}"><input data-xc="${c}" value="${esc(x?x[c-NC]:'')}" ${c===NC+4?'inputmode="decimal" ':''}spellcheck="false" aria-label="${esc(XH[c-NC])}"></td>`}const v=r.v[c];const cl=[];if(c===1)cl.push('stk');if(NUM.has(c))cl.push('num');if(c===1||c===16||c===17||c===2)cl.push('mn');if(fl)cl.push(fl);
  if(c===16)return`<td class="ro ${fl||''}"><span data-bc>${esc(ean(r.v[17])||'—')}</span></td>`;
  if(BOOL.has(c))return`<td class="bool"><input type="checkbox" data-c="${c}" ${v===true?'checked':''} aria-label="${HEAD[c]}"></td>`;
  return`<td class="${cl.join(' ')}"><input data-c="${c}" value="${esc(v)}" ${NUM.has(c)?'inputmode="decimal"':''} spellcheck="false" aria-label="${esc(label(c))}"></td>`}
@@ -830,8 +830,8 @@ let flagT;function schedFlags(){clearTimeout(flagT);flagT=setTimeout(()=>{comput
 function paintFlags(){for(const tr of tb.querySelectorAll('tr[data-id]')){const r=rowById(tr.dataset.id);if(!r)continue;const is=S.issues.get(r.id);for(const td of tr.querySelectorAll('td')){td.classList.remove('bad','warn')}
  const tds=tr.children;visCols.forEach((c,i)=>{const td=tds[i+1];const f=is&&is.f[c];if(f)td.classList.add(f)});
  const bc=tr.querySelector('[data-bc]');if(bc)bc.textContent=ean(r.v[17])||'—'}
- xRefresh();for(const tr of tb.querySelectorAll('tr[data-id]')){const x=S.xc.get(+tr.dataset.id);for(const sp of tr.querySelectorAll('[data-x]'))sp.textContent=xText(x,+sp.dataset.x);for(const ip of tr.querySelectorAll('[data-xc]'))if(ip!==document.activeElement)ip.value=x?x[+ip.dataset.xc-NC]:''}}
-tb.addEventListener('input',e=>{const t=e.target;if(t.dataset.xc!==undefined){const r=rowById(t.closest('tr').dataset.id);if(r){const v=t.value.trim();if(+t.dataset.xc===NC)r.tp=v;else r.tl=v;schedFlags()}return}if(t.dataset.c===undefined||t.type==='checkbox')return;const r=rowById(t.closest('tr').dataset.id);r.v[+t.dataset.c]=t.value;schedFlags()});
+ xRefresh();for(const tr of tb.querySelectorAll('tr[data-id]')){const x=S.xc.get(+tr.dataset.id);for(const sp of tr.querySelectorAll('[data-x]'))sp.textContent=xText(x,+sp.dataset.x);for(const ip of tr.querySelectorAll('[data-xc]'))if(ip!==document.activeElement)ip.value=x?x[+ip.dataset.xc-NC]:'';for(const ck of tr.querySelectorAll('[data-xk]'))ck.checked=!!(x&&x[5])}}
+tb.addEventListener('input',e=>{const t=e.target;if(t.dataset.xc!==undefined){const r=rowById(t.closest('tr').dataset.id);if(r){const v=t.value.trim();if(+t.dataset.xc===NC)r.tp=v;else if(+t.dataset.xc===NC+1)r.tl=v;else r.p5=v;schedFlags()}return}if(t.dataset.xk!==undefined){const r=rowById(t.closest('tr').dataset.id);if(r){r.sepd=t.checked;schedFlags()}return}if(t.dataset.c===undefined||t.type==='checkbox')return;const r=rowById(t.closest('tr').dataset.id);r.v[+t.dataset.c]=t.value;schedFlags()});
 let lastShift=false;
 tb.addEventListener('click',e=>{if(e.target.dataset&&e.target.dataset.sel!==undefined)lastShift=e.shiftKey},true);
 tb.addEventListener('click',e=>{const b=e.target.closest('[data-rn]');if(!b)return;const row=S.idx.get(+b.closest('tr').dataset.id)+2;S.ins.mode='after';S.ins.n=String(row);renderIns();persist();toast(`Las nuevas variantes se insertarán después de la fila ${row}`)});
@@ -972,7 +972,7 @@ async function syPush(){const c=syCfg();if(!c)return;if(!c.token){syStatus('Pega
     try{await put()}catch(e){if(e.status===409||e.status===422)await put();else throw e}
     const o=sy.get();o.last=Date.now();sy.set(o);syStatus(`Listo: ${fmt(S.rows.length)} filas guardadas en <b>${esc(c.repo)}</b>. La app móvil las verá al abrirla o al tocar Actualizar.`,'ok')}
   catch(e){syStatus(esc(syErr(e)),'bad')}finally{$('#syPush').disabled=false}}
-function extraOut(head,a){const hl=head.map(x=>String(x).trim().toLowerCase()),o={};const t=hl.indexOf('tipo'),l=hl.indexOf('tela');if(t>=0&&String(a[t]||'').trim())o.tp=String(a[t]).trim();if(l>=0&&String(a[l]||'').trim())o.tl=String(a[l]).trim();return o}
+function extraOut(head,a){const hl=head.map(x=>String(x).trim().toLowerCase()),o={};const t=hl.indexOf('tipo'),l=hl.indexOf('tela');if(t>=0&&String(a[t]||'').trim())o.tp=String(a[t]).trim();if(l>=0&&String(a[l]||'').trim())o.tl=String(a[l]).trim();const q=hl.indexOf('price5'),w=hl.indexOf('separado');if(q>=0&&String(a[q]||'').trim())o.p5=String(a[q]).trim();if(w>=0)o.sepd=a[w]===true||/^(true|1)$/i.test(String(a[w]));return o}
 function fromOut(head,a){const v=DEF.slice(),hl=head.map(x=>String(x).trim().toLowerCase());
  for(let c=1;c<NC;c++){if(c===16||c===17||!HEAD[c])continue;const i=hl.indexOf(HEAD[c].toLowerCase());if(i<0)continue;const x=a[i];v[c]=BOOL.has(c)?(x===true||/^(true|1)$/i.test(String(x))):(x==null?'':String(x))}
  const bi=hl.indexOf('barcode');if(bi>=0&&/^\d{13}$/.test(String(a[bi]).trim()))v[17]=String(a[bi]).trim().slice(0,12);return v}
@@ -1113,9 +1113,11 @@ async function tfLoad(){ // devuelve 'ok' | 'clave' | 'red'
  const env=await tfEnv();if(!env)return'red';const pass=tfPass();if(!pass)return'clave';
  try{await tfSet(env,pass);return'ok'}catch(e){return'clave'}}
 function tfPrices(key){const l=S.tlinks[key];if(!l)return null;const it=TF.items.find(x=>x.id===l.id);return it?it.t:null}
-function tfPut(r){const t=tfPrices(tfKey(r));if(!t)return false;[15,25,27,29].forEach((c,i)=>{if(t[i]!=null)r.v[c]=String(Math.round(t[i]))});return true}
-function tfApplyAll(quiet){let n=0,rows=0;const ch=[];for(const r of S.rows){const t=tfPrices(tfKey(r));if(!t)continue;const nv=[15,25,27,29].map((c,i)=>t[i]!=null?String(Math.round(t[i])):r.v[c]);if([15,25,27,29].some((c,i)=>String(r.v[c])!==nv[i]))ch.push([r,nv])}
- if(!ch.length)return 0;snap();for(const [r,nv] of ch)[15,25,27,29].forEach((c,i)=>r.v[c]=nv[i]);persist();refreshAll(true);
+function tfPut(r){const it=tfItem(r);if(!it)return false;[15,25,27,29].forEach((c,i)=>{if(it.t[i]!=null)r.v[c]=String(Math.round(it.t[i]))});r.p5=it.t[4]!=null?String(Math.round(it.t[4])):'';r.sepd=!!it.sep;return true}
+function tfItem(r){const l=S.tlinks[tfKey(r)];return l?TF.items.find(i=>i.id===l.id)||null:null}
+function tfApplyAll(){const ch=[];for(const r of S.rows){const it=tfItem(r);if(!it)continue;const nv=[15,25,27,29].map((c,i)=>it.t[i]!=null?String(Math.round(it.t[i])):r.v[c]);const p5=it.t[4]!=null?String(Math.round(it.t[4])):'',sp=!!it.sep;
+ if([15,25,27,29].some((c,i)=>String(r.v[c])!==nv[i])||(r.p5||'')!==p5||!!r.sepd!==sp)ch.push([r,nv,p5,sp])}
+ if(!ch.length)return 0;snap();for(const [r,nv,p5,sp] of ch){[15,25,27,29].forEach((c,i)=>r.v[c]=nv[i]);r.p5=p5;r.sepd=sp}persist();refreshAll(true);
  toast(`Precios del tarifario actualizados en ${fmt(ch.length)} filas`,'Deshacer',undo);return ch.length}
 function tfStatus(){const el=$('#tfSt');const n=Object.keys(S.tlinks).length;
  el.hidden=false;el.className='xs';
@@ -1175,9 +1177,8 @@ function xCols(rows){
  const P=rows.map(r=>({r,...xParts(r)}));const cnt=new Map();
  for(const x of P)if(x.color){const k=nz(x.color);if(!cnt.has(k))cnt.set(k,new Map());const m=cnt.get(k);m.set(x.color,(m.get(x.color)||0)+1)}
  const cc=new Map([...cnt].map(([k,m])=>[k,[...m.entries()].sort((a,b)=>b[1]-a[1])[0][0]]));
- return P.map(x=>{const r=x.r,it=(()=>{const l=S.tlinks[tfKey(r)];return l?TF.items.find(i=>i.id===l.id):null})();
-  const p5=it&&it.t&&it.t[4]!=null?String(Math.round(it.t[4])):'';
-  return[tfTipo(r),r.tl||x.tela||'',x.color?(cc.get(nz(x.color))||x.color):'',x.talla,p5,!!(it&&it.sep)]})}
+ return P.map(x=>{const r=x.r;
+  return[tfTipo(r),r.tl||x.tela||'',x.color?(cc.get(nz(x.color))||x.color):'',x.talla,r.p5||'',!!r.sepd]})}
 const withX=()=>({head:OUT.map(outName),rows:outRows(S.rows)});
 tfMigrate();xRefresh();renderRows(true);
 window.__S=S;window.__api={withX,xCols,xParts,genVariants,addVariants,buildCsv,buildTsv,ean,HEAD,computeIssues};
