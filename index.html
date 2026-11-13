@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v36</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v37</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -503,13 +503,15 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 /* ---------- plantilla: 51 columnas exactas ---------- */
 const HEAD=['','sku','name','description','category','brand','model','reference','cost','costwithoutvat','istaxexempt','vatpercentage','utilityprotection','proverateid','margin','price','barcode','','location_name','location_aisle','location_shelf','location_fiscalstock','location_nonfiscalstock','location_minstock','sizes','price2','margin2','price3','margin3','price4','margin4','comm_type1','comm_value1','comm_reduced_active1','comm_reduced_type1','comm_reduced_value1','comm_type2','comm_value2','comm_reduced_active2','comm_reduced_type2','comm_reduced_value2','comm_type3','comm_value3','comm_reduced_active3','comm_reduced_type3','comm_reduced_value3','comm_type4','comm_value4','comm_reduced_active4','comm_reduced_type4','comm_reduced_value4'];
 const NC=HEAD.length;
+const XH=['producto','color','talla','price5','separado'],XL=['Producto','Color','Talla','Precio 5 (+49)','Separado'];
 const BOOL=new Set([10,12,33,38,43,48]);
 const NUM=new Set([8,9,11,14,15,17,21,22,23,25,26,27,28,29,30,32,35,37,40,42,45,47,50]);
 const W={1:230,2:300,3:160,4:110,5:110,6:130,7:110,8:90,9:110,15:90,16:140,17:130,18:120,19:120,20:120,21:120,22:140,23:120,24:90,25:90,29:90,27:90};
+W[51]=230;W[52]=120;W[53]=80;W[54]=110;W[55]=90;
 const DEF=Array(NC).fill('');
 Object.assign(DEF,{9:'0',10:true,11:'0',12:false,14:'0',18:'Principal',21:'0',22:'12',23:'5',26:'0',28:'0',30:'0',31:'Fijo',32:'4000',33:true,34:'Fijo',35:'2000',36:'Fijo',37:'2000',38:false,39:'Fijo',40:'0',41:'Fijo',42:'1000',43:false,44:'Fijo',45:'0',46:'Fijo',47:'1000',48:false,49:'Fijo',50:'0'});
-const ESS=[1,2,4,5,6,8,15,25,27,29,16,17,21,22,23];
-const label=c=>HEAD[c]||'(base)';
+const ESS=[1,2,51,52,53,4,5,6,8,15,25,27,29,54,55,16,17,21,22,23];
+const label=c=>c>=NC?XL[c-NC]:(HEAD[c]||'(base)');
 const FML=n=>`R${n} & MOD(10 - MOD(SUMPRODUCT(MID(R${n}, {1,2,3,4,5,6,7,8,9,10,11,12}, 1) * {1,3,1,3,1,3,1,3,1,3,1,3}), 10), 10)`;
 function ean(b){b=String(b==null?'':b).trim();if(!/^\d{12}$/.test(b))return'';let s=0;for(let i=0;i<12;i++)s+=(+b[i])*(i%2?3:1);return b+((10-(s%10))%10)}
 
@@ -799,19 +801,21 @@ const upd=()=>{const max=g.scrollHeight-g.clientHeight;fa.hidden=max<200;down=g.
 g.addEventListener('scroll',upd,{passive:true});new ResizeObserver(upd).observe(g);new MutationObserver(upd).observe($('#tb'),{childList:true});
 fb.onclick=()=>g.scrollTo({top:down?g.scrollHeight:0,behavior:'smooth'});upd()}
 const ROW_H=34;const gs=$('#gs'),tb=$('#tb');let visCols=[],r0=-1,r1=-1;
-function computeView(){S.lastI=null;S.idx=new Map(S.rows.map((r,i)=>[r.id,i]));const q=key(S.ui.q),fl=S.ui.filter;S.view=S.rows.filter(r=>{if(fl==='new'&&r.src!=='new')return false;if(fl==='imp'&&r.src==='new')return false;if(fl==='alert'&&!S.issues.has(r.id))return false;if(q&&!(key(r.v[1])+' '+key(r.v[2])).includes(q))return false;return true})}
+function xRefresh(){try{const X=xCols(S.rows);S.xc=new Map(S.rows.map((r,i)=>[r.id,X[i]]))}catch(e){S.xc=S.xc||new Map()}}
+function computeView(){xRefresh();S.lastI=null;S.idx=new Map(S.rows.map((r,i)=>[r.id,i]));const q=key(S.ui.q),fl=S.ui.filter;S.view=S.rows.filter(r=>{if(fl==='new'&&r.src!=='new')return false;if(fl==='imp'&&r.src==='new')return false;if(fl==='alert'&&!S.issues.has(r.id))return false;if(q&&!(key(r.v[1])+' '+key(r.v[2])).includes(q))return false;return true})}
 const cw=c=>S.cw[c]||W[c]||100;
 const tblW=()=>86+visCols.reduce((s,c)=>s+cw(c),0);
 function renderHead(){visCols=S.ui.view==='ess'?ESS:Array.from({length:NC-1},(_,i)=>i+1);
  $('#cg').innerHTML='<col style="width:34px"><col style="width:52px">'+visCols.map(c=>`<col style="width:${cw(c)}px">`).join('');
  $('#tbl').style.width=tblW()+'px';
- $('#hr').innerHTML='<th class="cb"><input type="checkbox" id="selAll" aria-label="Seleccionar todas"></th><th class="rn" title="Número de fila como en Google Sheets">Fila</th>'+visCols.map(c=>`<th class="${c===1?'stk':''}" title="${c===17?'Columna R sin título: 12 dígitos que usa la fórmula del código de barras':esc(HEAD[c])}">${esc(label(c))}<span class="rz" data-rz="${c}" title="Arrastra para cambiar el ancho. Doble clic para restablecer."></span></th>`).join('')}
+ $('#hr').innerHTML='<th class="cb"><input type="checkbox" id="selAll" aria-label="Seleccionar todas"></th><th class="rn" title="Número de fila como en Google Sheets">Fila</th>'+visCols.map(c=>`<th class="${c===1?'stk':''}" title="${c===17?'Columna R sin título: 12 dígitos que usa la fórmula del código de barras':c>=NC?esc(XH[c-NC])+' (se calcula solo y sale en inventario.json)':esc(HEAD[c])}">${esc(label(c))}<span class="rz" data-rz="${c}" title="Arrastra para cambiar el ancho. Doble clic para restablecer."></span></th>`).join('')}
 $('#hr').addEventListener('pointerdown',e=>{const h=e.target.closest('[data-rz]');if(!h)return;e.preventDefault();const c=+h.dataset.rz,ix=2+visCols.indexOf(c),col=$('#cg').children[ix];const x0=e.clientX,w0=cw(c);h.setPointerCapture(e.pointerId);h.classList.add('on');
  const mv=ev=>{const w=Math.max(50,Math.min(700,Math.round(w0+ev.clientX-x0)));S.cw[c]=w;col.style.width=w+'px';$('#tbl').style.width=tblW()+'px'};
  const up=()=>{h.classList.remove('on');h.removeEventListener('pointermove',mv);h.removeEventListener('pointerup',up);h.removeEventListener('pointercancel',up);persist()};
  h.addEventListener('pointermove',mv);h.addEventListener('pointerup',up);h.addEventListener('pointercancel',up)});
 $('#hr').addEventListener('dblclick',e=>{const h=e.target.closest('[data-rz]');if(!h)return;delete S.cw[+h.dataset.rz];renderHead();renderRows(true);persist()});
-function cell(r,c,fl){const v=r.v[c];const cl=[];if(c===1)cl.push('stk');if(NUM.has(c))cl.push('num');if(c===1||c===16||c===17||c===2)cl.push('mn');if(fl)cl.push(fl);
+function xText(x,c){const v=x?x[c-NC]:'';return c===NC+4?(v?'Sí':'—'):(v===''||v==null?'—':String(v))}
+function cell(r,c,fl){if(c>=NC)return`<td class="ro ${c===NC+3?'num':''}"><span data-x="${c}">${esc(xText(S.xc&&S.xc.get(r.id),c))}</span></td>`;const v=r.v[c];const cl=[];if(c===1)cl.push('stk');if(NUM.has(c))cl.push('num');if(c===1||c===16||c===17||c===2)cl.push('mn');if(fl)cl.push(fl);
  if(c===16)return`<td class="ro ${fl||''}"><span data-bc>${esc(ean(r.v[17])||'—')}</span></td>`;
  if(BOOL.has(c))return`<td class="bool"><input type="checkbox" data-c="${c}" ${v===true?'checked':''} aria-label="${HEAD[c]}"></td>`;
  return`<td class="${cl.join(' ')}"><input data-c="${c}" value="${esc(v)}" ${NUM.has(c)?'inputmode="decimal"':''} spellcheck="false" aria-label="${esc(label(c))}"></td>`}
@@ -830,7 +834,8 @@ const rowById=id=>S.rows.find(r=>r.id===+id);
 let flagT;function schedFlags(){clearTimeout(flagT);flagT=setTimeout(()=>{computeIssues();paintFlags();renderStats();renderStrip();persist()},200)}
 function paintFlags(){for(const tr of tb.querySelectorAll('tr[data-id]')){const r=rowById(tr.dataset.id);if(!r)continue;const is=S.issues.get(r.id);for(const td of tr.querySelectorAll('td')){td.classList.remove('bad','warn')}
  const tds=tr.children;visCols.forEach((c,i)=>{const td=tds[i+1];const f=is&&is.f[c];if(f)td.classList.add(f)});
- const bc=tr.querySelector('[data-bc]');if(bc)bc.textContent=ean(r.v[17])||'—'}}
+ const bc=tr.querySelector('[data-bc]');if(bc)bc.textContent=ean(r.v[17])||'—'}
+ xRefresh();for(const tr of tb.querySelectorAll('tr[data-id]')){const x=S.xc.get(+tr.dataset.id);for(const sp of tr.querySelectorAll('[data-x]'))sp.textContent=xText(x,+sp.dataset.x)}}
 tb.addEventListener('input',e=>{const t=e.target;if(t.dataset.c===undefined||t.type==='checkbox')return;const r=rowById(t.closest('tr').dataset.id);r.v[+t.dataset.c]=t.value;schedFlags()});
 let lastShift=false;
 tb.addEventListener('click',e=>{if(e.target.dataset&&e.target.dataset.sel!==undefined)lastShift=e.shiftKey},true);
@@ -844,7 +849,7 @@ tb.addEventListener('keydown',e=>{const t=e.target;if(t.dataset.c===undefined||t
 function focusCell(i,c){if(i<0||i>=S.view.length)return;const need=i*ROW_H;if(need<gs.scrollTop||need>gs.scrollTop+gs.clientHeight-2*ROW_H-38){gs.scrollTop=Math.max(0,need-gs.clientHeight/2)}renderRows(true);const id=S.view[i].id;const el=tb.querySelector(`tr[data-id="${id}"] input[data-c="${c}"]`);if(el){el.focus({preventScroll:true});el.select()}}
 tb.addEventListener('paste',e=>{const t=e.target;if(t.dataset.c===undefined||t.type==='checkbox')return;const txt=(e.clipboardData||window.clipboardData).getData('text');if(!/[\t\n]/.test(txt.replace(/\r?\n$/,'')))return;e.preventDefault();
  const lines=txt.replace(/\r/g,'').replace(/\n$/,'').split('\n').map(l=>l.split('\t'));const i0=+t.closest('tr').dataset.i;const c0=visCols.indexOf(+t.dataset.c);snap();let n=0;
- lines.forEach((cells,di)=>{const r=S.view[i0+di];if(!r)return;cells.forEach((val,dj)=>{const c=visCols[c0+dj];if(c===undefined||c===16)return;r.v[c]=BOOL.has(c)?/^(true|verdadero|1|si|sí)$/i.test(val.trim()):val.trim();n++})});
+ lines.forEach((cells,di)=>{const r=S.view[i0+di];if(!r)return;cells.forEach((val,dj)=>{const c=visCols[c0+dj];if(c===undefined||c===16||c>=NC)return;r.v[c]=BOOL.has(c)?/^(true|verdadero|1|si|sí)$/i.test(val.trim()):val.trim();n++})});
  renderRows(true);schedFlags();toast(`${n} celdas pegadas`,'Deshacer',undo)});
 /* ---------- arrastrar para rellenar (como Excel) ---------- */
 let FD=null;
@@ -1134,7 +1139,6 @@ setTimeout(()=>{if(Object.keys(S.tlinks).length)tfRefresh(false)},1500);
 let tfLast=Date.now();document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Object.keys(S.tlinks).length&&Date.now()-tfLast>60000){tfLast=Date.now();tfRefresh(false)}});
 
 /* ---------- columnas extra para el punto de venta ---------- */
-const XH=['producto','color','talla','price5','separado'];
 const lc=x=>String(x==null?'':x).trim().toLowerCase();
 function xParts(r){
  const toks=String(r.v[2]||'').split(/\s+/).filter(Boolean),L=toks.map(lc),n=toks.length,used=new Set();
@@ -1172,6 +1176,7 @@ function xCols(rows){
   const p5=it&&it.t&&it.t[4]!=null?String(Math.round(it.t[4])):'';
   return[pr,x.color?(cc.get(nz(x.color))||x.color):'',x.talla,p5,!!(it&&it.sep)]})}
 const withX=()=>{const X=xCols(S.rows);return{head:[...HEAD,...XH],rows:S.rows.map((r,i)=>r.v.concat(X[i]))}};
+xRefresh();renderRows(true);
 window.__S=S;window.__api={withX,xCols,xParts,genVariants,addVariants,buildCsv,buildTsv,ean,HEAD,computeIssues};
 (function(){
  let d=null;
