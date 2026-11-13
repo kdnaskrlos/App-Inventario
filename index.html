@@ -275,7 +275,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v44</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v45</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -408,7 +408,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 <div class="ov" id="ovExp" hidden>
   <div class="modal" role="dialog" aria-labelledby="hExp">
     <h3 id="hExp">Exportar plantilla</h3>
-    <p class="note" style="margin:0">Se genera solo con las columnas esenciales: sku, nombre, tipo, tela, color, talla, categoria, marca, modelo, costo, precio1 a precio5, separado, codigo (ya calculado), existencia y minimo.</p>
+    <p class="note" style="margin:0">Se genera solo con las columnas esenciales: sku, nombre, tipo, tela, color, talla, genero, marca, modelo, costo, precio1 a precio5, separado, codigo (ya calculado), existencia y minimo.</p>
     <div>
       <div class="lbl" style="margin-bottom:6px">Qué filas</div>
       <label class="opt"><input type="radio" name="xrows" value="new"><div><b>Solo las nuevas <span id="xNew"></span></b><span>Lo que agregaste con el generador. Ideal para subir solo lo pendiente.</span></div></label>
@@ -488,7 +488,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 (()=>{
 'use strict';
 /* ---------- plantilla: 51 columnas exactas ---------- */
-const HEAD=['sku','nombre','categoria','marca','modelo','costo','precio1','precio2','precio3','precio4','existencia','minimo','','referencia'];
+const HEAD=['sku','nombre','genero','marca','modelo','costo','precio1','precio2','precio3','precio4','existencia','minimo','','referencia'];
 const NC=HEAD.length;
 const XH=['tipo','tela','color','talla','precio5','separado','codigo'];
 const NUM=new Set([5,6,7,8,9,10,11]);
@@ -512,8 +512,8 @@ const CAT0={
 const SIZES0=['2-4','4','6','8','10','12','14','16','S','M','L','XL','2XL','3XL','U.'];
 const PROF0=[[11000,30000,28000,25000,22000],[9000,30000,28000,25000,22000],[12800,30000,28000,25000,22000],[21900,45000,40500,36000,31500],[15500,40000,36000,32000,28000],[9000,25000,22500,20000,17500],[10000,25000,22500,20000,17500],[12300,35000,33000,30000,27000]];
 const TPL0={sku:'{tipo_ab}-{marca_ab}-{cat_ab}-{talla}-{color_ab}-{material_ab}',name:'{tipo} {marca} {cat} {talla} {color} {material}',skuR:'{tipo_ab}-{marca_ab}-{cat_ab}-{talla}-{ref}-{material_ab}',nameR:'{tipo} {marca} {cat} {talla} {ref} {material}'};
-const KIND={tipo:'Tipo de prenda',marca:'Marca',modelo:'Modelo',cat:'Categoría',mat:'Material'};
-const KCOL={marca:'marca',modelo:'modelo',cat:'categoria'};
+const KIND={tipo:'Tipo de prenda',marca:'Marca',modelo:'Modelo',cat:'Género',mat:'Tela'};
+const KCOL={marca:'marca',modelo:'modelo',cat:'genero'};
 const TOKS=['tipo','tipo_ab','marca','marca_ab','modelo','modelo_ab','cat','cat_ab','talla','color','color_ab','ref','material','material_ab'];
 
 /* ---------- estado ---------- */
@@ -668,7 +668,7 @@ const FM={s:{key:()=>tk().s,sep:'-',st:'#stS',tr:'#trS'},n:{key:()=>tk().n,sep:'
 let fmN=0;
 const fmParse=(str,sep)=>(sep==='-'?String(str).split('-'):String(str).split(/\s+/)).map(x=>x.trim()).filter(Boolean).map(x=>{const m=x.match(/^\{(\w+)\}$/);return m&&TOKS.includes(m[1])?{id:'t:'+m[1],t:'tok',v:m[1]}:{id:'x'+(++fmN),t:'txt',v:x}});
 const fmStr=(items,sep)=>items.map(it=>it.t==='tok'?'{'+it.v+'}':it.v).join(sep);
-const fmLbl=it=>it.t==='tok'?'{'+it.v+'}':it.v;
+const TOKL={cat:'genero',cat_ab:'genero_ab',material:'tela',material_ab:'tela_ab'};const fmLbl=it=>it.t==='tok'?'{'+(TOKL[it.v]||it.v)+'}':it.v;
 const fmPill=(it,ghost,tray)=>`<span class="pl${it.t==='txt'?' txt':''}${ghost?' ghost':''}" data-id="${esc(it.id)}" role="listitem" tabindex="0" title="${tray?'Arrastra o toca para agregar':'Arrastra para mover o sacar'}">${esc(fmLbl(it))}</span>`;
 function fmDraw(kind,items,ghostId,animate){
   const m=FM[kind],st=$(m.st),tr=$(m.tr);const before=new Map();
@@ -968,7 +968,7 @@ function extraOut(head,a){const hl=head.map(x=>String(x).trim().toLowerCase()),o
  if(t>=0&&String(a[t]||'').trim())o.tp=String(a[t]).trim();if(l>=0&&String(a[l]||'').trim())o.tl=String(a[l]).trim();
  if(q>=0&&String(a[q]||'').trim())o.p5=String(a[q]).trim();if(w>=0)o.sepd=a[w]===true||/^(true|1|si|sí|verdadero)$/i.test(String(a[w]).trim());return o}
 function fromOut(head,a){const v=DEF.slice(),hl=head.map(x=>String(x).trim().toLowerCase());
- for(let c=0;c<NC;c++){if(!HEAD[c])continue;const i=hl.indexOf(HEAD[c]);if(i>=0)v[c]=a[i]==null?'':String(a[i])}
+ for(let c=0;c<NC;c++){if(!HEAD[c])continue;let i=hl.indexOf(HEAD[c]);if(i<0&&HEAD[c]==='genero')i=hl.indexOf('categoria');if(i>=0)v[c]=a[i]==null?'':String(a[i])}
  const bi=hl.indexOf('codigo');if(bi>=0&&/^\d{13}$/.test(String(a[bi]).trim()))v[12]=String(a[bi]).trim().slice(0,12);return v}
 async function syPull(){const c=syCfg();if(!c)return;syStatus('Descargando…');$('#syPull').disabled=true;
   try{const res=await gh(syUrl(c.repo),{headers:syHdr(c.token,true)});const j=await res.json();

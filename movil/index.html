@@ -182,7 +182,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 <div class="wrap">
   <header class="top">
     <div class="bar">
-      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v13</span></span></div>
+      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v14</span></span></div>
       <button class="ib" id="bSync" type="button" aria-label="Actualizar inventario desde GitHub"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-14.7 5.8L3.5 15.5"/><path d="M3.5 12a8.5 8.5 0 0 1 14.7-5.8l2.3 2.3"/><path d="M20.5 3.5v5h-5M3.5 20.5v-5h5"/></svg></button>
       <button class="ib" id="bTheme" type="button" aria-label="Cambiar entre modo claro y oscuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
       <button class="ib" id="bData" type="button" aria-label="Cargar o actualizar datos"><svg viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4.5 14v4.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V14"/></svg></button>
@@ -194,7 +194,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
       <button class="scanbtn" id="bScan" type="button" aria-label="Escanear código de barras"><svg viewBox="0 0 24 24"><path d="M3.5 8V5.5a2 2 0 0 1 2-2H8M16 3.5h2.5a2 2 0 0 1 2 2V8M20.5 16v2.5a2 2 0 0 1-2 2H16M8 20.5H5.5a2 2 0 0 1-2-2V16M7 8v8M10.5 8v8M14 8v8M17 8v8"/></svg></button>
     </div>
     <div class="filters">
-      <select id="fCat" aria-label="Categoría"></select>
+      <select id="fCat" aria-label="Género"></select>
       <select id="fBrand" aria-label="Marca"></select>
       <select id="fSort" aria-label="Orden"><option value="name">A–Z</option><option value="lo">Menos stock</option><option value="hi">Más stock</option><option value="sku">Por SKU</option></select>
     </div>
@@ -255,7 +255,7 @@ function parseTable(aoa){
   let h=-1;for(let i=0;i<Math.min(aoa.length,10);i++){const l=(aoa[i]||[]).map(x=>norm(x).trim());if(l.includes('sku')&&l.includes('nombre')){h=i;break}}
   if(h<0)throw new Error('No encontré las columnas «sku» y «nombre». Usa el archivo exportado desde la carga masiva.');
   const head=aoa[h].map(x=>norm(x).trim()),ix=(...n)=>{for(const x of n){const i=head.indexOf(x);if(i>=0)return i}return -1};
-  const c={sku:ix('sku'),name:ix('nombre'),cat:ix('categoria'),brand:ix('marca'),model:ix('modelo'),cost:ix('costo'),
+  const c={sku:ix('sku'),name:ix('nombre'),cat:ix('genero','categoria'),brand:ix('marca'),model:ix('modelo'),cost:ix('costo'),
     p1:ix('precio1'),p2:ix('precio2'),p3:ix('precio3'),p4:ix('precio4'),bc:ix('codigo'),nf:ix('existencia'),mn:ix('minimo'),
     tp:ix('tipo'),te:ix('tela'),co:ix('color'),sz:ix('talla')};
   const g=(a,i)=>i>=0?a[i]:'';const rows=[];const seen=new Set();
@@ -281,7 +281,7 @@ function toast(msg,label,fn){const t=$('#toast');t.innerHTML=`<span>${esc(msg)}<
   if(label)t.querySelector('button').onclick=()=>{t.hidden=true;fn&&fn()};clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,label?6000:3200)}
 function opts(sel,all,vals,cur){const s=$(sel);s.innerHTML=`<option value="">${all}</option>`+vals.map(v=>`<option value="${esc(v)}"${v===cur?' selected':''}>${esc(v)}</option>`).join('')}
 function build(){const cats=[...new Set(D.rows.map(r=>r.c).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));const br=[...new Set(D.rows.map(r=>r.b).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
-  opts('#fCat','Categorías',cats,F.cat);opts('#fBrand','Marcas',br,F.brand)}
+  opts('#fCat','Géneros',cats,F.cat);opts('#fBrand','Marcas',br,F.brand)}
 const total=r=>r.nf;
 function filtered(){const terms=norm(F.q).split(/\s+/).filter(Boolean);
   let a=D.rows.filter(r=>{if(F.st!=='all'&&st(r)!==F.st)return false;if(F.cat&&r.c!==F.cat)return false;if(F.brand&&r.b!==F.brand)return false;
@@ -340,7 +340,7 @@ function openDetail(sku){const r=D.rows.find(x=>x.s===sku);if(!r)return;const t=
    <dl class="kv" style="flex:1"><dt>Existencia</dt><dd class="mono">${fmtN(r.nf)}</dd><dt>Mínimo</dt><dd class="mono">${fmtN(r.mn)}</dd></dl></div></div>
   ${r.e&&r.e.length===13?`<div class="card"><h3>Código de barras</h3><div class="bc"><canvas id="bcv" aria-label="Código de barras ${esc(r.e)}"></canvas></div><div class="row" style="margin-top:10px"><button class="btn" type="button" data-copy="${esc(r.e)}" data-l="Código">Copiar código</button><button class="btn" type="button" data-copy="${esc(r.s)}" data-l="SKU">Copiar SKU</button></div></div>`:`<div class="card"><h3>Código de barras</h3><p class="hint">Este producto no tiene código en el archivo.</p><div class="row" style="margin-top:10px"><button class="btn" type="button" data-copy="${esc(r.s)}" data-l="SKU">Copiar SKU</button></div></div>`}
   <div class="card"><h3>Precios</h3><div class="prices">${pri.map(o=>`<div><span>Precio ${o.i+1}</span><b>${fmtN(o.v)}</b></div>`).join('')}</div></div>
-  <div class="card"><h3>Ficha</h3><dl class="kv">${kv('Tipo',r.tp)}${kv('Tela',r.te)}${kv('Color',r.co)}${kv('Talla',r.z)}${kv('Categoría',r.c)}${kv('Marca',r.b)}${kv('Modelo',r.m)}
+  <div class="card"><h3>Ficha</h3><dl class="kv">${kv('Tipo',r.tp)}${kv('Tela',r.te)}${kv('Color',r.co)}${kv('Talla',r.z)}${kv('Género',r.c)}${kv('Marca',r.b)}${kv('Modelo',r.m)}
    <dt>Costo</dt><dd><button class="reveal" type="button" data-cost="${fmtN(r.k)}">Mostrar</button></dd></dl></div>`;
   showSheet(el);if(r.e&&r.e.length===13)requestAnimationFrame(()=>{const cv=$('#bcv');cv&&drawEan(cv,r.e)})}
 

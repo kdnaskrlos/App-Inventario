@@ -16,5 +16,5 @@ El repositorio es público: cualquiera con el enlace puede ver `data/inventario.
 
 ## Versiones
 
-- Carga masiva: v44 (instalable en la PC)
-- Stock móvil: v13
+- Carga masiva: v45 (instalable en la PC)
+- Stock móvil: v14
