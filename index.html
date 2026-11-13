@@ -102,8 +102,6 @@ button{cursor:pointer}
 .abrow span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 details.adv{margin-top:10px}
 details.adv summary{cursor:pointer;color:var(--muted);font-size:13px;padding:4px 0}
-.advgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
-.advgrid .fld.chk label{flex-direction:row;align-items:center;gap:8px}
 .fmt{margin-top:10px}.fmt .fl{font-size:13px;color:var(--muted);margin-bottom:4px}.fmt .fl code{float:right;font-family:var(--f-mono);font-size:11px}
 .fstrip,.tray{position:relative;display:flex;flex-wrap:wrap;gap:6px;align-items:center;align-content:flex-start;padding:8px;border-radius:10px}
 .fstrip{min-height:46px;border:1px solid var(--line);background:var(--surface);transition:border-color .12s,box-shadow .12s}
@@ -277,7 +275,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v43</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v44</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -347,27 +345,22 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
         <h2><i>4</i>Precios y stock</h2>
         <details class="adv" id="profDet" style="margin:0 0 10px"><summary id="profSum">Perfiles de precio</summary><div class="chips" id="profs" style="margin-top:8px"></div></details>
         <div class="grid2">
-          <div class="fld"><label for="f_cost">Costo <code>cost</code></label><input class="in" id="f_cost" inputmode="decimal" data-f="cost"></div>
-          <div class="fld"><label for="f_price">Precio <code>price</code></label><input class="in" id="f_price" inputmode="decimal" data-f="price"></div>
-          <div class="fld"><label for="f_price2">Precio 2 <code>price2</code></label><input class="in" id="f_price2" inputmode="decimal" data-f="price2"></div>
-          <div class="fld"><label for="f_price3">Precio 3 <code>price3</code></label><input class="in" id="f_price3" inputmode="decimal" data-f="price3"></div>
-          <div class="fld"><label for="f_price4">Precio 4 <code>price4</code></label><input class="in" id="f_price4" inputmode="decimal" data-f="price4"></div>
+          <div class="fld"><label for="f_cost">Costo <code>costo</code></label><input class="in" id="f_cost" inputmode="decimal" data-f="cost"></div>
+          <div class="fld"><label for="f_price">Precio 1 <code>precio1</code></label><input class="in" id="f_price" inputmode="decimal" data-f="price"></div>
+          <div class="fld"><label for="f_price2">Precio 2 <code>precio2</code></label><input class="in" id="f_price2" inputmode="decimal" data-f="price2"></div>
+          <div class="fld"><label for="f_price3">Precio 3 <code>precio3</code></label><input class="in" id="f_price3" inputmode="decimal" data-f="price3"></div>
+          <div class="fld"><label for="f_price4">Precio 4 <code>precio4</code></label><input class="in" id="f_price4" inputmode="decimal" data-f="price4"></div>
           <div class="fld" style="justify-content:flex-end"><button class="btn sm" data-act="profSave" title="Guarda costo y precios como un perfil reutilizable" style="min-height:34px;justify-content:center">+ Guardar como perfil</button></div>
         </div>
-        <div class="grid3" style="margin-top:8px">
-          <div class="fld"><label for="f_fis">Stock fiscal <code>fiscalstock</code></label><input class="in" id="f_fis" inputmode="numeric" data-f="fis"></div>
-          <div class="fld"><label for="f_nof">No fiscal <code>nonfiscalstock</code></label><input class="in" id="f_nof" inputmode="numeric" data-f="nof"></div>
-          <div class="fld"><label for="f_min">Mínimo <code>minstock</code></label><input class="in" id="f_min" inputmode="numeric" data-f="min"></div>
+        <div class="grid2" style="margin-top:8px">
+          <div class="fld"><label for="f_nof">Existencia <code>existencia</code></label><input class="in" id="f_nof" inputmode="numeric" data-f="nof"></div>
+          <div class="fld"><label for="f_min">Mínimo <code>minimo</code></label><input class="in" id="f_min" inputmode="numeric" data-f="min"></div>
         </div>
-        <details class="adv"><summary>Otras columnas con su valor por defecto</summary>
-          <p class="hint">Cada variante nueva se crea con estos valores. Los títulos son los de tu plantilla.</p>
-          <div class="advgrid" id="adv"></div>
-        </details>
       </section>
       <section class="sec">
         <h2>Formato de SKU y nombre</h2>
         <div class="fmt"><div class="fl">SKU <code>sku</code></div><div class="fstrip" id="stS" data-fm="s" role="list" aria-label="Orden de las partes del SKU"></div><div class="tray" id="trS" data-fm="s" role="list" aria-label="Partes disponibles para el SKU"></div></div>
-        <div class="fmt"><div class="fl">Nombre <code>name</code></div><div class="fstrip" id="stN" data-fm="n" role="list" aria-label="Orden de las partes del nombre"></div><div class="tray" id="trN" data-fm="n" role="list" aria-label="Partes disponibles para el nombre"></div></div>
+        <div class="fmt"><div class="fl">Nombre <code>nombre</code></div><div class="fstrip" id="stN" data-fm="n" role="list" aria-label="Orden de las partes del nombre"></div><div class="tray" id="trN" data-fm="n" role="list" aria-label="Partes disponibles para el nombre"></div></div>
         <p class="ex" id="ex"></p>
         <div class="tools"><button class="btn sm" data-act="tplReset">Volver al formato original</button></div>
       </section>
@@ -384,7 +377,6 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
     <div class="bar" id="bar">
       <div class="search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="in" id="q" placeholder="Buscar por SKU o nombre" autocomplete="off"></div>
       <div class="seg" id="flt"><button data-v="all" aria-pressed="true">Todas</button><button data-v="new" aria-pressed="false">Nuevas</button><button data-v="imp" aria-pressed="false">Importadas</button><button data-v="alert" aria-pressed="false">Con alertas</button></div>
-      <div class="seg" id="vw" hidden><button data-v="ess" aria-pressed="true">Esencial</button></div>
       <button class="btn sm" id="btnRep" title="Cambia una palabra o texto dentro de una columna, sin tocar el resto del contenido">Buscar y reemplazar</button>
       <button class="btn sm ghost" id="btnCw" title="Vuelve al ancho original de todas las columnas">Restablecer anchos</button>
       <span class="count" id="count"></span>
@@ -496,19 +488,15 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 (()=>{
 'use strict';
 /* ---------- plantilla: 51 columnas exactas ---------- */
-const HEAD=['','sku','name','description','category','brand','model','reference','cost','costwithoutvat','istaxexempt','vatpercentage','utilityprotection','proverateid','margin','price','barcode','','location_name','location_aisle','location_shelf','location_fiscalstock','location_nonfiscalstock','location_minstock','sizes','price2','margin2','price3','margin3','price4','margin4','comm_type1','comm_value1','comm_reduced_active1','comm_reduced_type1','comm_reduced_value1','comm_type2','comm_value2','comm_reduced_active2','comm_reduced_type2','comm_reduced_value2','comm_type3','comm_value3','comm_reduced_active3','comm_reduced_type3','comm_reduced_value3','comm_type4','comm_value4','comm_reduced_active4','comm_reduced_type4','comm_reduced_value4'];
+const HEAD=['sku','nombre','categoria','marca','modelo','costo','precio1','precio2','precio3','precio4','existencia','minimo','','referencia'];
 const NC=HEAD.length;
-const XH=['tipo','tela','color','talla','precio5','separado'],XL=XH;
-const NEWN={1:'sku',2:'nombre',4:'categoria',5:'marca',6:'modelo',8:'costo',15:'precio1',25:'precio2',27:'precio3',29:'precio4',16:'codigo',22:'existencia',23:'minimo'};
-const hix=(hl,c)=>{let i=hl.indexOf(String(HEAD[c]).toLowerCase());if(i<0&&NEWN[c])i=hl.indexOf(NEWN[c]);return i};
-const BOOL=new Set([10,12,33,38,43,48]);
-const NUM=new Set([8,9,11,14,15,17,21,22,23,25,26,27,28,29,30,32,35,37,40,42,45,47,50]);
-const W={1:230,2:300,3:160,4:110,5:110,6:130,7:110,8:90,9:110,15:90,16:140,17:130,18:120,19:120,20:120,21:120,22:140,23:120,24:90,25:90,29:90,27:90};
-W[51]=110;W[52]=110;W[53]=120;W[54]=80;W[55]=110;W[56]=90;
-const DEF=Array(NC).fill('');
-Object.assign(DEF,{9:'0',10:true,11:'0',12:false,14:'0',18:'Principal',21:'0',22:'12',23:'5',26:'0',28:'0',30:'0',31:'Fijo',32:'4000',33:true,34:'Fijo',35:'2000',36:'Fijo',37:'2000',38:false,39:'Fijo',40:'0',41:'Fijo',42:'1000',43:false,44:'Fijo',45:'0',46:'Fijo',47:'1000',48:false,49:'Fijo',50:'0'});
-const ESS=[1,2,51,52,53,54,4,5,6,8,15,25,27,29,55,56,16,22,23];
-const label=c=>c>=NC?XL[c-NC]:(NEWN[c]||HEAD[c]||'(base)');
+const XH=['tipo','tela','color','talla','precio5','separado','codigo'];
+const NUM=new Set([5,6,7,8,9,10,11]);
+const W={0:230,1:300,2:110,3:110,4:130,5:90,6:90,7:90,8:90,9:90,10:140,11:120};
+W[NC]=110;W[NC+1]=110;W[NC+2]=120;W[NC+3]=80;W[NC+4]=110;W[NC+5]=90;W[NC+6]=140;
+const DEF=Array(NC).fill('');DEF[10]='12';DEF[11]='5';
+const ESS=[0,1,NC,NC+1,NC+2,NC+3,2,3,4,5,6,7,8,9,NC+4,NC+5,NC+6,10,11];
+const label=c=>c>=NC?XH[c-NC]:(HEAD[c]||'');
 const FML=n=>`R${n} & MOD(10 - MOD(SUMPRODUCT(MID(R${n}, {1,2,3,4,5,6,7,8,9,10,11,12}, 1) * {1,3,1,3,1,3,1,3,1,3,1,3}), 10), 10)`;
 function ean(b){b=String(b==null?'':b).trim();if(!/^\d{12}$/.test(b))return'';let s=0;for(let i=0;i<12;i++)s+=(+b[i])*(i%2?3:1);return b+((10-(s%10))%10)}
 
@@ -525,14 +513,14 @@ const SIZES0=['2-4','4','6','8','10','12','14','16','S','M','L','XL','2XL','3XL'
 const PROF0=[[11000,30000,28000,25000,22000],[9000,30000,28000,25000,22000],[12800,30000,28000,25000,22000],[21900,45000,40500,36000,31500],[15500,40000,36000,32000,28000],[9000,25000,22500,20000,17500],[10000,25000,22500,20000,17500],[12300,35000,33000,30000,27000]];
 const TPL0={sku:'{tipo_ab}-{marca_ab}-{cat_ab}-{talla}-{color_ab}-{material_ab}',name:'{tipo} {marca} {cat} {talla} {color} {material}',skuR:'{tipo_ab}-{marca_ab}-{cat_ab}-{talla}-{ref}-{material_ab}',nameR:'{tipo} {marca} {cat} {talla} {ref} {material}'};
 const KIND={tipo:'Tipo de prenda',marca:'Marca',modelo:'Modelo',cat:'Categoría',mat:'Material'};
-const KCOL={marca:'brand',modelo:'model',cat:'category'};
+const KCOL={marca:'marca',modelo:'modelo',cat:'categoria'};
 const TOKS=['tipo','tipo_ab','marca','marca_ab','modelo','modelo_ab','cat','cat_ab','talla','color','color_ab','ref','material','material_ab'];
 
 /* ---------- estado ---------- */
 const KEY='comicshop-carga-masiva-v1';
 const S={pw:0,redo:[],sp:null,sizeProfiles:[],cw:{},defs:null,mg:{col:false,sz:false,ent:false,sp:false},pe:null,profiles:[],tlinks:{},ins:{mode:'end',n:''},idx:new Map(),rows:[],refs:{sku:[],name:[],base:[]},catalog:null,f:null,tpl:{...TPL0},ui:{view:'ess',filter:'all',q:''},sel:new Set(),undo:[],nextId:1,issues:new Map(),view:[],cnt:{err:0,warn:0}};
 function initCatalog(){const c={colors:COLORS.map(x=>({...x})),sizes:[...SIZES0]};for(const k in CAT0)c[k]=CAT0[k].map(([n,ab])=>({n,ab}));return c}
-function initForm(){const f={tipo:{n:'Franela',ab:'Franela'},marca:{n:'Etanol',ab:'Eta'},modelo:{n:'Manga Corta',ab:'MC'},cat:{n:'Caballero',ab:'Cab'},mat:{n:'PoliAlg.',ab:'PoliAlg'},colors:['Blanco','Negro','Rojo'],sizes:['S','M','L','XL'],cost:'11000',price:'30000',price2:'28000',price3:'25000',price4:'22000',fis:'0',nof:'12',min:'5',adv:{},mode:'color',refs:[],rp:{pre:'Ref-',from:'1',to:'10',dig:'4'}};return f}
+function initForm(){const f={tipo:{n:'Franela',ab:'Franela'},marca:{n:'Etanol',ab:'Eta'},modelo:{n:'Manga Corta',ab:'MC'},cat:{n:'Caballero',ab:'Cab'},mat:{n:'PoliAlg.',ab:'PoliAlg'},colors:['Blanco','Negro','Rojo'],sizes:['S','M','L','XL'],cost:'11000',price:'30000',price2:'28000',price3:'25000',price4:'22000',nof:'12',min:'5',mode:'color',refs:[],rp:{pre:'Ref-',from:'1',to:'10',dig:'4'}};return f}
 S.catalog=initCatalog();S.f=initForm();
 const G={undo:[],redo:[],cur:null,t:0,busy:false};
 function gTrack(){if(G.busy||G.cur===null)return;const now=SETK();if(now===G.cur)return;const t=Date.now();if(t-G.t>700){G.undo.push(G.cur);if(G.undo.length>80)G.undo.shift();G.redo=[]}G.cur=now;G.t=t}
@@ -541,13 +529,18 @@ function gUndo(){G.t=0;gTrack();if(!G.undo.length){toast('No hay más cambios qu
 function gRedo(){G.t=0;gTrack();if(!G.redo.length){toast('No hay cambios que rehacer en las opciones.');return}G.undo.push(G.cur);gApply(G.redo.pop());toast('Cambio en las opciones rehecho')}
 let saveT;
 function persist(){gTrack();clearTimeout(saveT);saveT=setTimeout(()=>{try{localStorage.setItem(KEY,JSON.stringify({rows:S.rows,refs:S.refs,catalog:S.catalog,f:S.f,tpl:S.tpl,ui:S.ui,nextId:S.nextId,ins:S.ins,profiles:S.profiles,tlinks:S.tlinks,defs:S.defs,cw:S.cw,pw:S.pw,sp:S.sizeProfiles}))}catch(e){}},400)}
-function restore(){try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(!j)return;if(Array.isArray(j.rows)&&j.rows.every(r=>r&&Array.isArray(r.v)&&r.v.length===NC)){S.rows=j.rows;S.nextId=j.nextId||j.rows.reduce((m,r)=>Math.max(m,r.id),0)+1}
+const OLD2NEW={1:0,2:1,4:2,5:3,6:4,7:13,8:5,15:6,17:12,22:10,23:11,25:7,27:8,29:9,51:NC,52:NC+1,53:NC+2,54:NC+3,55:NC+4,56:NC+5};
+function restore(){try{const j=JSON.parse(localStorage.getItem(KEY)||'null');if(!j)return;
+ if(Array.isArray(j.rows)&&j.rows.every(r=>r&&Array.isArray(r.v)&&(r.v.length===NC||r.v.length===51))){
+  S.rows=j.rows.map(r=>{if(r.v.length===NC)return r;const v=DEF.slice();for(const o in OLD2NEW)if(OLD2NEW[o]<NC)v[OLD2NEW[o]]=r.v[o];return{...r,v}});
+  S.nextId=j.nextId||j.rows.reduce((m,r)=>Math.max(m,r.id),0)+1}
+ if(j.cw&&typeof j.cw==='object'){const cw={};for(const k in j.cw){const n=j.rows&&j.rows.length&&j.rows[0].v.length===51?OLD2NEW[k]:+k;if(n!==undefined&&n<NC+7)cw[n]=j.cw[k]}j.cw=cw}
  if(j.refs&&j.refs.sku)S.refs=j.refs;if(j.catalog&&j.catalog.colors)S.catalog=Object.assign(initCatalog(),j.catalog);if(j.f&&j.f.tipo)S.f=Object.assign(initForm(),j.f);if(j.tpl)S.tpl=Object.assign({...TPL0},j.tpl);if(j.defs&&j.defs.catalog&&j.defs.f&&j.defs.tpl&&Array.isArray(j.defs.profiles))S.defs=j.defs;if(j.cw&&typeof j.cw==='object')S.cw=j.cw;if(typeof j.pw==='number'&&j.pw>=300&&j.pw<=1000)S.pw=j.pw;if(Array.isArray(j.sp)&&j.sp.every(p=>p&&Array.isArray(p.sizes)))S.sizeProfiles=j.sp;if(j.ins&&j.ins.mode)S.ins=j.ins;if(Array.isArray(j.profiles)&&j.profiles.every(p=>p&&Array.isArray(p.a)&&p.a.length===5))S.profiles=j.profiles;if(j.tlinks&&typeof j.tlinks==='object')S.tlinks=j.tlinks;if(j.ui)S.ui=Object.assign(S.ui,j.ui,{q:''})}catch(e){}}
 const initSizeProfiles=()=>[['Niño 4–16',['4','6','8','10','12','14','16']],['S–XL',['S','M','L','XL']],['S–3XL',['S','M','L','XL','2XL','3XL']],['Única',['U.']]].map(([name,sizes],i)=>({id:i+1,name,sizes}));
 const initProfiles=()=>PROF0.map((a,i)=>({id:i+1,name:'',a:a.map(String)}));
 S.profiles=initProfiles();S.sizeProfiles=initSizeProfiles();
 restore();
-S.f.adv=S.f.adv||{};
+delete S.f.adv;delete S.f.fis;
 
 /* ---------- utilidades ---------- */
 const $=s=>document.querySelector(s);
@@ -563,17 +556,17 @@ function loadRows(str){const j=JSON.parse(str);S.rows=j.rows;S.refs=j.refs;S.nex
 function undo(){const st=S.undo.pop();if(!st)return;S.redo.push(ROWS_STATE());loadRows(st);updUR();toast('Acción deshecha')}
 function redo(){const st=S.redo.pop();if(!st)return;S.undo.push(ROWS_STATE());loadRows(st);updUR();toast('Acción rehecha')}
 function allKeys(){const sku=new Map(),name=new Map(),base=new Map();const inc=(m,k)=>{if(k)m.set(k,(m.get(k)||0)+1)};
- for(const r of S.rows){inc(sku,key(r.v[1]));inc(name,key(r.v[2]));inc(base,String(r.v[17]).trim())}
+ for(const r of S.rows){inc(sku,key(r.v[0]));inc(name,key(r.v[1]));inc(base,String(r.v[12]).trim())}
  for(const k of S.refs.sku)inc(sku,key(k));for(const k of S.refs.name)inc(name,key(k));for(const k of S.refs.base)inc(base,String(k).trim());return{sku,name,base}}
 
 /* ---------- validación ---------- */
 function computeIssues(){const K=allKeys();const m=new Map();let err=0,warn=0;
  for(const r of S.rows){const f={};let e=0,w=0;const v=r.v;
-  if(!String(v[1]).trim()){f[1]='bad';e++}else if(K.sku.get(key(v[1]))>1){f[1]='bad';e++}
-  if(!String(v[2]).trim()){f[2]='bad';e++}else if(K.name.get(key(v[2]))>1){f[2]='bad';e++}
-  const b=String(v[17]).trim();
-  if(!b){f[17]='warn';w++}else if(!/^\d{12}$/.test(b)||K.base.get(b)>1){f[17]='bad';e++}
-  if(!String(v[15]).trim()){f[15]='warn';w++}
+  if(!String(v[0]).trim()){f[0]='bad';e++}else if(K.sku.get(key(v[0]))>1){f[0]='bad';e++}
+  if(!String(v[1]).trim()){f[1]='bad';e++}else if(K.name.get(key(v[1]))>1){f[1]='bad';e++}
+  const b=String(v[12]).trim();
+  if(!b){f[NC+6]='warn';w++}else if(!/^\d{12}$/.test(b)||K.base.get(b)>1){f[NC+6]='bad';e++}
+  if(!String(v[6]).trim()){f[6]='warn';w++}
   if(e||w)m.set(r.id,{f,e,w});err+=e?1:0;warn+=(!e&&w)?1:0}
  S.issues=m;S.cnt={err,warn};return m}
 
@@ -590,11 +583,11 @@ function genVariants(){const f=F();const K=allKeys();if(f.mode==='ref'){const si
   const dup=K.sku.has(key(sku))||K.name.has(key(name))||seenS.has(key(sku))||seenN.has(key(name));seenS.add(key(sku));seenN.add(key(name));out.push({sku,name,color:c,size:sz,dup})}
  return out}
 function uniqueBase(used){const a=new Uint32Array(3);for(let t=0;t<50;t++){crypto.getRandomValues(a);let s=String(1+a[0]%9)+String(a[1]).padStart(10,'0').slice(0,10)+String(a[2]%10);if(!used.has(s)){used.add(s);return s}}return''}
-function usedBases(){const u=new Set(S.refs.base.map(x=>String(x).trim()));for(const r of S.rows)if(r.v[17])u.add(String(r.v[17]).trim());return u}
+function usedBases(){const u=new Set(S.refs.base.map(x=>String(x).trim()));for(const r of S.rows)if(r.v[12])u.add(String(r.v[12]).trim());return u}
 function addVariants(){const list=genVariants().filter(x=>!x.dup);const skipped=genVariants().length-list.length;if(!list.length){toast(skipped?'Todas las variantes ya existen. Cambia colores o tallas.':(F().mode==='ref'?'Agrega al menos una referencia y elige una talla.':'Elige al menos un color y una talla.'));return}
  snap();const f=F();const used=usedBases();let first=null;const fresh=[];
- for(const x of list){const v=DEF.slice();for(const k in f.adv)v[k]=f.adv[k];
-  if(x.ref)v[7]=x.ref;v[1]=x.sku;v[2]=x.name;v[4]=f.cat.n;v[5]=f.marca.n;v[6]=f.modelo.n;v[8]=f.cost;v[15]=f.price;v[25]=f.price2;v[27]=f.price3;v[29]=f.price4;v[21]=f.fis;v[22]=f.nof;v[23]=f.min;v[17]=uniqueBase(used);
+ for(const x of list){const v=DEF.slice();
+  if(x.ref)v[13]=x.ref;v[0]=x.sku;v[1]=x.name;v[2]=f.cat.n;v[3]=f.marca.n;v[4]=f.modelo.n;v[5]=f.cost;v[6]=f.price;v[7]=f.price2;v[8]=f.price3;v[9]=f.price4;v[10]=f.nof;v[11]=f.min;v[12]=uniqueBase(used);
   const r={id:S.nextId++,src:'new',v,tp:f.tipo.n,cl:x.color?x.color.n:'',sz:x.size};tfPut(r);fresh.push(r);if(!first)first=r.id}
  S.rows.splice(insPos(),0,...fresh)
  learnCatalog();S.ui.filter='all';S.ui.q='';$('#q').value='';
@@ -668,8 +661,8 @@ function renderProfiles(){const cur=curA().join('|');const ed=S.pe;{const sm=$('
  $('#profs').innerHTML=`<div class="phead"><span class="lbl">Perfiles de precio · clic para aplicar</span><span class="tools"><button class="btn sm" data-act="pNew">Nuevo</button><button class="btn sm" data-act="pLearn" title="Agrega las combinaciones de precio más usadas en tu tabla">Aprender de mi tabla</button></span></div><div class="pfl">${list}</div>${editor}`}
 function markProfiles(){const cur=curA().join('|');for(const d of document.querySelectorAll('#profs .pf')){const p=S.profiles.find(x=>x.id===+d.dataset.pf);d.classList.toggle('on',!!p&&p.a.join('|')===cur)}}
 function renderFields(){const f=F();for(const el of document.querySelectorAll('[data-f]'))el.value=f[el.dataset.f]??''}
-const ADVC=[3,7,9,10,11,12,13,14,18,19,20,24,26,28,30,...Array.from({length:20},(_,i)=>31+i)];
-function renderAdv(){const f=F();$('#adv').innerHTML=ADVC.map(c=>{const v=f.adv[c]!==undefined?f.adv[c]:DEF[c];return BOOL.has(c)?`<div class="fld chk"><label><input type="checkbox" data-adv="${c}" ${v===true?'checked':''}> <span class="mono" style="font-size:12px">${HEAD[c]}</span></label></div>`:`<div class="fld"><label for="adv${c}"><span class="mono">${HEAD[c]}</span></label><input class="in" id="adv${c}" data-adv="${c}" value="${esc(v)}"></div>`}).join('')}
+
+
 /* ---------- formato: fichas que se arrastran ---------- */
 const FM={s:{key:()=>tk().s,sep:'-',st:'#stS',tr:'#trS'},n:{key:()=>tk().n,sep:' ',st:'#stN',tr:'#trN'}};
 let fmN=0;
@@ -746,10 +739,10 @@ panel.addEventListener('input',e=>{const t=e.target,f=F();
  else if(t.dataset.pe!==undefined){if(t.dataset.pe==='name')S.pe.name=t.value;else S.pe.a[+t.dataset.pe]=t.value}
  else if(t.dataset.f){f[t.dataset.f]=t.value;markProfiles();schedPv()}
  else if(t.dataset.cab){const c=S.catalog.colors.find(x=>x.n===t.dataset.cab);if(c)c.ab=t.value;for(const b of document.querySelectorAll('#colChips [data-col]'))if(b.dataset.col===t.dataset.cab)b.querySelector('small').textContent=t.value;schedPv()}
- else if(t.dataset.adv&&t.type!=='checkbox'){f.adv[t.dataset.adv]=t.value;persist()}
+
  else if(t.id==='tSku'){S.tpl[tk().s]=t.value;schedPv()}else if(t.id==='tName'){S.tpl[tk().n]=t.value;schedPv()}
  else if(t.id==='colQ')renderColors()});
-panel.addEventListener('change',e=>{const t=e.target;if(t.dataset.adv&&t.type==='checkbox'){F().adv[t.dataset.adv]=t.checked;persist()}});
+
 panel.addEventListener('click',e=>{const f=F();const zc=e.target.closest('span[data-sz]');if(zc){const s=zc.dataset.sz;f.sizes=f.sizes.includes(s)?f.sizes.filter(x=>x!==s):[...f.sizes,s];renderSizes();schedPv();return}const b=e.target.closest('button');if(!b)return;
  if(b.dataset.m){f.mode=b.dataset.m;renderMode();renderTpl();schedPv()}
  else if(b.dataset.delref!==undefined){f.refs.splice(+b.dataset.delref,1);renderRefs();schedPv()}
@@ -783,7 +776,7 @@ else if(b.dataset.pdel){const i=S.profiles.findIndex(x=>x.id===+b.dataset.pdel);
   else if(a==='pCancel'){S.pe=null;renderProfiles()}
   else if(a==='pSave'){const e2=S.pe;if(!e2)return;const arr=e2.a.map(x=>String(x).trim());if(!arr[1]){toast('Escribe al menos el Precio.');return}if(e2.id){const p=S.profiles.find(x=>x.id===e2.id);if(p){p.name=e2.name.trim();p.a=arr}}else S.profiles.push({id:newPid(),name:e2.name.trim(),a:arr});S.pe=null;renderProfiles();persist();toast('Perfil guardado')}
   else if(a==='profSave'){const arr=curA();if(!arr[1]){toast('Escribe al menos el Precio.');return}if(S.profiles.some(p=>p.a.join('|')===arr.join('|'))){toast('Ese perfil ya existe.');return}S.profiles.push({id:newPid(),name:'',a:arr});renderProfiles();persist();toast('Perfil guardado. Puedes ponerle nombre con el lápiz.')}
-  else if(a==='pLearn'){const c=new Map();for(const r of S.rows){const v=r.v;if(!String(v[15]).trim())continue;const k=[v[8],v[15],v[25],v[27],v[29]].map(x=>String(x).trim()).join('|');c.set(k,(c.get(k)||0)+1)}const have=new Set(S.profiles.map(p=>p.a.join('|')));let n=0;for(const [k] of [...c.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8)){if(have.has(k))continue;S.profiles.push({id:newPid(),name:'',a:k.split('|')});n++}renderProfiles();persist();toast(n?`${n} perfiles agregados desde tu tabla`:'No hay perfiles nuevos en tu tabla.')}
+  else if(a==='pLearn'){const c=new Map();for(const r of S.rows){const v=r.v;if(!String(v[6]).trim())continue;const k=[v[5],v[6],v[7],v[8],v[9]].map(x=>String(x).trim()).join('|');c.set(k,(c.get(k)||0)+1)}const have=new Set(S.profiles.map(p=>p.a.join('|')));let n=0;for(const [k] of [...c.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8)){if(have.has(k))continue;S.profiles.push({id:newPid(),name:'',a:k.split('|')});n++}renderProfiles();persist();toast(n?`${n} perfiles agregados desde tu tabla`:'No hay perfiles nuevos en tu tabla.')}
   else if(a==='colAll'){for(const el of document.querySelectorAll('#colChips [data-col]'))if(!f.colors.includes(el.dataset.col))f.colors.push(el.dataset.col);renderColors();schedPv()}
   else if(a==='colNone'){f.colors=[];renderColors();schedPv()}
   else if(a==='colNew'){const n=$('#ncN').value.trim(),ab=$('#ncA').value.trim()||suggestAb($('#ncN').value);if(!n)return;if(!S.catalog.colors.some(c=>key(c.n)===key(n)))S.catalog.colors.push({n,ab});const real=S.catalog.colors.find(c=>key(c.n)===key(n)).n;if(!f.colors.includes(real))f.colors.push(real);$('#ncN').value='';$('#ncA').value='';renderColors();schedPv()}
@@ -799,22 +792,25 @@ g.addEventListener('scroll',upd,{passive:true});new ResizeObserver(upd).observe(
 fb.onclick=()=>g.scrollTo({top:down?g.scrollHeight:0,behavior:'smooth'});upd()}
 const ROW_H=34;const gs=$('#gs'),tb=$('#tb');let visCols=[],r0=-1,r1=-1;
 function xRefresh(){try{const X=xCols(S.rows);S.xc=new Map(S.rows.map((r,i)=>[r.id,X[i]]))}catch(e){S.xc=S.xc||new Map()}}
-function computeView(){xRefresh();S.lastI=null;S.idx=new Map(S.rows.map((r,i)=>[r.id,i]));const q=key(S.ui.q),fl=S.ui.filter;S.view=S.rows.filter(r=>{if(fl==='new'&&r.src!=='new')return false;if(fl==='imp'&&r.src==='new')return false;if(fl==='alert'&&!S.issues.has(r.id))return false;if(q&&!(key(r.v[1])+' '+key(r.v[2])).includes(q))return false;return true})}
+function computeView(){xRefresh();S.lastI=null;S.idx=new Map(S.rows.map((r,i)=>[r.id,i]));const q=key(S.ui.q),fl=S.ui.filter;S.view=S.rows.filter(r=>{if(fl==='new'&&r.src!=='new')return false;if(fl==='imp'&&r.src==='new')return false;if(fl==='alert'&&!S.issues.has(r.id))return false;if(q&&!(key(r.v[0])+' '+key(r.v[1])).includes(q))return false;return true})}
 const cw=c=>S.cw[c]||W[c]||100;
 const tblW=()=>86+visCols.reduce((s,c)=>s+cw(c),0);
 function renderHead(){visCols=ESS;
  $('#cg').innerHTML='<col style="width:34px"><col style="width:52px">'+visCols.map(c=>`<col style="width:${cw(c)}px">`).join('');
  $('#tbl').style.width=tblW()+'px';
- $('#hr').innerHTML='<th class="cb"><input type="checkbox" id="selAll" aria-label="Seleccionar todas"></th><th class="rn" title="Número de fila como en Google Sheets">Fila</th>'+visCols.map(c=>`<th class="${c===1?'stk':''}" title="${c===17?'Columna R sin título: 12 dígitos que usa la fórmula del código de barras':c>=NC?esc(XH[c-NC])+' (se calcula solo y sale en inventario.json)':esc(HEAD[c])}">${esc(label(c))}<span class="rz" data-rz="${c}" title="Arrastra para cambiar el ancho. Doble clic para restablecer."></span></th>`).join('')}
+ $('#hr').innerHTML='<th class="cb"><input type="checkbox" id="selAll" aria-label="Seleccionar todas"></th><th class="rn" title="Número de fila como en Google Sheets">Fila</th>'+visCols.map(c=>`<th class="${c===0?'stk':''}" title="${esc(label(c))}">${esc(label(c))}<span class="rz" data-rz="${c}" title="Arrastra para cambiar el ancho. Doble clic para restablecer."></span></th>`).join('')}
 $('#hr').addEventListener('pointerdown',e=>{const h=e.target.closest('[data-rz]');if(!h)return;e.preventDefault();const c=+h.dataset.rz,ix=2+visCols.indexOf(c),col=$('#cg').children[ix];const x0=e.clientX,w0=cw(c);h.setPointerCapture(e.pointerId);h.classList.add('on');
  const mv=ev=>{const w=Math.max(50,Math.min(700,Math.round(w0+ev.clientX-x0)));S.cw[c]=w;col.style.width=w+'px';$('#tbl').style.width=tblW()+'px'};
  const up=()=>{h.classList.remove('on');h.removeEventListener('pointermove',mv);h.removeEventListener('pointerup',up);h.removeEventListener('pointercancel',up);persist()};
  h.addEventListener('pointermove',mv);h.addEventListener('pointerup',up);h.addEventListener('pointercancel',up)});
 $('#hr').addEventListener('dblclick',e=>{const h=e.target.closest('[data-rz]');if(!h)return;delete S.cw[+h.dataset.rz];renderHead();renderRows(true);persist()});
 function xText(x,c){const v=x?x[c-NC]:'';return c===NC+5?(v?'Sí':'—'):(v===''||v==null?'—':String(v))}
-function cell(r,c,fl){if(c>=NC){const x=S.xc&&S.xc.get(r.id);if(c===NC+5)return`<td class="bool"><input type="checkbox" data-xk="1" ${x&&x[5]?'checked':''} aria-label="separado"></td>`;return`<td class="${c===NC+4?'num':''}"><input data-xc="${c}" value="${esc(x?x[c-NC]:'')}" ${c===NC+4?'inputmode="decimal" ':''}spellcheck="false" aria-label="${esc(XH[c-NC])}"></td>`}const v=r.v[c];const cl=[];if(c===1)cl.push('stk');if(NUM.has(c))cl.push('num');if(c===1||c===16||c===17||c===2)cl.push('mn');if(fl)cl.push(fl);
- if(c===16)return`<td class="ro ${fl||''}"><span data-bc>${esc(ean(r.v[17])||'—')}</span></td>`;
- if(BOOL.has(c))return`<td class="bool"><input type="checkbox" data-c="${c}" ${v===true?'checked':''} aria-label="${esc(NEWN[c]||HEAD[c])}"></td>`;
+function cell(r,c,fl){
+ if(c>=NC){const x=S.xc&&S.xc.get(r.id);
+  if(c===NC+5)return`<td class="bool"><input type="checkbox" data-xk="1" ${x&&x[5]?'checked':''} aria-label="separado"></td>`;
+  if(c===NC+6)return`<td class="ro mn ${fl||''}"><span data-x="${c}">${esc(xText(x,c))}</span></td>`;
+  return`<td class="${c===NC+4?'num':''}"><input data-xc="${c}" value="${esc(x?x[c-NC]:'')}" ${c===NC+4?'inputmode="decimal" ':''}spellcheck="false" aria-label="${esc(XH[c-NC])}"></td>`}
+ const v=r.v[c];const cl=[];if(c===0)cl.push('stk');if(NUM.has(c))cl.push('num');if(c<2)cl.push('mn');if(fl)cl.push(fl);
  return`<td class="${cl.join(' ')}"><input data-c="${c}" value="${esc(v)}" ${NUM.has(c)?'inputmode="decimal"':''} spellcheck="false" aria-label="${esc(label(c))}"></td>`}
 function renderRows(force){const V=S.view;const st=gs.scrollTop,h=gs.clientHeight||600;const first=Math.max(0,Math.floor(st/ROW_H)-6),last=Math.min(V.length,Math.ceil((st+h)/ROW_H)+6);
  if(!force&&first===r0&&last===r1)return;r0=first;r1=last;
@@ -831,7 +827,7 @@ const rowById=id=>S.rows.find(r=>r.id===+id);
 let flagT;function schedFlags(){clearTimeout(flagT);flagT=setTimeout(()=>{computeIssues();paintFlags();renderStats();renderStrip();persist()},200)}
 function paintFlags(){for(const tr of tb.querySelectorAll('tr[data-id]')){const r=rowById(tr.dataset.id);if(!r)continue;const is=S.issues.get(r.id);for(const td of tr.querySelectorAll('td')){td.classList.remove('bad','warn')}
  const tds=tr.children;visCols.forEach((c,i)=>{const td=tds[i+1];const f=is&&is.f[c];if(f)td.classList.add(f)});
- const bc=tr.querySelector('[data-bc]');if(bc)bc.textContent=ean(r.v[17])||'—'}
+ }
  xRefresh();for(const tr of tb.querySelectorAll('tr[data-id]')){const x=S.xc.get(+tr.dataset.id);for(const sp of tr.querySelectorAll('[data-x]'))sp.textContent=xText(x,+sp.dataset.x);for(const ip of tr.querySelectorAll('[data-xc]'))if(ip!==document.activeElement)ip.value=x?x[+ip.dataset.xc-NC]:'';for(const ck of tr.querySelectorAll('[data-xk]'))ck.checked=!!(x&&x[5])}}
 tb.addEventListener('input',e=>{const t=e.target;if(t.dataset.xc!==undefined){const r=rowById(t.closest('tr').dataset.id);if(r){const v=t.value.trim();if(+t.dataset.xc===NC)r.tp=v;else if(+t.dataset.xc===NC+1)r.tl=v;else r.p5=v;schedFlags()}return}if(t.dataset.xk!==undefined){const r=rowById(t.closest('tr').dataset.id);if(r){r.sepd=t.checked;schedFlags()}return}if(t.dataset.c===undefined||t.type==='checkbox')return;const r=rowById(t.closest('tr').dataset.id);r.v[+t.dataset.c]=t.value;schedFlags()});
 let lastShift=false;
@@ -846,11 +842,11 @@ tb.addEventListener('keydown',e=>{const t=e.target;if(t.dataset.c===undefined||t
 function focusCell(i,c){if(i<0||i>=S.view.length)return;const need=i*ROW_H;if(need<gs.scrollTop||need>gs.scrollTop+gs.clientHeight-2*ROW_H-38){gs.scrollTop=Math.max(0,need-gs.clientHeight/2)}renderRows(true);const id=S.view[i].id;const el=tb.querySelector(`tr[data-id="${id}"] input[data-c="${c}"]`);if(el){el.focus({preventScroll:true});el.select()}}
 tb.addEventListener('paste',e=>{const t=e.target;if(t.dataset.c===undefined||t.type==='checkbox')return;const txt=(e.clipboardData||window.clipboardData).getData('text');if(!/[\t\n]/.test(txt.replace(/\r?\n$/,'')))return;e.preventDefault();
  const lines=txt.replace(/\r/g,'').replace(/\n$/,'').split('\n').map(l=>l.split('\t'));const i0=+t.closest('tr').dataset.i;const c0=visCols.indexOf(+t.dataset.c);snap();let n=0;
- lines.forEach((cells,di)=>{const r=S.view[i0+di];if(!r)return;cells.forEach((val,dj)=>{const c=visCols[c0+dj];if(c===undefined||c===16||c>=NC)return;r.v[c]=BOOL.has(c)?/^(true|verdadero|1|si|sí)$/i.test(val.trim()):val.trim();n++})});
+ lines.forEach((cells,di)=>{const r=S.view[i0+di];if(!r)return;cells.forEach((val,dj)=>{const c=visCols[c0+dj];if(c===undefined||c>=NC)return;r.v[c]=val.trim();n++})});
  renderRows(true);schedFlags();toast(`${n} celdas pegadas`,'Deshacer',undo)});
 /* ---------- arrastrar para rellenar (como Excel) ---------- */
 let FD=null;
-tb.addEventListener('focusin',e=>{const t=e.target;if(t.dataset.c===undefined||+t.dataset.c===16)return;tb.querySelectorAll('.fh').forEach(x=>x.remove());const td=t.closest('td');if(!td)return;const h=document.createElement('span');h.className='fh';h.dataset.fh='1';h.title='Arrastra hacia arriba o abajo para copiar este valor';td.appendChild(h)});
+tb.addEventListener('focusin',e=>{const t=e.target;if(t.dataset.c===undefined)return;tb.querySelectorAll('.fh').forEach(x=>x.remove());const td=t.closest('td');if(!td)return;const h=document.createElement('span');h.className='fh';h.dataset.fh='1';h.title='Arrastra hacia arriba o abajo para copiar este valor';td.appendChild(h)});
 tb.addEventListener('mousedown',e=>{if(e.target.closest('[data-fh]'))e.preventDefault()});
 tb.addEventListener('pointerdown',e=>{const h=e.target.closest('[data-fh]');if(!h)return;e.preventDefault();const tr=h.closest('tr'),td=h.closest('td'),inp=td.querySelector('[data-c]');const c=+inp.dataset.c,i=+tr.dataset.i,r=S.view[i];if(!r)return;
  FD={c,i,j:i,src:r.v[c],x:e.clientX,y:e.clientY,tm:null};document.body.style.userSelect='none';
@@ -874,38 +870,37 @@ $('#hr').addEventListener('change',e=>{if(e.target.id!=='selAll')return;if(e.tar
 function scrollToId(id){const i=S.view.findIndex(r=>r.id===id);if(i>=0){gs.scrollTop=Math.max(0,i*ROW_H-60);renderRows(true)}}
 
 /* ---------- barra de selección ---------- */
-const BULKC=Array.from({length:NC},(_,i)=>i).filter(i=>i&&i!==16);
+const BULKC=[0,1,2,3,4,5,6,7,8,9,10,11,NC,NC+1,NC+4];
 function renderSel(){const el=$('#selbar');const n=S.sel.size;if(!n){el.hidden=true;return}
- const keepC=el.dataset.c||'15';el.hidden=false;
- el.innerHTML=`<b>${n} seleccionada${n===1?'':'s'}</b><span class="note">Cambiar</span><select class="in" id="bc" style="width:auto" aria-label="Columna a cambiar">${BULKC.map(c=>`<option value="${c}" ${String(c)===keepC?'selected':''}>${esc(label(c))}</option>`).join('')}</select>${BOOL.has(+keepC)?'<select class="in" id="bv" style="width:auto"><option value="true">TRUE</option><option value="false">FALSE</option></select>':'<input class="in" id="bv" style="width:150px" placeholder="Nuevo valor">'}<button class="btn sm primary" id="bApply">Aplicar</button><button class="btn sm" id="bBar">Generar código de barras</button><button class="btn sm danger" id="bDel">${ICO.trash}Eliminar</button><button class="btn sm ghost" id="bClr">Quitar selección</button>`}
+ const keepC=el.dataset.c||'6';el.hidden=false;
+ el.innerHTML=`<b>${n} seleccionada${n===1?'':'s'}</b><span class="note">Cambiar</span><select class="in" id="bc" style="width:auto" aria-label="Columna a cambiar">${BULKC.map(c=>`<option value="${c}" ${String(c)===keepC?'selected':''}>${esc(label(c))}</option>`).join('')}</select><input class="in" id="bv" style="width:150px" placeholder="Nuevo valor"><button class="btn sm primary" id="bApply">Aplicar</button><button class="btn sm" id="bBar">Generar código de barras</button><button class="btn sm danger" id="bDel">${ICO.trash}Eliminar</button><button class="btn sm ghost" id="bClr">Quitar selección</button>`}
 $('#selbar').addEventListener('change',e=>{if(e.target.id==='bc'){$('#selbar').dataset.c=e.target.value;renderSel()}});
 $('#selbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.id==='bClr'){S.sel.clear();renderRows(true);renderSel()}
- else if(b.id==='bApply'){const c=+$('#bc').value;let v=$('#bv').value;if(BOOL.has(c))v=v==='true';else v=v.trim();snap();for(const r of S.rows)if(S.sel.has(r.id))r.v[c]=v;renderRows(true);schedFlags();toast(`${label(c)} actualizado en ${S.sel.size} filas`,'Deshacer',undo)}
- else if(b.id==='bBar'){snap();const used=usedBases();let n=0;for(const r of S.rows)if(S.sel.has(r.id)){r.v[17]=uniqueBase(used);n++}renderRows(true);schedFlags();toast(`${n} códigos de barras nuevos`,'Deshacer',undo)}
+ else if(b.id==='bApply'){const c=+$('#bc').value;let v=$('#bv').value.trim();snap();for(const r of S.rows)if(S.sel.has(r.id)){if(c===NC)r.tp=v;else if(c===NC+1)r.tl=v;else if(c===NC+4)r.p5=v;else r.v[c]=v}xRefresh();renderRows(true);schedFlags();toast(`${label(c)} actualizado en ${S.sel.size} filas`,'Deshacer',undo)}
+ else if(b.id==='bBar'){snap();const used=usedBases();let n=0;for(const r of S.rows)if(S.sel.has(r.id)){r.v[12]=uniqueBase(used);n++}renderRows(true);schedFlags();toast(`${n} códigos de barras nuevos`,'Deshacer',undo)}
  else if(b.id==='bDel'){const n=S.sel.size;snap();S.rows=S.rows.filter(r=>!S.sel.has(r.id));S.sel.clear();refreshAll(true);toast(`${n} filas eliminadas`,'Deshacer',undo)}});
 
 /* ---------- encabezados, alertas, estado vacío ---------- */
 function renderStats(){const nn=S.rows.filter(r=>r.src==='new').length;$('#stats').innerHTML=`<div class="stat"><b>${fmt(S.rows.length)}</b><span>variantes en tabla</span></div><div class="stat"><b>${fmt(nn)}</b><span>nuevas</span></div>`+(S.cnt.err?`<div class="stat err"><b>${S.cnt.err}</b><span>con errores</span></div>`:'<div class="stat ok"><b>0</b><span>errores</span></div>')+(S.refs.sku.length?`<div class="stat"><b>${fmt(S.refs.sku.length)}</b><span>de referencia</span></div>`:'');
  $('#count').textContent=S.rows.length?`Mostrando ${fmt(S.view.length)} de ${fmt(S.rows.length)}`:'';const a=$('#flt [data-v="alert"]');a.textContent=`Con alertas${S.cnt.err+S.cnt.warn?' ('+(S.cnt.err+S.cnt.warn)+')':''}`}
-function renderStrip(){const el=$('#strip');const K=allKeys();let dS=0,dN=0,dB=0,miss=0;for(const r of S.rows){const v=r.v;if(K.sku.get(key(v[1]))>1)dS++;if(K.name.get(key(v[2]))>1)dN++;const b=String(v[17]).trim();if(!b)miss++;else if(K.base.get(b)>1||!/^\d{12}$/.test(b))dB++}
+function renderStrip(){const el=$('#strip');const K=allKeys();let dS=0,dN=0,dB=0,miss=0;for(const r of S.rows){const v=r.v;if(K.sku.get(key(v[0]))>1)dS++;if(K.name.get(key(v[1]))>1)dN++;const b=String(v[12]).trim();if(!b)miss++;else if(K.base.get(b)>1||!/^\d{12}$/.test(b))dB++}
  const p=[];if(dS)p.push(`${dS} con SKU repetido`);if(dN)p.push(`${dN} con nombre repetido`);if(dB)p.push(`${dB} con código de barras repetido o inválido`);if(miss)p.push(`${miss} sin código de barras`);
  if(!p.length){el.hidden=true;return}el.className='strip'+(dS||dN||dB?' bad':'');el.hidden=false;
  el.innerHTML=`<span>${p.join(' · ')}</span><span class="sp"></span><button class="btn sm" id="sAl">Ver solo alertas</button>`+((miss||dB)?`<button class="btn sm" id="sFix">Generar códigos de barras faltantes o repetidos</button>`:'')}
 $('#strip').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
  if(b.id==='sAl'){S.ui.filter='alert';setFilterUI();refreshAll(true)}
- else if(b.id==='sFix'){snap();const used=usedBases();const seen=new Set();let n=0;for(const r of S.rows){const b=String(r.v[17]).trim();if(!b||!/^\d{12}$/.test(b)||seen.has(b)||S.refs.base.some(x=>String(x).trim()===b)){r.v[17]=uniqueBase(used);n++}else seen.add(b)}refreshAll(true);toast(`${n} códigos de barras generados`,'Deshacer',undo)}});
+ else if(b.id==='sFix'){snap();const used=usedBases();const seen=new Set();let n=0;for(const r of S.rows){const b=String(r.v[12]).trim();if(!b||!/^\d{12}$/.test(b)||seen.has(b)||S.refs.base.some(x=>String(x).trim()===b)){r.v[12]=uniqueBase(used);n++}else seen.add(b)}refreshAll(true);toast(`${n} códigos de barras generados`,'Deshacer',undo)}});
 function renderEmpty(){const e=$('#empty');if(S.rows.length){if(!S.view.length){e.hidden=false;e.innerHTML='<h3>Sin resultados</h3><p>Ningún producto coincide con la búsqueda o el filtro actual.</p><button class="btn" id="eClr">Quitar filtros</button>'}else e.hidden=true;return}
  e.hidden=false;e.innerHTML='<h3>Tu tabla está vacía</h3><p>Arma tus variantes con el generador de la izquierda y pulsa Agregar. También puedes traer tu archivo actual para continuar donde ibas o para evitar duplicados.</p><div class="tools" style="justify-content:center"><button class="btn primary" id="eAdd">Agregar el ejemplo</button><button class="btn" id="eImp">Importar mi inventario</button></div>'}
 $('#empty').addEventListener('click',e=>{const id=e.target.closest('button')?.id;if(id==='eAdd')addVariants();else if(id==='eImp')openImport();else if(id==='eClr'){S.ui.filter='all';S.ui.q='';$('#q').value='';setFilterUI();refreshAll(true)}});
-function setFilterUI(){for(const b of document.querySelectorAll('#flt button'))b.setAttribute('aria-pressed',b.dataset.v===S.ui.filter);for(const b of document.querySelectorAll('#vw button'))b.setAttribute('aria-pressed',b.dataset.v===S.ui.view)}
+function setFilterUI(){for(const b of document.querySelectorAll('#flt button'))b.setAttribute('aria-pressed',b.dataset.v===S.ui.filter)}
 $('#flt').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.ui.filter=b.dataset.v;setFilterUI();refreshAll(true)};
-$('#vw').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.ui.view=b.dataset.v;setFilterUI();gs.scrollLeft=0;refreshAll(true,true)};
 let qT;$('#q').oninput=e=>{clearTimeout(qT);qT=setTimeout(()=>{S.ui.q=e.target.value;gs.scrollTop=0;refreshAll(true)},150)};
 const SETK=()=>JSON.stringify({catalog:S.catalog,f:S.f,tpl:S.tpl,profiles:S.profiles,ins:S.ins,sp:S.sizeProfiles});
-function renderPanel(){$('#colQ').value='';renderEnt();renderColors();renderSizes();renderFields();renderAdv();renderTpl();renderProfiles();renderSizeProfiles();renderMode();renderPreview();renderIns()}
+function renderPanel(){$('#colQ').value='';renderEnt();renderColors();renderSizes();renderFields();renderTpl();renderProfiles();renderSizeProfiles();renderMode();renderPreview();renderIns()}
 function renderPbar(c){const has=!!S.defs;$('#pbar').innerHTML=c?(has?'<span class="note">Se restauran tus valores predeterminados guardados (producto, colores, tallas, perfiles, formato de SKU y valores). Tu tabla no cambia.</span><span class="tools" style="margin:0;display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm danger" data-act="rsMine">Restablecer a los míos</button><button class="btn sm" data-act="rsFab" title="Vuelve a los valores de ejemplo originales y borra tus predeterminados">De fábrica</button><button class="btn sm" data-act="rsNo">Cancelar</button></span>':'<span class="note">Se restauran producto, colores, tallas, perfiles de precio, formato de SKU y valores al ejemplo inicial. Tu tabla no cambia.</span><span class="tools" style="margin:0;display:flex;gap:6px"><button class="btn sm danger" data-act="rsFab">Restablecer</button><button class="btn sm" data-act="rsNo">Cancelar</button></span>'):`<span class="lbl">Opciones del generador${has?' <span class="tag" title="Hay predeterminadas propias guardadas">Mis predeterminadas</span>':''}</span><span class="tools" style="margin:0;display:flex;gap:6px;flex-wrap:wrap"><button class="btn sm" data-act="rsSet" title="Guarda como predeterminadas las opciones actuales: producto, colores, tallas, perfiles, formato de SKU y valores">Establecer como predeterminadas</button><button class="btn sm" data-act="rsAsk">Restablecer todo</button></span>`}
-function applyOpts(o){S.catalog=o.catalog;S.f=Object.assign(initForm(),o.f);S.f.adv=S.f.adv||{};S.tpl=Object.assign({...TPL0},o.tpl);S.profiles=o.profiles;S.sizeProfiles=o.sp||S.sizeProfiles;S.ins=o.ins||{mode:'end',n:''};S.pe=null;S.mg={col:false,sz:false,ent:false,sp:false};for(const id of['colMg','szMg','entMg','spMg'])$('#'+id).setAttribute('aria-pressed','false');renderPanel();renderPbar(false);persist()}
+function applyOpts(o){S.catalog=o.catalog;S.f=Object.assign(initForm(),o.f);delete S.f.adv;delete S.f.fis;S.tpl=Object.assign({...TPL0},o.tpl);S.profiles=o.profiles;S.sizeProfiles=o.sp||S.sizeProfiles;S.ins=o.ins||{mode:'end',n:''};S.pe=null;S.mg={col:false,sz:false,ent:false,sp:false};for(const id of['colMg','szMg','entMg','spMg'])$('#'+id).setAttribute('aria-pressed','false');renderPanel();renderPbar(false);persist()}
 $('#pbar').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.act;
  if(a==='rsNo')renderPbar(false);
  else if(a==='rsSet'){S.defs=JSON.parse(SETK());renderPbar(false);persist();toast('Opciones guardadas como predeterminadas. "Restablecer" volverá a ellas.')}
@@ -928,22 +923,17 @@ function openImport(){pending=null;$('#impInfo').hidden=true;$('#doImport').disa
 $('#btnImport').onclick=openImport;$('#pick').onclick=()=>$('#file').click();
 const dz=$('#dropz');['dragover','dragenter'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over')}));
 dz.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)readFile(f)});$('#file').onchange=e=>{if(e.target.files[0])readFile(e.target.files[0])};
-function boolOf(v){return v===true||/^(true|verdadero|1|si|sí)$/i.test(String(v).trim())}
 function readFile(file){if(typeof XLSX==='undefined'){toast('No se pudo cargar el lector de Excel. Revisa tu conexión y recarga.');return}
  const rd=new FileReader();rd.onload=()=>{try{let wb;if(/\.csv$/i.test(file.name))wb=XLSX.read(new TextDecoder('utf-8').decode(rd.result),{type:'string'});else wb=XLSX.read(rd.result,{type:'array'});
   const ws=wb.Sheets[wb.SheetNames[0]];const aoa=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true,blankrows:false});if(!aoa.length)throw new Error('vacío');
-  const hdr=aoa[0].map(x=>String(x).trim().toLowerCase());const map=new Array(NC).fill(-1);let hit=0;
-  for(let c=1;c<NC;c++){if(c===17||!HEAD[c])continue;const i=hix(hdr,c);if(i>=0){map[c]=i;hit++}}
-  const bi=map[16];if(bi>=0&&hdr[bi+1]==='')map[17]=bi+1;if(map[1]<0)throw new Error('sin columna sku');
-  const rows=[];for(let k=1;k<aoa.length;k++){const a=aoa[k];const v=DEF.slice();for(let c=1;c<NC;c++){if(map[c]<0||c===16)continue;
-    if(BOOL.has(c))v[c]=(a[map[c]]===''||a[map[c]]===undefined)?DEF[c]:boolOf(a[map[c]]);else v[c]=(a[map[c]]===''||a[map[c]]===undefined)?'':(typeof a[map[c]]==='number'?String(a[map[c]]):String(a[map[c]]))}
-   if(!v[17]&&bi>=0&&/^\d{13}$/.test(String(a[bi]).trim()))v[17]=String(a[bi]).trim().slice(0,12);
-   if(String(v[1]).trim()||String(v[2]).trim())rows.push(v)}
-  pending={rows,hit,name:file.name};$('#impSum').innerHTML=`<b>${esc(file.name)}</b>: ${fmt(rows.length)} filas y ${hit+(map[17]>=0?1:0)} de 50 columnas reconocidas.`;$('#impInfo').hidden=false;$('#doImport').disabled=!rows.length}
-  catch(err){toast('No pude leer ese archivo. Debe tener los títulos de tu plantilla (sku, name…).')}};rd.readAsArrayBuffer(file)}
+  const head=aoa[0],hl=head.map(x=>String(x).trim().toLowerCase());if(!hl.includes('sku'))throw new Error('sin columna sku');
+  const hit=[...HEAD.filter((h,c)=>h&&c!==13&&hl.includes(h)),...XH.filter(h=>hl.includes(h))].length;
+  const rows=[];for(let k=1;k<aoa.length;k++){const a=aoa[k],v=fromOut(head,a);if(String(v[0]).trim()||String(v[1]).trim())rows.push({v,...extraOut(head,a)})}
+  pending={rows,hit,name:file.name};$('#impSum').innerHTML=`<b>${esc(file.name)}</b>: ${fmt(rows.length)} filas y ${hit} columnas reconocidas.`;$('#impInfo').hidden=false;$('#doImport').disabled=!rows.length}
+  catch(err){toast('No pude leer ese archivo. Debe tener los títulos de las columnas (sku, nombre…).')}};rd.readAsArrayBuffer(file)}
 $('#doImport').onclick=()=>{if(!pending)return;const mode=document.querySelector('input[name=imode]:checked').value;snap();
- if(mode==='ref'){for(const v of pending.rows){S.refs.sku.push(String(v[1]));S.refs.name.push(String(v[2]));if(v[17])S.refs.base.push(String(v[17]))}}
- else{if(mode==='replace'){S.rows=[];S.refs={sku:[],name:[],base:[]}}for(const v of pending.rows)S.rows.push({id:S.nextId++,src:'imp',v})}
+ if(mode==='ref'){for(const o of pending.rows){S.refs.sku.push(String(o.v[0]));S.refs.name.push(String(o.v[1]));if(o.v[12])S.refs.base.push(String(o.v[12]))}}
+ else{if(mode==='replace'){S.rows=[];S.refs={sku:[],name:[],base:[]}}for(const o of pending.rows)S.rows.push({id:S.nextId++,src:'imp',...o})}
  const n=pending.rows.length;pending=null;$('#ovImp').hidden=true;S.sel.clear();gs.scrollTop=0;refreshAll(true);toast(mode==='ref'?`${fmt(n)} filas guardadas como referencia`:`${fmt(n)} filas importadas`,'Deshacer',undo)};
 
 
@@ -974,10 +964,12 @@ async function syPush(){const c=syCfg();if(!c)return;if(!c.token){syStatus('Pega
     try{await put()}catch(e){if(e.status===409||e.status===422)await put();else throw e}
     const o=sy.get();o.last=Date.now();sy.set(o);syStatus(`Listo: ${fmt(S.rows.length)} filas guardadas en <b>${esc(c.repo)}</b>. La app móvil las verá al abrirla o al tocar Actualizar.`,'ok')}
   catch(e){syStatus(esc(syErr(e)),'bad')}finally{$('#syPush').disabled=false}}
-function extraOut(head,a){const hl=head.map(x=>String(x).trim().toLowerCase()),o={};const t=hl.indexOf('tipo'),l=hl.indexOf('tela');if(t>=0&&String(a[t]||'').trim())o.tp=String(a[t]).trim();if(l>=0&&String(a[l]||'').trim())o.tl=String(a[l]).trim();const q=Math.max(hl.indexOf('precio5'),hl.indexOf('price5')),w=hl.indexOf('separado');if(q>=0&&String(a[q]||'').trim())o.p5=String(a[q]).trim();if(w>=0)o.sepd=a[w]===true||/^(true|1)$/i.test(String(a[w]));return o}
+function extraOut(head,a){const hl=head.map(x=>String(x).trim().toLowerCase()),o={};const t=hl.indexOf('tipo'),l=hl.indexOf('tela'),q=hl.indexOf('precio5'),w=hl.indexOf('separado');
+ if(t>=0&&String(a[t]||'').trim())o.tp=String(a[t]).trim();if(l>=0&&String(a[l]||'').trim())o.tl=String(a[l]).trim();
+ if(q>=0&&String(a[q]||'').trim())o.p5=String(a[q]).trim();if(w>=0)o.sepd=a[w]===true||/^(true|1|si|sí|verdadero)$/i.test(String(a[w]).trim());return o}
 function fromOut(head,a){const v=DEF.slice(),hl=head.map(x=>String(x).trim().toLowerCase());
- for(let c=1;c<NC;c++){if(c===16||c===17||!HEAD[c])continue;const i=hix(hl,c);if(i<0)continue;const x=a[i];v[c]=BOOL.has(c)?(x===true||/^(true|1)$/i.test(String(x))):(x==null?'':String(x))}
- const bi=hix(hl,16);if(bi>=0&&/^\d{13}$/.test(String(a[bi]).trim()))v[17]=String(a[bi]).trim().slice(0,12);return v}
+ for(let c=0;c<NC;c++){if(!HEAD[c])continue;const i=hl.indexOf(HEAD[c]);if(i>=0)v[c]=a[i]==null?'':String(a[i])}
+ const bi=hl.indexOf('codigo');if(bi>=0&&/^\d{13}$/.test(String(a[bi]).trim()))v[12]=String(a[bi]).trim().slice(0,12);return v}
 async function syPull(){const c=syCfg();if(!c)return;syStatus('Descargando…');$('#syPull').disabled=true;
   try{const res=await gh(syUrl(c.repo),{headers:syHdr(c.token,true)});const j=await res.json();
     if(!j||!Array.isArray(j.rows)||!Array.isArray(j.head)||!j.rows.every(v=>Array.isArray(v)&&v.length===j.head.length))throw Object.assign(new Error('formato'),{bad:true});
@@ -990,13 +982,12 @@ $('#btnSync').onclick=()=>{const o=sy.get();if(o.repo)$('#syRepo').value=o.repo;
 $('#syPush').onclick=syPush;$('#syPull').onclick=syPull;
 
 /* ---------- buscar y reemplazar ---------- */
-const REPC=Array.from({length:NC},(_,i)=>i).filter(i=>i&&i!==16&&!BOOL.has(i));
-function openRep(){const sel=$('#rpC');if(!sel.options.length)sel.innerHTML='<option value="c:1">sku</option><option value="c:2">name</option><option value="sn">sku y name (las dos)</option>'+REPC.filter(c=>c>2).map(c=>`<option value="c:${c}">${esc(label(c))}</option>`).join('');
+function openRep(){const sel=$('#rpC');if(!sel.options.length)sel.innerHTML='<option value="c:0">sku</option><option value="c:1">nombre</option><option value="sn">sku y nombre (las dos)</option>'+[2,3,4,5,6,7,8,9,10,11].map(c=>`<option value="c:${c}">${esc(label(c))}</option>`).join('');
  const ns=S.sel.size,nv=S.view.length,na=S.rows.length;$('#rpNs').textContent=`(${fmt(ns)})`;$('#rpNv').textContent=`(${fmt(nv)})`;$('#rpNa').textContent=`(${fmt(na)})`;
  document.querySelector('input[name=rps][value=sel]').disabled=!ns;
  const def=ns?'sel':(nv<na?'view':'all');document.querySelector(`input[name=rps][value=${def}]`).checked=true;
  $('#ovRep').hidden=false;rpCalc();$('#rpF').focus()}
-function repCols(){const v=$('#rpC').value;return v==='sn'?[1,2]:[+v.slice(2)]}
+function repCols(){const v=$('#rpC').value;return v==='sn'?[0,1]:[+v.slice(2)]}
 function repRows(){const sc=document.querySelector('input[name=rps]:checked').value;return sc==='sel'?S.rows.filter(r=>S.sel.has(r.id)):sc==='view'?S.view:S.rows}
 function repRegex(){const f=$('#rpF').value;if(!f)return null;let src=f.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');if($('#rpWord').checked)src='(?<![\\p{L}\\p{N}])'+src+'(?![\\p{L}\\p{N}])';try{return new RegExp(src,'g'+($('#rpCase').checked?'':'i')+'u')}catch(e){return null}}
 let repPlan=null;
@@ -1006,8 +997,8 @@ function rpCalc(){const re=repRegex(),to=$('#rpT').value,cols=repCols(),rows=rep
  for(const r of rows)for(const c of cols){const old=String(r.v[c]);const nu=old.replace(re,()=>{hits++;return to});if(nu!==old){ch.push({r,c,nu});if(samples.length<6)samples.push([old,nu])}}
  if(!ch.length){prev.className='xs';prev.textContent='No hay coincidencias en las filas elegidas.';return}
  const K=allKeys();const nk={sku:new Map(K.sku),name:new Map(K.name)};const inc=(m,k,d)=>{if(k)m.set(k,(m.get(k)||0)+d)};
- for(const x of ch){if(x.c===1||x.c===2){const m=x.c===1?nk.sku:nk.name;inc(m,key(x.r.v[x.c]),-1);inc(m,key(x.nu),1)}}
- let dup=0;for(const x of ch){if(x.c===1&&nk.sku.get(key(x.nu))>1)dup++;else if(x.c===2&&nk.name.get(key(x.nu))>1)dup++}
+ for(const x of ch){if(x.c===0||x.c===1){const m=x.c===0?nk.sku:nk.name;inc(m,key(x.r.v[x.c]),-1);inc(m,key(x.nu),1)}}
+ let dup=0;for(const x of ch){if(x.c===0&&nk.sku.get(key(x.nu))>1)dup++;else if(x.c===1&&nk.name.get(key(x.nu))>1)dup++}
  repPlan=ch;$('#rpGo').disabled=false;prev.className='xs'+(dup?' bad':' ok');
  prev.innerHTML=`<span><b>${fmt(ch.length)} celda${ch.length===1?'':'s'}</b> cambiaría${ch.length===1?'':'n'} (${fmt(hits)} coincidencia${hits===1?'':'s'}).</span>`+samples.map(([a,b])=>`<div class="mono" style="font-size:12px;word-break:break-all"><span style="color:var(--bad)">${esc(a)}</span><br>→ <span style="color:var(--good)">${esc(b)}</span></div>`).join('')+(ch.length>samples.length?`<span class="note">… y ${fmt(ch.length-samples.length)} más</span>`:'')+(dup?`<span><b>Atención:</b> ${fmt(dup)} quedarían repetidos y se marcarán en rojo.</span>`:'')}
 for(const id of['rpC','rpF','rpT','rpCase','rpWord'])$('#'+id).addEventListener(id==='rpC'||id==='rpCase'||id==='rpWord'?'change':'input',rpCalc);
@@ -1018,11 +1009,11 @@ $('#rpGo').onclick=()=>{if(!repPlan||!repPlan.length)return;const ch=repPlan;sna
 $('#btnExport').onclick=()=>{const nn=S.rows.filter(r=>r.src==='new').length;$('#xNew').textContent=`(${fmt(nn)})`;$('#xAll').textContent=`(${fmt(S.rows.length)})`;document.querySelector('input[name=xrows][value=new]').checked=nn>0&&nn!==S.rows.length;document.querySelector('input[name=xrows][value=all]').checked=!(nn>0&&nn!==S.rows.length);setStatus('');$('#ovExp').hidden=false};
 function expRows(){const m=document.querySelector('input[name=xrows]:checked').value;return m==='new'?S.rows.filter(r=>r.src==='new'):S.rows}
 const numOk=s=>/^-?\d+(\.\d+)?$/.test(String(s).trim());
-const OUT=[1,2,51,52,53,54,4,5,6,8,15,25,27,29,55,56,16,22,23];
-const outName=c=>c>=NC?XH[c-NC]:(NEWN[c]||HEAD[c]);
-const outBool=c=>c===NC+5||BOOL.has(c);
+const OUT=[0,1,NC,NC+1,NC+2,NC+3,2,3,4,5,6,7,8,9,NC+4,NC+5,NC+6,10,11];
+const outName=c=>c>=NC?XH[c-NC]:HEAD[c];
+const outBool=c=>c===NC+5;
 const outNum=c=>c===NC+4||NUM.has(c);
-function outRows(rows){const X=xCols(rows);return rows.map((r,i)=>OUT.map(c=>c>=NC?X[i][c-NC]:c===16?ean(r.v[17]):r.v[c]))}
+function outRows(rows){const X=xCols(rows);return rows.map((r,i)=>OUT.map(c=>c>=NC?X[i][c-NC]:r.v[c]))}
 function sheetAoa(forText){const rows=expRows();const head=$('#xhead').checked;const out=[];if(head)out.push(OUT.map(outName));
  for(const row of outRows(rows))out.push(row.map((v,k)=>outBool(OUT[k])?(v===true?'TRUE':'FALSE'):v));return{aoa:out,rows,head}}
 function buildXlsx(){const{aoa,head}=sheetAoa(false);const ws={};
@@ -1079,13 +1070,13 @@ const TFK='cm-tarifario-v1',TFREPO='kdnaskrlos/Tarifario-de-Precios';
 const TF={items:[],at:0,pass:null,err:''};
 try{const c=JSON.parse(localStorage.getItem(TFK)||'null');if(c&&Array.isArray(c.items)){TF.items=c.items;TF.at=c.at||0}}catch(e){}
 const nz=x=>String(x==null?'':x).normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim();
-function tfTipo(r){if(r.tp)return r.tp;const n=nz(r.v[2]);let best='';for(const t of (S.catalog.tipo||[])){const a=nz(t.n);if(a&&(n===a||n.startsWith(a+' '))&&a.length>nz(best).length)best=t.n}
- if(!best){const tk=String(r.v[2]||'').split(/\s+/).filter(Boolean),mw=lc(r.v[5]).split(/\s+/)[0],k=tk.findIndex(x=>lc(x)===mw);if(k>0)best=tk.slice(0,k).join(' ')}return best}
-const tfKeyOld=r=>[tfTipo(r),r.v[5],r.v[6],r.v[4]].map(nz).join('|');
-function tfKey(r){return [tfTipo(r),rowTela(r),r.v[5],r.v[6],r.v[4]].map(nz).join('|')}
+function tfTipo(r){if(r.tp)return r.tp;const n=nz(r.v[1]);let best='';for(const t of (S.catalog.tipo||[])){const a=nz(t.n);if(a&&(n===a||n.startsWith(a+' '))&&a.length>nz(best).length)best=t.n}
+ if(!best){const tk=String(r.v[1]||'').split(/\s+/).filter(Boolean),mw=lc(r.v[3]).split(/\s+/)[0],k=tk.findIndex(x=>lc(x)===mw);if(k>0)best=tk.slice(0,k).join(' ')}return best}
+const tfKeyOld=r=>[tfTipo(r),r.v[3],r.v[4],r.v[2]].map(nz).join('|');
+function tfKey(r){return [tfTipo(r),rowTela(r),r.v[3],r.v[4],r.v[2]].map(nz).join('|')}
 function rowTela(r){return r.tl||xParts(r).tela||''}
 function tfMigrate(){const old=new Set();for(const r of S.rows){const o=tfKeyOld(r);if(S.tlinks[o]){const nk=tfKey(r);if(!S.tlinks[nk])S.tlinks[nk]=S.tlinks[o];old.add(o)}}for(const o of old)delete S.tlinks[o];if(old.size)persist()}
-function tfLabel(r){const t=tfTipo(r),m=String(r.v[6]||'').trim(),a=nz(t),b=nz(m);const nom=!t?m:!m?t:(b.includes(a)?m:a.includes(b)?t:t+' '+m);return `${r.v[5]||'—'} · ${r.v[4]||'—'} · ${nom}`}
+function tfLabel(r){const t=tfTipo(r),m=String(r.v[4]||'').trim(),a=nz(t),b=nz(m);const nom=!t?m:!m?t:(b.includes(a)?m:a.includes(b)?t:t+' '+m);return `${r.v[3]||'—'} · ${r.v[2]||'—'} · ${nom}`}
 function tfCalc(p,TS){ // misma lógica que el tarifario
  if(!p.cb||!p.list)return null;const has=x=>x!=null&&x!==''&&isFinite(x);
  const go=has(p.gop)?+p.gop:(TS.go||0),fl=has(p.flp)?+p.flp:TS.floor,r=TS.round,out=[];
@@ -1115,16 +1106,16 @@ async function tfLoad(){ // devuelve 'ok' | 'clave' | 'red'
  const env=await tfEnv();if(!env)return'red';const pass=tfPass();if(!pass)return'clave';
  try{await tfSet(env,pass);return'ok'}catch(e){return'clave'}}
 function tfPrices(key){const l=S.tlinks[key];if(!l)return null;const it=TF.items.find(x=>x.id===l.id);return it?it.t:null}
-function tfPut(r){const it=tfItem(r);if(!it)return false;[15,25,27,29].forEach((c,i)=>{if(it.t[i]!=null)r.v[c]=String(Math.round(it.t[i]))});r.p5=it.t[4]!=null?String(Math.round(it.t[4])):'';r.sepd=!!it.sep;return true}
+function tfPut(r){const it=tfItem(r);if(!it)return false;[6,7,8,9].forEach((c,i)=>{if(it.t[i]!=null)r.v[c]=String(Math.round(it.t[i]))});r.p5=it.t[4]!=null?String(Math.round(it.t[4])):'';r.sepd=!!it.sep;return true}
 function tfItem(r){const l=S.tlinks[tfKey(r)];return l?TF.items.find(i=>i.id===l.id)||null:null}
-function tfApplyAll(){const ch=[];for(const r of S.rows){const it=tfItem(r);if(!it)continue;const nv=[15,25,27,29].map((c,i)=>it.t[i]!=null?String(Math.round(it.t[i])):r.v[c]);const p5=it.t[4]!=null?String(Math.round(it.t[4])):'',sp=!!it.sep;
- if([15,25,27,29].some((c,i)=>String(r.v[c])!==nv[i])||(r.p5||'')!==p5||!!r.sepd!==sp)ch.push([r,nv,p5,sp])}
- if(!ch.length)return 0;snap();for(const [r,nv,p5,sp] of ch){[15,25,27,29].forEach((c,i)=>r.v[c]=nv[i]);r.p5=p5;r.sepd=sp}persist();refreshAll(true);
+function tfApplyAll(){const ch=[];for(const r of S.rows){const it=tfItem(r);if(!it)continue;const nv=[6,7,8,9].map((c,i)=>it.t[i]!=null?String(Math.round(it.t[i])):r.v[c]);const p5=it.t[4]!=null?String(Math.round(it.t[4])):'',sp=!!it.sep;
+ if([6,7,8,9].some((c,i)=>String(r.v[c])!==nv[i])||(r.p5||'')!==p5||!!r.sepd!==sp)ch.push([r,nv,p5,sp])}
+ if(!ch.length)return 0;snap();for(const [r,nv,p5,sp] of ch){[6,7,8,9].forEach((c,i)=>r.v[c]=nv[i]);r.p5=p5;r.sepd=sp}persist();refreshAll(true);
  toast(`Precios del tarifario actualizados en ${fmt(ch.length)} filas`,'Deshacer',undo);return ch.length}
 function tfStatus(){const el=$('#tfSt');const n=Object.keys(S.tlinks).length;
  el.hidden=false;el.className='xs';
  el.innerHTML='<span>'+(TF.items.length?`Tarifario leído: <b>${fmt(TF.items.length)}</b> productos con precios${TF.at?' · '+new Date(TF.at).toLocaleString('es-VE'):''}. Vínculos guardados: <b>${n}</b>.${TF.err?' <span style="color:var(--danger,#c0392b)">'+esc(TF.err)+'</span>':''}`:(TF.err?esc(TF.err):'Todavía no se han leído los precios del tarifario.'))+'</span>'}
-function tfGroups(){const m=new Map();for(const r of S.rows){const k=tfKey(r);let g=m.get(k);if(!g){g={k,lab:tfLabel(r),n:0,cat:r.v[4],marca:r.v[5],tipo:tfTipo(r),modelo:r.v[6]};m.set(k,g)}g.n++}return[...m.values()].sort((a,b)=>(!!S.tlinks[a.k])-(!!S.tlinks[b.k])||a.lab.localeCompare(b.lab))}
+function tfGroups(){const m=new Map();for(const r of S.rows){const k=tfKey(r);let g=m.get(k);if(!g){g={k,lab:tfLabel(r),n:0,cat:r.v[2],marca:r.v[3],tipo:tfTipo(r),modelo:r.v[4]};m.set(k,g)}g.n++}return[...m.values()].sort((a,b)=>(!!S.tlinks[a.k])-(!!S.tlinks[b.k])||a.lab.localeCompare(b.lab))}
 function tfSuggest(g){const w=new Set(nz(g.tipo+' '+g.modelo).split(' ').filter(Boolean));return TF.items.map(it=>{let sc=0;for(const x of nz(it.prod).split(' '))if(w.has(x))sc+=2;if(nz(it.gen)===nz(g.cat))sc+=2;if(nz(it.prov)===nz(g.marca))sc+=3;return[sc,it]}).filter(x=>x[0]>=5).sort((a,b)=>b[0]-a[0]).slice(0,3).map(x=>x[1])}
 const tfOpt=it=>`<option value="${esc(it.id)}">${esc([it.prov,it.gen,it.prod].filter(Boolean).join(' · '))}</option>`;
 function tfRender(){tfStatus();const only=$('#tfFilt').checked;const all=TF.items.slice().sort((a,b)=>(a.prov+a.gen+a.prod).localeCompare(b.prov+b.gen+b.prod)).map(tfOpt).join('');
@@ -1152,11 +1143,11 @@ let tfLast=Date.now();document.addEventListener('visibilitychange',()=>{if(!docu
 /* ---------- columnas extra para el punto de venta ---------- */
 const lc=x=>String(x==null?'':x).trim().toLowerCase();
 function xParts(r){
- const toks=String(r.v[2]||'').split(/\s+/).filter(Boolean),L=toks.map(lc),n=toks.length,used=new Set();
+ const toks=String(r.v[1]||'').split(/\s+/).filter(Boolean),L=toks.map(lc),n=toks.length,used=new Set();
  const tp=String(S.tpl.name),pt=tp.indexOf('{talla}'),pc=tp.indexOf('{color}');
- const pfx=new Set([tfTipo(r),r.v[5],r.v[4]].filter(Boolean).flatMap(x=>String(x).split(/\s+/)).map(lc));
+ const pfx=new Set([tfTipo(r),r.v[3],r.v[2]].filter(Boolean).flatMap(x=>String(x).split(/\s+/)).map(lc));
  let pl=0;while(pl<n&&pfx.has(L[pl]))pl++;
- {const cw=lc(r.v[4]).split(/\s+/).filter(Boolean);if(cw.length)for(let i=0;i+cw.length<=n;i++){if(cw.every((w,k)=>L[i+k]===w)){pl=Math.max(pl,i+cw.length);break}}}
+ {const cw=lc(r.v[2]).split(/\s+/).filter(Boolean);if(cw.length)for(let i=0;i+cw.length<=n;i++){if(cw.every((w,k)=>L[i+k]===w)){pl=Math.max(pl,i+cw.length);break}}}
  // talla: del catálogo, o un dato numérico (6-8, 10) que no sea parte del tipo, marca o categoría
  let szI=-1,sz='';
  for(let i=0;i<n&&szI<0;i++){const z=S.catalog.sizes.find(z=>lc(z)===L[i]);if(z){sz=z;szI=i}}
@@ -1164,7 +1155,7 @@ function xParts(r){
  if(szI>=0)used.add(szI);
  // tela al final (del catálogo) y referencia
  let end=n,tela='';for(const m of (S.catalog.mat||[]).map(m=>({n:m.n,w:lc(m.n).split(/\s+/)})).sort((a,b)=>b.w.length-a.w.length)){const w=m.w;if(w.length&&end-w.length>pl-1&&w.every((x,k)=>L[end-w.length+k]===x)){end-=w.length;tela=m.n;break}}
- const refv=String(r.v[7]||'').trim(),rk=x=>String(x).toLowerCase().replace(/[^a-z0-9]/g,'');
+ const refv=String(r.v[13]||'').trim(),rk=x=>String(x).toLowerCase().replace(/[^a-z0-9]/g,'');
  const refI=refv?toks.findIndex(t=>rk(t)===rk(refv)):-1;
  let cl='';
  if(refI>=0){used.add(refI);cl=refv}
@@ -1180,7 +1171,7 @@ function xCols(rows){
  for(const x of P)if(x.color){const k=nz(x.color);if(!cnt.has(k))cnt.set(k,new Map());const m=cnt.get(k);m.set(x.color,(m.get(x.color)||0)+1)}
  const cc=new Map([...cnt].map(([k,m])=>[k,[...m.entries()].sort((a,b)=>b[1]-a[1])[0][0]]));
  return P.map(x=>{const r=x.r;
-  return[tfTipo(r),r.tl||x.tela||'',x.color?(cc.get(nz(x.color))||x.color):'',x.talla,r.p5||'',!!r.sepd]})}
+  return[tfTipo(r),r.tl||x.tela||'',x.color?(cc.get(nz(x.color))||x.color):'',x.talla,r.p5||'',!!r.sepd,ean(r.v[12])]})}
 const withX=()=>({head:OUT.map(outName),rows:outRows(S.rows)});
 tfMigrate();xRefresh();renderRows(true);
 window.__S=S;window.__api={withX,xCols,xParts,genVariants,addVariants,buildCsv,buildTsv,ean,HEAD,computeIssues};

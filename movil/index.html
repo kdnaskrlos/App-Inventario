@@ -182,7 +182,7 @@ textarea{width:100%;min-height:96px;border-radius:10px;border:1px solid var(--li
 <div class="wrap">
   <header class="top">
     <div class="bar">
-      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v12</span></span></div>
+      <div class="brand"><b>Stock, <em>Comic Shop</em></b><span>Inventario en el teléfono · <span class="ver" title="Versión de la app móvil">v13</span></span></div>
       <button class="ib" id="bSync" type="button" aria-label="Actualizar inventario desde GitHub"><svg viewBox="0 0 24 24"><path d="M20.5 12a8.5 8.5 0 0 1-14.7 5.8L3.5 15.5"/><path d="M3.5 12a8.5 8.5 0 0 1 14.7-5.8l2.3 2.3"/><path d="M20.5 3.5v5h-5M3.5 20.5v-5h5"/></svg></button>
       <button class="ib" id="bTheme" type="button" aria-label="Cambiar entre modo claro y oscuro"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M4.9 4.9l1.6 1.6M17.5 17.5l1.6 1.6M2.5 12h2.2M19.3 12h2.2M4.9 19.1l1.6-1.6M17.5 6.5l1.6-1.6"/></svg></button>
       <button class="ib" id="bData" type="button" aria-label="Cargar o actualizar datos"><svg viewBox="0 0 24 24"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4.5 14v4.5a1.5 1.5 0 0 0 1.5 1.5h12a1.5 1.5 0 0 0 1.5-1.5V14"/></svg></button>
@@ -249,21 +249,20 @@ function toEan(code,base){const nz=x=>str(x).replace(/\.0+$/,'');code=nz(code);b
   if(/^\d{13}$/.test(code))return code;
   if(/^\d{1,12}$/.test(base)){const b=base.padStart(12,'0');return b+checkDigit(b)}
   if(/^\d{12}$/.test(code))return code+checkDigit(code);return''}
-const st=r=>{const t=r.fi+r.nf;return t<=0?'out':(r.mn>0&&t<=r.mn?'low':'ok')};
+const st=r=>{const t=r.nf;return t<=0?'out':(r.mn>0&&t<=r.mn?'low':'ok')};
 
 function parseTable(aoa){
-  let h=-1;for(let i=0;i<Math.min(aoa.length,10);i++){const l=(aoa[i]||[]).map(x=>norm(x).trim());if(l.includes('sku')&&(l.includes('name')||l.includes('nombre'))){h=i;break}}
-  if(h<0)throw new Error('No encontré las columnas «sku» y «name». Usa el archivo exportado desde la carga masiva.');
+  let h=-1;for(let i=0;i<Math.min(aoa.length,10);i++){const l=(aoa[i]||[]).map(x=>norm(x).trim());if(l.includes('sku')&&l.includes('nombre')){h=i;break}}
+  if(h<0)throw new Error('No encontré las columnas «sku» y «nombre». Usa el archivo exportado desde la carga masiva.');
   const head=aoa[h].map(x=>norm(x).trim()),ix=(...n)=>{for(const x of n){const i=head.indexOf(x);if(i>=0)return i}return -1};
-  const c={sku:ix('sku'),name:ix('nombre','name'),desc:ix('description'),cat:ix('categoria','category'),brand:ix('marca','brand'),model:ix('modelo','model'),ref:ix('reference'),cost:ix('costo','cost'),
-    p1:ix('precio1','price'),p2:ix('precio2','price2'),p3:ix('precio3','price3'),p4:ix('precio4','price4'),bc:ix('codigo','barcode'),ln:ix('location_name'),la:ix('location_aisle'),ls:ix('location_shelf'),
-    fi:ix('location_fiscalstock'),nf:ix('existencia','location_nonfiscalstock'),mn:ix('minimo','location_minstock'),sz:ix('sizes')};
-  c.base=(c.bc>=0&&head[c.bc+1]==='')?c.bc+1:-1;
+  const c={sku:ix('sku'),name:ix('nombre'),cat:ix('categoria'),brand:ix('marca'),model:ix('modelo'),cost:ix('costo'),
+    p1:ix('precio1'),p2:ix('precio2'),p3:ix('precio3'),p4:ix('precio4'),bc:ix('codigo'),nf:ix('existencia'),mn:ix('minimo'),
+    tp:ix('tipo'),te:ix('tela'),co:ix('color'),sz:ix('talla')};
   const g=(a,i)=>i>=0?a[i]:'';const rows=[];const seen=new Set();
   for(let i=h+1;i<aoa.length;i++){const a=aoa[i]||[];const sku=str(g(a,c.sku));if(!sku||seen.has(sku))continue;seen.add(sku);
-    rows.push({s:sku,n:str(g(a,c.name)),d:str(g(a,c.desc)),c:str(g(a,c.cat)),b:str(g(a,c.brand)),m:str(g(a,c.model)),r:str(g(a,c.ref)),k:num(g(a,c.cost)),
-      p:[num(g(a,c.p1)),num(g(a,c.p2)),num(g(a,c.p3)),num(g(a,c.p4))],e:toEan(g(a,c.bc),g(a,c.base)),
-      fi:num(g(a,c.fi)),nf:num(g(a,c.nf)),mn:num(g(a,c.mn)),l:[str(g(a,c.ln)),str(g(a,c.la)),str(g(a,c.ls))],z:str(g(a,c.sz))})}
+    rows.push({s:sku,n:str(g(a,c.name)),c:str(g(a,c.cat)),b:str(g(a,c.brand)),m:str(g(a,c.model)),k:num(g(a,c.cost)),
+      p:[num(g(a,c.p1)),num(g(a,c.p2)),num(g(a,c.p3)),num(g(a,c.p4))],e:toEan(g(a,c.bc),''),
+      nf:num(g(a,c.nf)),mn:num(g(a,c.mn)),tp:str(g(a,c.tp)),te:str(g(a,c.te)),co:str(g(a,c.co)),z:str(g(a,c.sz))})}
   if(!rows.length)throw new Error('El archivo no tiene filas con SKU.');
   return rows}
 function parseTSV(t){const out=[];let row=[],cur='',q=false;for(let i=0;i<t.length;i++){const ch=t[i];
@@ -283,10 +282,10 @@ function toast(msg,label,fn){const t=$('#toast');t.innerHTML=`<span>${esc(msg)}<
 function opts(sel,all,vals,cur){const s=$(sel);s.innerHTML=`<option value="">${all}</option>`+vals.map(v=>`<option value="${esc(v)}"${v===cur?' selected':''}>${esc(v)}</option>`).join('')}
 function build(){const cats=[...new Set(D.rows.map(r=>r.c).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));const br=[...new Set(D.rows.map(r=>r.b).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'es'));
   opts('#fCat','Categorías',cats,F.cat);opts('#fBrand','Marcas',br,F.brand)}
-const total=r=>r.fi+r.nf;
+const total=r=>r.nf;
 function filtered(){const terms=norm(F.q).split(/\s+/).filter(Boolean);
   let a=D.rows.filter(r=>{if(F.st!=='all'&&st(r)!==F.st)return false;if(F.cat&&r.c!==F.cat)return false;if(F.brand&&r.b!==F.brand)return false;
-    if(!terms.length)return true;r._h=r._h||norm([r.s,r.n,r.c,r.b,r.m,r.r,r.e,r.z].join(' '));return terms.every(t=>r._h.includes(t))});
+    if(!terms.length)return true;r._h=r._h||norm([r.s,r.n,r.c,r.b,r.m,r.e,r.tp,r.te,r.co,r.z].join(' '));return terms.every(t=>r._h.includes(t))});
   const cmp={name:(x,y)=>x.n.localeCompare(y.n,'es',{numeric:true}),sku:(x,y)=>x.s.localeCompare(y.s,'es',{numeric:true}),lo:(x,y)=>total(x)-total(y)||x.n.localeCompare(y.n,'es'),hi:(x,y)=>total(y)-total(x)||x.n.localeCompare(y.n,'es')}[F.sort];
   return a.sort(cmp)}
 function render(){
@@ -333,17 +332,16 @@ function drawEan(cv,code){const m=4,q=11,w=(95+q*2)*m,h=150;cv.width=w;cv.height
   x.fillText(code[0],(q-5)*m,h-4);for(let i=0;i<6;i++)x.fillText(code[i+1],(q+3+i*7+3.5)*m,h-4);for(let i=0;i<6;i++)x.fillText(code[i+7],(q+50+i*7+3.5)*m,h-4)}
 
 function openDetail(sku){const r=D.rows.find(x=>x.s===sku);if(!r)return;const t=total(r),k=st(r);const el=$('#detail');
-  const loc=[r.l[0],r.l[1]&&('Pasillo '+r.l[1]),r.l[2]&&('Estante '+r.l[2])].filter(Boolean).join(' · ')||'—';
   const kv=(a,b,m)=>b?`<dt>${a}</dt><dd${m?' class="mono"':''}>${esc(b)}</dd>`:'';
   const pri=r.p.map((v,i)=>({v,i})).filter(o=>o.v||o.i===0);
   el.innerHTML=`<div class="grab"></div><div class="sh"><h2>${esc(r.n||'(sin nombre)')}</h2><button class="x" type="button" data-act="close" aria-label="Cerrar">×</button></div>
   <div class="mono muted" style="font-size:12.5px;margin-top:4px;overflow-wrap:anywhere">${esc(r.s)}</div>
   <div class="card"><h3>Stock</h3><div class="big"><div class="stk ${k}"><b>${fmtN(t)}</b><span>${k==='out'?'agotado':k==='low'?'stock bajo':'en total'}</span></div>
-   <dl class="kv" style="flex:1"><dt>Fiscal</dt><dd class="mono">${fmtN(r.fi)}</dd><dt>No fiscal</dt><dd class="mono">${fmtN(r.nf)}</dd><dt>Mínimo</dt><dd class="mono">${fmtN(r.mn)}</dd></dl></div></div>
+   <dl class="kv" style="flex:1"><dt>Existencia</dt><dd class="mono">${fmtN(r.nf)}</dd><dt>Mínimo</dt><dd class="mono">${fmtN(r.mn)}</dd></dl></div></div>
   ${r.e&&r.e.length===13?`<div class="card"><h3>Código de barras</h3><div class="bc"><canvas id="bcv" aria-label="Código de barras ${esc(r.e)}"></canvas></div><div class="row" style="margin-top:10px"><button class="btn" type="button" data-copy="${esc(r.e)}" data-l="Código">Copiar código</button><button class="btn" type="button" data-copy="${esc(r.s)}" data-l="SKU">Copiar SKU</button></div></div>`:`<div class="card"><h3>Código de barras</h3><p class="hint">Este producto no tiene código en el archivo.</p><div class="row" style="margin-top:10px"><button class="btn" type="button" data-copy="${esc(r.s)}" data-l="SKU">Copiar SKU</button></div></div>`}
   <div class="card"><h3>Precios</h3><div class="prices">${pri.map(o=>`<div><span>Precio ${o.i+1}</span><b>${fmtN(o.v)}</b></div>`).join('')}</div></div>
-  <div class="card"><h3>Ficha</h3><dl class="kv">${kv('Categoría',r.c)}${kv('Marca',r.b)}${kv('Modelo',r.m)}${kv('Referencia',r.r)}${kv('Tallas',r.z)}<dt>Ubicación</dt><dd>${esc(loc)}</dd>
-   <dt>Costo</dt><dd><button class="reveal" type="button" data-cost="${fmtN(r.k)}">Mostrar</button></dd></dl>${r.d?`<p class="hint" style="margin-top:10px">${esc(r.d)}</p>`:''}</div>`;
+  <div class="card"><h3>Ficha</h3><dl class="kv">${kv('Tipo',r.tp)}${kv('Tela',r.te)}${kv('Color',r.co)}${kv('Talla',r.z)}${kv('Categoría',r.c)}${kv('Marca',r.b)}${kv('Modelo',r.m)}
+   <dt>Costo</dt><dd><button class="reveal" type="button" data-cost="${fmtN(r.k)}">Mostrar</button></dd></dl></div>`;
   showSheet(el);if(r.e&&r.e.length===13)requestAnimationFrame(()=>{const cv=$('#bcv');cv&&drawEan(cv,r.e)})}
 
 function openData(){const el=$('#data');const has=D.rows.length>0;
@@ -354,7 +352,7 @@ function openData(){const el=$('#data');const has=D.rows.length>0;
   <div class="card stack"><h3 style="margin:0">Cargar desde archivo</h3><p class="hint">Elige el Excel (.xlsx) o CSV exportado desde la carga masiva. Reemplaza el stock anterior.</p>
    <label class="btn block" for="file">Elegir archivo</label><input id="file" type="file" accept=".xlsx,.xls,.csv,.tsv,.txt,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,text/csv" hidden></div>
   <div class="card stack"><h3 style="margin:0">Pegar desde Google Sheets</h3><p class="hint">Copia las filas con sus títulos (incluida la fila de encabezados) y pégalas aquí.</p>
-   <textarea id="paste" placeholder="sku&#9;name&#9;description…" spellcheck="false"></textarea><button class="btn block" type="button" data-act="paste">Cargar lo pegado</button></div>
+   <textarea id="paste" placeholder="sku&#9;nombre&#9;tipo…" spellcheck="false"></textarea><button class="btn block" type="button" data-act="paste">Cargar lo pegado</button></div>
   <div class="card stack"><h3 style="margin:0">Otras opciones</h3><button class="btn block" type="button" data-act="demo">Cargar datos de ejemplo</button>
    ${has?`<button class="btn danger block" type="button" data-act="wipe">Borrar datos de este teléfono</button>`:''}</div>`;
   showSheet(el)}
@@ -369,8 +367,8 @@ async function readFile(f){
 function pasted(){const t=$('#paste').value;if(!t.trim()){toast('Pega primero las filas copiadas de Sheets.');return}
   try{const rows=parseTable(parseTSV(t));hideSheets();setData(rows,'Pegado desde Sheets')}catch(e){toast(e.message)}}
 function demo(){const cats=[['Franela','Camisetas'],['Gorra','Accesorios'],['Taza','Hogar'],['Poster','Arte']],brands=['Marvel','DC','Anime Club'],sizes=['S','M','L','XL'];const rows=[];let n=1;
-  for(const [p,c] of cats)for(const b of brands)for(const z of sizes){if(p!=='Franela'&&(z==='S'||z==='XL'))continue;const base=String(750100000000+n*137).slice(0,12);const fi=(n*7)%4===0?0:(n*5)%9,nf=(n*3)%6;
-    rows.push({s:`${p.slice(0,3).toUpperCase()}-${b.slice(0,3).toUpperCase()}-${String(n).padStart(3,'0')}-${z}`,n:`${p} ${b} Talla ${z} (ejemplo)`,d:'',c,b,m:'Edición '+(1+n%3),r:'',k:3+n%5,p:[8+n%7,9+n%7,7+n%7,0],e:base+checkDigit(base),fi,nf,mn:3,l:['Principal','A'+(1+n%4),'E'+(1+n%3)],z});n++}
+  for(const [p,c] of cats)for(const b of brands)for(const z of sizes){if(p!=='Franela'&&(z==='S'||z==='XL'))continue;const base=String(750100000000+n*137).slice(0,12);const nf=(n*3)%6;
+    rows.push({s:`${p.slice(0,3).toUpperCase()}-${b.slice(0,3).toUpperCase()}-${String(n).padStart(3,'0')}-${z}`,n:`${p} ${b} Talla ${z} (ejemplo)`,c,b,m:'Edición '+(1+n%3),k:3+n%5,p:[8+n%7,9+n%7,7+n%7,0],e:base+checkDigit(base),nf,mn:3,tp:p,te:'',co:'',z});n++}
   hideSheets();setData(rows,'Datos de ejemplo')}
 
 
