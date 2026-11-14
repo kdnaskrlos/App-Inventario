@@ -164,8 +164,10 @@ tbody tr:nth-child(even) td{background:var(--surface2)}
 tbody tr.new td{background:var(--mark)}
 tbody tr.new td input{color:var(--mark-ink)}
 tbody tr.picked td{background:var(--blue-soft)}
-td.stk,th.stk{position:sticky;z-index:2;left:86px;box-shadow:1px 0 0 var(--line)}
-td.rn,th.rn{position:sticky;left:34px;z-index:2;width:52px;text-align:center}
+td.stk,th.stk{box-shadow:1px 0 0 var(--line)}
+td.stk{position:static}th.stk{left:auto}
+td.rn,th.rn{width:52px;text-align:center}
+td.rn{position:static}th.rn{left:auto}
 th.rn{z-index:4;text-align:center}
 td.rn button{width:100%;height:33px;border:0;background:transparent;font-family:var(--f-mono);font-size:12px;color:var(--muted);padding:0}
 td.rn button:hover{background:var(--accent-soft);color:var(--accent);font-weight:600}
@@ -275,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v47</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v48</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -409,7 +411,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 <div class="ov" id="ovExp" hidden>
   <div class="modal" role="dialog" aria-labelledby="hExp">
     <h3 id="hExp">Exportar plantilla</h3>
-    <p class="note" style="margin:0">Se genera solo con las columnas esenciales: sku, nombre, tipo, tela, color, talla, genero, marca, modelo, costo, precio1 a precio5, separado, codigo (ya calculado), existencia, minimo e id_imagen.</p>
+    <p class="note" style="margin:0">Se genera solo con las columnas esenciales: sku, nombre, tipo, tela, color, talla, genero, marca, modelo, costo, precio1 a precio5, separado, codigo (ya calculado), existencia y minimo, además de id_imagen (junto a sku).</p>
     <div>
       <div class="lbl" style="margin-bottom:6px">Qué filas</div>
       <label class="opt"><input type="radio" name="xrows" value="new"><div><b>Solo las nuevas <span id="xNew"></span></b><span>Lo que agregaste con el generador. Ideal para subir solo lo pendiente.</span></div></label>
@@ -496,7 +498,7 @@ const NUM=new Set([5,6,7,8,9,10,11]);
 const W={0:230,1:300,2:110,3:110,4:130,5:90,6:90,7:90,8:90,9:90,10:140,11:120};
 W[NC]=110;W[NC+1]=110;W[NC+2]=120;W[NC+3]=80;W[NC+4]=110;W[NC+5]=90;W[NC+6]=140;W[NC+7]=110;
 const DEF=Array(NC).fill('');DEF[10]='12';DEF[11]='5';
-const ESS=[0,1,NC,NC+1,NC+2,NC+3,2,3,4,5,6,7,8,9,NC+4,NC+5,NC+6,10,11,NC+7];
+const ESS=[0,NC+7,1,NC,NC+1,NC+2,NC+3,2,3,4,5,6,7,8,9,NC+4,NC+5,NC+6,10,11];
 const label=c=>c>=NC?XH[c-NC]:(HEAD[c]||'');
 const FML=n=>`R${n} & MOD(10 - MOD(SUMPRODUCT(MID(R${n}, {1,2,3,4,5,6,7,8,9,10,11,12}, 1) * {1,3,1,3,1,3,1,3,1,3,1,3}), 10), 10)`;
 function ean(b){b=String(b==null?'':b).trim();if(!/^\d{12}$/.test(b))return'';let s=0;for(let i=0;i<12;i++)s+=(+b[i])*(i%2?3:1);return b+((10-(s%10))%10)}
@@ -1010,7 +1012,7 @@ $('#rpGo').onclick=()=>{if(!repPlan||!repPlan.length)return;const ch=repPlan;sna
 $('#btnExport').onclick=()=>{const nn=S.rows.filter(r=>r.src==='new').length;$('#xNew').textContent=`(${fmt(nn)})`;$('#xAll').textContent=`(${fmt(S.rows.length)})`;document.querySelector('input[name=xrows][value=new]').checked=nn>0&&nn!==S.rows.length;document.querySelector('input[name=xrows][value=all]').checked=!(nn>0&&nn!==S.rows.length);setStatus('');$('#ovExp').hidden=false};
 function expRows(){const m=document.querySelector('input[name=xrows]:checked').value;return m==='new'?S.rows.filter(r=>r.src==='new'):S.rows}
 const numOk=s=>/^-?\d+(\.\d+)?$/.test(String(s).trim());
-const OUT=[0,1,NC,NC+1,NC+2,NC+3,2,3,4,5,6,7,8,9,NC+4,NC+5,NC+6,10,11,NC+7];
+const OUT=[0,NC+7,1,NC,NC+1,NC+2,NC+3,2,3,4,5,6,7,8,9,NC+4,NC+5,NC+6,10,11];
 const outName=c=>c>=NC?XH[c-NC]:HEAD[c];
 const outBool=c=>c===NC+5;
 const outNum=c=>c===NC+4||NUM.has(c);
