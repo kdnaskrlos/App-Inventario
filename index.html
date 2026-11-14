@@ -275,7 +275,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v45</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v46</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -1138,6 +1138,7 @@ $('#tfList').addEventListener('change',e=>{const s2=e.target.closest('select[dat
  if(!id){delete S.tlinks[k];persist();tfRender();return}
  const it=TF.items.find(x=>x.id===id);S.tlinks[k]={id,lbl:[it.prov,it.gen,it.prod].join(' · ')};persist();tfApplyAll();tfRender()});
 setTimeout(()=>{if(Object.keys(S.tlinks).length)tfRefresh(false)},1500);
+setInterval(()=>{const ae=document.activeElement;if(document.hidden||!Object.keys(S.tlinks).length||(ae&&/^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)))return;tfLast=Date.now();tfRefresh(false).catch(()=>{})},120000); // revisa el tarifario cada 2 min
 let tfLast=Date.now();document.addEventListener('visibilitychange',()=>{if(!document.hidden&&Object.keys(S.tlinks).length&&Date.now()-tfLast>60000){tfLast=Date.now();tfRefresh(false)}});
 
 /* ---------- columnas extra para el punto de venta ---------- */
