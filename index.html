@@ -277,7 +277,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 </style>
 
 <header class="top">
-  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v49</b></span></div>
+  <div class="brand"><b>Carga masiva, <em>Comic Shop</em></b><span>Inventario con variantes, SKU y códigos de barras · <b class="ver" title="Versión de la herramienta">v50</b></span></div>
   <div class="stats" id="stats"></div>
   <div class="actions">
     <button class="btn ghost" id="btnTheme" aria-label="Cambiar entre modo claro y oscuro" title="Cambiar entre modo claro y oscuro"></button>
@@ -378,7 +378,7 @@ td.warn,tbody tr td.warn{background:var(--warn-soft)}
 
   <section class="board" aria-label="Inventario">
     <div class="bar" id="bar">
-      <div class="search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="in" id="q" placeholder="Buscar por SKU o nombre" autocomplete="off"></div>
+      <div class="search"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input class="in" id="q" placeholder="Buscar: franela azul 8 -niño…" title="Escribe varias palabras (todas deben aparecer, en cualquier orden).&#10;&quot;frase exacta&quot; · -palabra para excluir&#10;Por columna: talla:8 color:azul genero:dama marca:as tipo:franela tela:algodon sku: id_imagen: codigo:&#10;Números: existencia:0 · existencia&lt;3 · precio1&gt;25000" autocomplete="off"></div>
       <div class="seg" id="flt"><button data-v="all" aria-pressed="true">Todas</button><button data-v="new" aria-pressed="false">Nuevas</button><button data-v="imp" aria-pressed="false">Importadas</button><button data-v="alert" aria-pressed="false">Con alertas</button></div>
       <button class="btn sm" id="btnRep" title="Cambia una palabra o texto dentro de una columna, sin tocar el resto del contenido">Buscar y reemplazar</button>
       <button class="btn sm ghost" id="btnCw" title="Vuelve al ancho original de todas las columnas">Restablecer anchos</button>
@@ -795,7 +795,25 @@ g.addEventListener('scroll',upd,{passive:true});new ResizeObserver(upd).observe(
 fb.onclick=()=>g.scrollTo({top:down?g.scrollHeight:0,behavior:'smooth'});upd()}
 const ROW_H=34;const gs=$('#gs'),tb=$('#tb');let visCols=[],r0=-1,r1=-1;
 function xRefresh(){try{const X=xCols(S.rows);S.xc=new Map(S.rows.map((r,i)=>[r.id,X[i]]))}catch(e){S.xc=S.xc||new Map()}}
-function computeView(){xRefresh();S.lastI=null;S.idx=new Map(S.rows.map((r,i)=>[r.id,i]));const q=key(S.ui.q),fl=S.ui.filter;S.view=S.rows.filter(r=>{if(fl==='new'&&r.src!=='new')return false;if(fl==='imp'&&r.src==='new')return false;if(fl==='alert'&&!S.issues.has(r.id))return false;if(q&&!(key(r.v[0])+' '+key(r.v[1])).includes(q))return false;return true})}
+function sn(x){return String(x==null?'':x).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/[^a-z0-9 ]+/g,' ').replace(/\s+/g,' ').trim()}
+/* buscador: varias palabras (todas deben estar), "frase exacta", -excluir, columna:valor y números con > < */
+const SF={sku:r=>r.v[0],id_imagen:r=>r.im||'',img:r=>r.im||'',nombre:r=>r.v[1],tipo:(r,x)=>x[0],tela:(r,x)=>x[1],color:(r,x)=>x[2],talla:(r,x)=>x[3],genero:r=>r.v[2],marca:r=>r.v[3],modelo:r=>r.v[4],
+ costo:r=>r.v[5],precio1:r=>r.v[6],precio2:r=>r.v[7],precio3:r=>r.v[8],precio4:r=>r.v[9],existencia:r=>r.v[10],minimo:r=>r.v[11],precio5:(r,x)=>x[4],codigo:(r,x)=>x[6]};
+const SNUM=new Set(['costo','precio1','precio2','precio3','precio4','precio5','existencia','minimo']),SEXACT=new Set(['talla']);
+function buildSearch(raw){const src=String(raw||'').trim();if(!src)return null;const T=[];const re=/(-?)(?:([A-Za-zÀ-ÿ_0-9]+)(>=|<=|:|=|>|<))?(?:"([^"]*)"|(\S+))/g;let m;
+ while((m=re.exec(src))){let neg=m[1]==='-',f=m[2]?String(m[2]).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase():'',op=m[3]||'',val=m[4]!=null?m[4]:m[5];if(f&&!SF[f]){val=(m[2]+op+(val||''));f='';op=''}
+  if(!f&&!val)continue;T.push({neg,f,op,val:sn(val),raw:val,phrase:m[4]!=null})}
+ if(!T.length)return null;
+ return r=>{const x=S.xc.get(r.id)||[];let hay=null;
+  for(const t of T){let ok;
+   if(t.f){const g=String(SF[t.f](r,x)==null?'':SF[t.f](r,x));
+    if(SNUM.has(t.f)&&t.op!==':'||(SNUM.has(t.f)&&/^[\d.,]+$/.test(t.raw))){const a=parseFloat(g.replace(',','.')),b=parseFloat(String(t.raw).replace(',','.'));ok=!isNaN(a)&&!isNaN(b)&&(t.op==='>'?a>b:t.op==='<'?a<b:t.op==='>='?a>=b:t.op==='<='?a<=b:a===b)}
+    else{const k=sn(g);ok=SEXACT.has(t.f)?k===t.val:k.includes(t.val)}}
+   else{if(hay===null)hay=sn([r.v[0],r.im,r.v[1],x[0],x[1],x[2],x[3],r.v[2],r.v[3],r.v[4],x[6]].join(' '));
+    if(/^\d{1,2}$/.test(t.val))ok=(' '+hay.replace(/[^a-z0-9]+/g,' ')+' ').includes(' '+t.val+' ');else ok=hay.includes(t.val)}
+   if(t.neg?ok:!ok)return false}
+  return true}}
+function computeView(){xRefresh();S.lastI=null;S.idx=new Map(S.rows.map((r,i)=>[r.id,i]));const qf=buildSearch(S.ui.q),fl=S.ui.filter;S.view=S.rows.filter(r=>{if(fl==='new'&&r.src!=='new')return false;if(fl==='imp'&&r.src==='new')return false;if(fl==='alert'&&!S.issues.has(r.id))return false;if(qf&&!qf(r))return false;return true})}
 const cw=c=>S.cw[c]||W[c]||100;
 const tblW=()=>86+visCols.reduce((s,c)=>s+cw(c),0);
 function renderHead(){visCols=ESS;
